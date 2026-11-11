@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/.astro", "!**/dist", "!**/.turbo", "!**/*.svg"]
+    "includes": [
+      "**",
+      "!**/.astro",
+      "!**/dist",
+      "!**/.turbo",
+      "!**/*.svg",
+      "!**/.changeset/*.md"
+    ]
   },
   "formatter": {
     "enabled": true,

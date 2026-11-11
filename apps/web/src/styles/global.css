@@ -1,4 +1,19 @@
-/* Global reset only. Design tokens and component styles live in StyleX. */
+/*
+ * Global reset and theme switch only. Design tokens and component styles
+ * live in StyleX (src/styles/tokens.stylex.ts).
+ */
+:root {
+  color-scheme: light dark;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+}
+
 *,
 *::before,
 *::after {
@@ -14,6 +29,7 @@ body {
   margin: 0;
   min-height: 100dvh;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 img,
@@ -28,4 +44,12 @@ input,
 textarea,
 select {
   font: inherit;
+  color: inherit;
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
 }

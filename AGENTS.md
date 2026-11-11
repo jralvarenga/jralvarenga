@@ -13,31 +13,32 @@ Read [DESIGN.md](DESIGN.md) before any UI work.
 - Biome 2.6 for formatting, linting, and import sorting ([biome.json](biome.json)). ESLint and Prettier are not used.
 - Changesets for versioning and GitHub releases ([.changeset/config.json](.changeset/config.json))
 - React 19 through `@astrojs/react` for UI components
-- StyleX 0.19 for all styling, compiled at build time by `@stylexjs/unplugin` in [astro.config.mjs](apps/web/astro.config.mjs) with CSS layers on. Tailwind is not used.
+- StyleX 0.19 for all styling, compiled at build time by `@stylexjs/unplugin` in [astro.config.mjs](apps/web/astro.config.mjs). Tailwind is not used.
 - Base UI (`@base-ui/react`) for unstyled, accessible primitives (dialog, menu, popover, tooltip, and so on)
-- `geist` 1.9 for the Geist Sans, Mono, and Pixel fonts
+- Geist Sans and Mono fonts, loaded with the Astro Fonts API (`fonts` in [astro.config.mjs](apps/web/astro.config.mjs)) from `src/assets/fonts`
 
 ## Architecture
 
 This is a Turborepo monorepo with one app today:
 
 - `apps/web` is the Astro site. Pages in `src/pages` map to routes, and each page wraps its content in a layout from `src/layouts`.
-- UI is built from React components in `src/components`, styled with StyleX. Astro files only handle routing, data loading, `<head>`, and composing components. They don't hold visual styles, because StyleX only compiles in `.ts`/`.tsx` files.
+- UI is built from React components in `src/components`, styled with StyleX. Astro files only handle routing, data loading, `<head>`, and composing components. They don't hold visual styles, because StyleX only compiles in `.ts`/`.tsx` files. When an Astro file needs a StyleX class, precompile it in a `.ts` module and import the class string, like `bodyClass` in [root.ts](apps/web/src/styles/root.ts).
 - React components render to static HTML by default. Add a `client:*` directive (prefer `client:visible` or `client:idle`) only when a component needs interactivity, for example the theme toggle or Base UI popovers.
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
-`apps/web` is still the Astro "basics" starter. Replace [Welcome.astro](apps/web/src/components/Welcome.astro), its SVG assets, and the starter styles in [Layout.astro](apps/web/src/layouts/Layout.astro) when building the real site. Do not build on top of them.
+The home page is still the Astro "basics" starter. Replace [Welcome.astro](apps/web/src/components/Welcome.astro) and its SVG assets when building the real site. Do not build on top of them. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
 
 ## Project structure
 
 - `apps/web/` is the Astro website. See [apps/web/AGENTS.md](apps/web/AGENTS.md) for Astro-specific instructions.
   - `src/pages/` holds routes.
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
-  - `src/components/` holds reusable React components (`.tsx`) styled with StyleX.
-  - `src/styles/` holds [global.css](apps/web/src/styles/global.css) (reset only) and the StyleX token files (`*.stylex.ts`).
-  - `src/assets/` holds images and SVGs processed by Astro.
+  - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
+  - `src/components/<feature>/` holds feature components, for example `showcase/` for the `/ui` preview.
+  - `src/styles/` holds [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
+  - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.
 - `.changeset/` holds pending changesets and the Changesets config.
@@ -54,11 +55,10 @@ bun run build                  # turbo build, outputs apps/web/dist
 bun run check                  # biome check (format + lint + imports), what CI runs
 bun run format                 # biome check --write, applies fixes
 bun run lint                   # biome lint only
+bun run check-types            # astro sync + tsc --noEmit for apps/web
 bun run changeset              # add a changeset for your change
 cd apps/web && bun run preview # serve the production build
 ```
-
-`bun run check-types` exists in the root, but no workspace defines a `check-types` script yet, so it does nothing.
 
 ## Environment
 
@@ -70,15 +70,17 @@ cd apps/web && bun run preview # serve the production build
 
 - Follow the code-guidelines, frontend, design, and app-architecture skills.
 - Biome formats with 2 spaces, LF, single quotes in JS/TS, and double quotes in JSX/HTML attributes. Run `bun run format` instead of formatting by hand.
-- Style only with StyleX: `stylex.create` in the component file and `{...stylex.props(...)}` on elements. Don't use Tailwind, CSS modules, inline `style`, or `<style>` blocks in Astro files. [global.css](apps/web/src/styles/global.css) is only for the reset.
-- Design tokens are StyleX variables (`stylex.defineVars`) in `src/styles/*.stylex.ts`. StyleX requires that file extension and named exports for variables. Components import tokens and never hardcode values.
-- Build interactive primitives on Base UI (`@base-ui/react/<component>`) and style its parts with StyleX. Use its `data-*` state attributes (`[data-open]`, `[data-disabled]`) for state styles. Don't hand-roll focus traps, menus, or popovers.
+- Style only with StyleX: `stylex.create` in the component file and `{...stylex.props(...)}` on elements. Don't use Tailwind, CSS modules, inline `style`, or `<style>` blocks in Astro files. [global.css](apps/web/src/styles/global.css) is only for the reset and `color-scheme`.
+- Design tokens are StyleX variables (`stylex.defineVars`) in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). StyleX requires that file extension, and the file may only export `defineVars` results. Components import tokens and never hardcode values.
+- StyleX CSS layers are off on purpose (`stylex.vite()` with no `useCSSLayers`). The unlayered element rules in global.css would otherwise beat every StyleX style, for example `button { color: inherit }`.
+- Build interactive primitives on Base UI (`@base-ui/react/<component>`) and wrap them in `components/ui`. Style state through Base UI's `className={(state) => stylex.props(...).className ?? ''}` callback, since StyleX can't target `data-*` attributes. Don't hand-roll focus traps, menus, or popovers.
+- Primitives take an `xstyle?: stylex.StyleXStyles` prop for overrides instead of `className` or `style`.
 - [.browserslistrc](apps/web/.browserslistrc) targets modern browsers so lightningcss doesn't lower `light-dark()`, which would break dark mode in StyleX.
 - Add a changeset (`bun run changeset`) for every user-facing change to `apps/web`. Private packages are versioned and tagged.
 
 ## Testing
 
-There are no tests yet. Verify UI changes by running `bun run dev` and checking the page in light and dark mode at mobile and desktop widths.
+There are no tests yet. Verify UI changes on `/ui` and the affected pages with `bun run dev`, in light and dark mode, at mobile and desktop widths.
 
 ## Deployment
 
@@ -87,7 +89,7 @@ There are no tests yet. Verify UI changes by running `bun run dev` and checking 
 
 ## Rules
 
-- Always run `bun run check` and `bun run build` before finishing a change. CI fails on either.
+- Always run `bun run check`, `bun run check-types`, and `bun run build` before finishing a change.
 - Never add ESLint or Prettier config. Biome is the only formatter and linter.
 - Never commit `.env` files or generated output (`dist`, `.astro`, `.turbo`).
 - Keep the Turborepo managed block below as it is. `turbo` rewrites it.
@@ -98,7 +100,7 @@ There are no tests yet. Verify UI changes by running `bun run dev` and checking 
 - Hosting target for the site (`.vercel` is in `.gitignore`, but nothing is configured).
 - Site sections and content model: home, projects, writing, about? If there is writing, should it use Astro content collections with MDX?
 - Should `packages/eslint-config` and `packages/typescript-config` be removed? They target Next.js and are unused, and Biome replaces ESLint.
-- Add `@astrojs/check` and a `check-types` script to `apps/web` so `bun run check-types` does real work?
+- Add `@astrojs/check` so `check-types` also type-checks `.astro` files? Today it only checks `.ts` and `.tsx`.
 
 <!-- BEGIN:turborepo-agent-rules -->
 
