@@ -11,7 +11,7 @@ Styling is StyleX on React components, with Base UI for interactive primitives. 
   - [emilkowal.ski](https://emilkowal.ski) for the single narrow column, content first, and small purposeful motion.
   - [shadcn](https://ui.shadcn.com) for the neutral token system and simple component variants.
 - Plain black and white with light and dark mode. Grays carry hierarchy. Color is never decoration.
-- Pages stay flat: no glows, blurred blobs, glassmorphism, or decorative gradients. Depth belongs only to controls (see Signature).
+- Pages stay flat: no glows, blurred blobs, glassmorphism, or decorative gradients. The header's soft scroll edge is the one exception (see Spacing and layout). Depth belongs only to controls (see Signature).
 
 ## Signature
 
@@ -96,7 +96,7 @@ Geist Sans, Geist Mono, and Geist Pixel (Square) load through the Astro Fonts AP
 
 - Spacing uses the `space` tokens on a 4px scale: `x1` (4px) through `x24` (96px).
 - Use one master layout: a single centered column with `max-width: 640px`, a 16px side gutter on mobile, and 24px from 640px up. Pages that need it, like a project gallery, can widen to 960px.
-- Header: the name on the left, nav links and the theme toggle on the right. The header is not sticky and has no background fill.
+- Header: the name on the left, nav links and the theme toggle on the right. It is sticky, with a soft scroll edge like SwiftUI's: no solid fill, but a `background` tint that fades to transparent 32px below the bar, over three stacked `backdrop-filter` blurs (1px, 3px, 8px), each masked to a shorter band at the top so the blur builds toward the top edge. No border or shadow under it.
 - Space sections 64px apart on mobile and 96px apart on desktop. Inside a section, space items 16 to 24px apart.
 - Lists for writing and projects are full-width rows with the title left and the date or meta right, in `mutedForeground` mono. Don't use card grids for lists.
 - Use hairline `border` dividers only where they separate information. Don't use boxes around everything.
@@ -117,7 +117,7 @@ Primitives live in [components/ui](apps/web/src/components/ui). Reuse them befor
 | `Field`    | Base UI `Field`         | `label`, `description`, `error`, `disabled`. `layout`: `stacked` (fields) or `inline` (checkbox, switch)                          |
 | `Spinner`  | SVG                     | Inherits `currentColor`. `label`, `size`                                                                                          |
 
-Always wrap form controls in `Field` so the label, description, and error are linked. Still to build: Link, ThemeToggle (it sets `data-theme` on `<html>`, stores the choice in `localStorage`, and applies it before paint with an inline script), ListItem, Card (flat, 1px `border`, radius 12px), and Tag.
+Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows a `D` key hint next to the name: a `kbd` with a 1px `border`, radius `sm`, Geist Mono 14px in `mutedForeground`, hidden on touch screens. Still to build: Link, a ThemeToggle button for touch screens, ListItem, Card (flat, 1px `border`, radius 12px), and Tag.
 
 Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for buttons and fields, `lg` 12px for cards, `full` for the switch.
 

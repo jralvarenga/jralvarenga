@@ -76,12 +76,11 @@ export function Hero() {
           <PixelReveal xstyle={styles.name}>Rigo Alvarenga</PixelReveal>
         </h1>
         <p {...stylex.props(styles.description)}>
-          I'm a Tech lead engineer on the development team at Denzo
-          Studios. Working on different projects like <a href="https://orviadx.com">Orvia</a> and many others.
+          I'm a Tech lead engineer on the development team at Denzo Studios.
+          Working on different projects like{' '}
+          <a href="https://orviadx.com">Orvia</a> and many others.
         </p>
-        <p {...stylex.props(styles.description)}>
-          As well as personal ones
-        </p>
+        <p {...stylex.props(styles.description)}>As well as personal ones</p>
       </section>
     </main>
   );

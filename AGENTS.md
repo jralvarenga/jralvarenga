@@ -38,7 +38,7 @@ This is a Turborepo monorepo with one app today:
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
   - `src/components/layout/` holds the site header.
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
-  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate.
+  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate. [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
   - `src/styles/` holds [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).

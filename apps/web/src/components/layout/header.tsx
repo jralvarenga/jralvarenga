@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import {
   colors,
+  font,
   motion,
   radius,
   space,
@@ -19,8 +20,54 @@ const links: NavLink[] = [
   { href: '/about', label: 'About' },
 ];
 
+/** How far the fade reaches below the header, so the edge has no line. */
+const FADE_OVERHANG = '32px';
+
+/**
+ * Progressive blur, like SwiftUI's soft scroll edge: each layer blurs more
+ * and is masked to a shorter band at the top, so the blur builds toward the
+ * top edge and dissolves into the page below.
+ */
+const blurLayers = [
+  {
+    blur: 'blur(1px)',
+    mask: 'linear-gradient(to bottom, black 60%, transparent)',
+  },
+  {
+    blur: 'blur(3px)',
+    mask: 'linear-gradient(to bottom, black 40%, transparent 80%)',
+  },
+  {
+    blur: 'blur(8px)',
+    mask: 'linear-gradient(to bottom, black 20%, transparent 60%)',
+  },
+];
+
 const styles = stylex.create({
+  bar: {
+    position: 'sticky',
+    top: 0,
+    zIndex: 10,
+  },
+  backdrop: {
+    position: 'absolute',
+    insetInline: 0,
+    top: 0,
+    bottom: `calc(-1 * ${FADE_OVERHANG})`,
+    pointerEvents: 'none',
+    // A soft tint of the page color that fades out toward the bottom.
+    backgroundImage: `linear-gradient(to bottom, color-mix(in oklch, ${colors.background} 92%, transparent), color-mix(in oklch, ${colors.background} 70%, transparent) 55%, transparent)`,
+  },
+  blur: (blur: string, mask: string) => ({
+    position: 'absolute',
+    inset: 0,
+    backdropFilter: blur,
+    WebkitBackdropFilter: blur,
+    maskImage: mask,
+    WebkitMaskImage: mask,
+  }),
   header: {
+    position: 'relative',
     display: 'flex',
     flexWrap: 'wrap',
     alignItems: 'center',
@@ -32,7 +79,32 @@ const styles = stylex.create({
       default: space.x4,
       '@media (min-width: 640px)': space.x6,
     },
-    paddingBlock: space.x6,
+    paddingBlock: space.x4,
+  },
+  brand: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: space.x2,
+  },
+  hint: {
+    // A keyboard hint means nothing on touch screens.
+    display: {
+      default: 'inline-flex',
+      '@media (pointer: coarse)': 'none',
+    },
+    alignItems: 'center',
+    justifyContent: 'center',
+    minWidth: '22px',
+    height: '22px',
+    paddingInline: space.x1,
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: colors.border,
+    borderRadius: radius.sm,
+    color: colors.mutedForeground,
+    fontFamily: font.mono,
+    fontSize: text.sm,
+    lineHeight: 1,
   },
   home: {
     color: colors.foreground,
@@ -101,8 +173,9 @@ interface Props {
 }
 
 /**
- * Site header: the name on the left, nav links on the right. Static, flat,
- * and not sticky.
+ * Site header: the name on the left, nav links on the right. It sticks to
+ * the top over a soft backdrop that tints and blurs the content scrolling
+ * under it, fading out with no hard edge.
  */
 export function Header({ pathname }: Props) {
   return (
@@ -110,30 +183,48 @@ export function Header({ pathname }: Props) {
       <a href="#content" {...stylex.props(styles.skip)}>
         Skip to content
       </a>
-      <header {...stylex.props(styles.header)}>
-        <a href="/" {...stylex.props(styles.home)}>
-          Rigo Alvarenga
-        </a>
-        <nav aria-label="Main">
-          <ul {...stylex.props(styles.list)}>
-            {links.map((link) => {
-              const isCurrent = pathname.startsWith(link.href);
+      <div {...stylex.props(styles.bar)}>
+        <div aria-hidden="true" {...stylex.props(styles.backdrop)}>
+          {blurLayers.map((layer) => (
+            <div
+              key={layer.blur}
+              {...stylex.props(styles.blur(layer.blur, layer.mask))}
+            />
+          ))}
+        </div>
+        <header {...stylex.props(styles.header)}>
+          <div {...stylex.props(styles.brand)}>
+            <a href="/" {...stylex.props(styles.home)}>
+              Rigo Alvarenga
+            </a>
+            <kbd title="Press D to switch theme" {...stylex.props(styles.hint)}>
+              D
+            </kbd>
+          </div>
+          <nav aria-label="Main">
+            <ul {...stylex.props(styles.list)}>
+              {links.map((link) => {
+                const isCurrent = pathname.startsWith(link.href);
 
-              return (
-                <li key={link.href}>
-                  <a
-                    href={link.href}
-                    aria-current={isCurrent ? 'page' : undefined}
-                    {...stylex.props(styles.link, isCurrent && styles.current)}
-                  >
-                    {link.label}
-                  </a>
-                </li>
-              );
-            })}
-          </ul>
-        </nav>
-      </header>
+                return (
+                  <li key={link.href}>
+                    <a
+                      href={link.href}
+                      aria-current={isCurrent ? 'page' : undefined}
+                      {...stylex.props(
+                        styles.link,
+                        isCurrent && styles.current,
+                      )}
+                    >
+                      {link.label}
+                    </a>
+                  </li>
+                );
+              })}
+            </ul>
+          </nav>
+        </header>
+      </div>
     </>
   );
 }

@@ -20,6 +20,15 @@ const { title = 'Rigo Alvarenga' } = Astro.props;
     <link rel="icon" href="/favicon.ico">
     <meta name="generator" content={Astro.generator}>
     <title>{title}</title>
+    <script is:inline>
+    // Apply the stored theme before paint. The key matches lib/theme.ts.
+    try {
+      const theme = localStorage.getItem('theme');
+      if (theme === 'light' || theme === 'dark') {
+        document.documentElement.dataset.theme = theme;
+      }
+    } catch {}
+    </script>
     <Font cssVariable="--font-geist-sans" preload />
     <Font cssVariable="--font-geist-mono" />
     <Font cssVariable="--font-geist-pixel" preload />
@@ -33,5 +42,10 @@ const { title = 'Rigo Alvarenga' } = Astro.props;
   <body class={bodyClass}>
     <Header pathname={Astro.url.pathname} />
     <slot />
+    <script>
+    import { bindThemeHotkey } from '../lib/theme';
+
+    bindThemeHotkey();
+    </script>
   </body>
 </html>
