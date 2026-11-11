@@ -1,6 +1,6 @@
 # Design
 
-Styling is StyleX on React components, with Base UI for interactive primitives. The tokens and the base primitives are built. Pages still use the Astro starter. Preview every primitive in both themes at `/ui` ([primitives.tsx](apps/web/src/components/showcase/primitives.tsx)).
+Styling is StyleX on React components, with Base UI for interactive primitives. The tokens, the base primitives, the header, and the home hero are built. Preview every primitive in both themes at `/ui` ([primitives.tsx](apps/web/src/components/showcase/primitives.tsx)).
 
 ## Direction
 
@@ -67,16 +67,18 @@ All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.sty
 
 ## Typography
 
-Geist Sans and Geist Mono load through the Astro Fonts API from [src/assets/fonts](apps/web/src/assets/fonts), as `--font-geist-sans` and `--font-geist-mono`. The `font` tokens wrap them with fallbacks. Do not use Google Fonts.
+Geist Sans, Geist Mono, and Geist Pixel (Square) load through the Astro Fonts API from [src/assets/fonts](apps/web/src/assets/fonts), as `--font-geist-sans`, `--font-geist-mono`, and `--font-geist-pixel`. The `font` tokens wrap them with fallbacks. Do not use Google Fonts.
 
-| Role    | Font       | Use                                        |
-| ------- | ---------- | ------------------------------------------ |
-| Display | Geist Sans | Page titles and section headings           |
-| Body    | Geist Sans | All text by default                        |
-| Utility | Geist Mono | Code, dates, small metadata, keyboard keys |
+| Role    | Font               | Use                                        |
+| ------- | ------------------ | ------------------------------------------ |
+| Display | Geist Sans         | Page titles and section headings           |
+| Body    | Geist Sans         | All text by default                        |
+| Utility | Geist Mono         | Code, dates, small metadata, keyboard keys |
+| Accent  | Geist Pixel Square | The name in the home hero only             |
 
 | Style   | Size / line height                           | Weight | Tracking                          |
 | ------- | -------------------------------------------- | ------ | --------------------------------- |
+| Hero    | `clamp(40px, 11vw, 72px)` / 1, Geist Pixel   | 500    | -0.02em                           |
 | Display | 40px / 1.1 on desktop, 32px / 1.15 on mobile | 500    | -0.03em                           |
 | H2      | 24px / 1.3                                   | 500    | -0.02em                           |
 | H3      | 18px / 1.4                                   | 500    | -0.01em                           |
@@ -140,6 +142,7 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 - **Properties**: only animate `transform`, `opacity`, `box-shadow`, and `background-color`. Prefer CSS transitions, which can be interrupted, over keyframes.
 - **Enter animations**: start from `scale(0.95)` or above, never `scale(0)`. Popovers scale from their trigger with `transform-origin`.
 - **Page load**: at most one subtle fade-and-rise of the main column (opacity 0 to 1, `translateY(8px)` to 0, 300ms). No stagger on every element.
+- **Pixel reveal**: the hero name builds itself out of its own pixels once on load ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)). Each glyph is sampled on Geist Pixel's grid (0.038em squares) and drawn on a canvas over the text. Pixels pop in solid, left to right with jitter, but the canvas only redraws every 80ms, so they land in visible batches with a pause between each. Then the real text replaces the canvas. It takes about 1.1s, the one exception to the 300ms limit. Use it only on the hero name.
 - Don't animate actions done with the keyboard or things seen many times a day, like nav or theme switching.
 - **Reduced motion**: under `prefers-reduced-motion: reduce`, remove movement (the switch thumb jumps and the spinner stops).
 
@@ -154,6 +157,6 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 ## Open questions
 
 - Should the primary color stay black and white, or take a hue like the purple reference? It changes only `primary*` tokens.
-- Should the name in the header be set in Geist Pixel as a second accent, or stay in Geist Sans?
+- Geist Pixel is used for the hero name. Should the header name use it too, or stay in Geist Sans?
 - Will the site have images (project screenshots, photo)? Card styling depends on it.
 - Is there an icon set preference? Lucide matches the current stroke icons.

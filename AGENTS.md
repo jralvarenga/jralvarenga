@@ -15,7 +15,7 @@ Read [DESIGN.md](DESIGN.md) before any UI work.
 - React 19 through `@astrojs/react` for UI components
 - StyleX 0.19 for all styling, compiled at build time by `@stylexjs/unplugin` in [astro.config.mjs](apps/web/astro.config.mjs). Tailwind is not used.
 - Base UI (`@base-ui/react`) for unstyled, accessible primitives (dialog, menu, popover, tooltip, and so on)
-- Geist Sans and Mono fonts, loaded with the Astro Fonts API (`fonts` in [astro.config.mjs](apps/web/astro.config.mjs)) from `src/assets/fonts`
+- Geist Sans, Mono, and Pixel (Square) fonts, loaded with the Astro Fonts API (`fonts` in [astro.config.mjs](apps/web/astro.config.mjs)) from `src/assets/fonts`
 
 ## Architecture
 
@@ -28,7 +28,7 @@ This is a Turborepo monorepo with one app today:
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
-The home page is still the Astro "basics" starter. Replace [Welcome.astro](apps/web/src/components/Welcome.astro) and its SVG assets when building the real site. Do not build on top of them. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
+[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, name, nav). Each page renders its own `<main id="content">` inside a React component, for example [Hero](apps/web/src/components/home/hero.tsx) on the home page. The nav links to `/projects`, `/writing`, and `/about`, which don't exist yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
 
 ## Project structure
 
@@ -36,7 +36,9 @@ The home page is still the Astro "basics" starter. Replace [Welcome.astro](apps/
   - `src/pages/` holds routes.
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
-  - `src/components/<feature>/` holds feature components, for example `showcase/` for the `/ui` preview.
+  - `src/components/layout/` holds the site header.
+  - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
+  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate.
   - `src/styles/` holds [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).

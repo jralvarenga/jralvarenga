@@ -62,6 +62,7 @@ export const radius = stylex.defineVars({
 export const font = stylex.defineVars({
   sans: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
   mono: 'var(--font-geist-mono), ui-monospace, monospace',
+  pixel: 'var(--font-geist-pixel), var(--font-geist-mono), monospace',
 });
 
 /** Font sizes. 16px is the base, 14px is the minimum. */
@@ -71,6 +72,7 @@ export const text = stylex.defineVars({
   lg: '18px',
   xl: '24px',
   display: '40px',
+  hero: 'clamp(40px, 11vw, 72px)',
 });
 
 /** Font weights. Only regular, medium and bold are allowed. */

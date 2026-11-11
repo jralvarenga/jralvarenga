@@ -93,7 +93,7 @@ export function Primitives() {
   }
 
   return (
-    <main {...stylex.props(styles.page)}>
+    <main id="content" {...stylex.props(styles.page)}>
       <header {...stylex.props(styles.header)}>
         <h1 {...stylex.props(styles.title)}>Primitives</h1>
         <div {...stylex.props(styles.row)}>
