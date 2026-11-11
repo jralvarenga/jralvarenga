@@ -58,7 +58,7 @@ const styles = stylex.create({
       default: 'none',
       ':focus-visible': `2px solid ${colors.ring}`,
     },
-    outlineOffset: '6px',
+    outlineOffset: '3px',
   },
   ghost: {
     backgroundColor: {
@@ -120,22 +120,25 @@ const styles = stylex.create({
 });
 
 /**
- * Buttons drop the 1px edge of the shared elevation and keep the highlight,
- * the bezel ring and the drop shadow.
+ * Buttons drop the 4px bezel ring of the shared elevation and keep the
+ * highlight, the 1px edge and a tighter drop shadow.
  */
-const edgeless = stylex.create({
+const ringless = stylex.create({
   primary: {
-    boxShadow: `inset 0 1px 0 ${colors.primaryHighlight}, 0 0 0 4px ${colors.bezel}, 0 2px 4px 3px ${colors.drop}`,
+    boxShadow: `inset 0 1px 0 ${colors.primaryHighlight}, 0 0 0 1px ${colors.primaryEdge}, 0 1px 3px ${colors.drop}`,
   },
   secondary: {
-    boxShadow: `inset 0 1px 0 ${colors.highlight}, 0 0 0 4px ${colors.bezel}, 0 2px 4px 3px ${colors.drop}`,
+    boxShadow: `inset 0 1px 0 ${colors.highlight}, 0 0 0 1px ${colors.edge}, 0 1px 3px ${colors.drop}`,
+  },
+  danger: {
+    boxShadow: `inset 0 1px 0 ${colors.primaryHighlight}, 0 0 0 1px ${colors.dangerEdge}, 0 1px 3px ${colors.drop}`,
   },
 });
 
 const variants = {
-  primary: [elevation.raisedPrimary, edgeless.primary],
-  secondary: [elevation.raisedSurface, edgeless.secondary],
-  danger: [elevation.raisedDanger, edgeless.primary],
+  primary: [elevation.raisedPrimary, ringless.primary],
+  secondary: [elevation.raisedSurface, ringless.secondary],
+  danger: [elevation.raisedDanger, ringless.danger],
   ghost: styles.ghost,
 } satisfies Record<Variant, stylex.StyleXStyles>;
 

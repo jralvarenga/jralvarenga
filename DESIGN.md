@@ -24,7 +24,7 @@ Styling is StyleX on React components, with Base UI for interactive primitives. 
 
 There are two elevation styles:
 
-- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. This is the only place gradients are allowed. Buttons drop the 1px edge (layer 2) and keep the highlight, bezel, and drop shadow. Checkboxes and the switch keep the edge, because they are small and need it to hold their shape.
+- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. This is the only place gradients are allowed. Buttons drop the 4px bezel ring (layer 3) and keep the highlight, the 1px edge, and a tighter `0 1px 3px` drop shadow. Checkboxes, the switch, and fields keep the full bezel.
 - **Recessed** (`recessed`): inputs, textareas, and the switch track. An inset shadow replaces the highlight. On focus the edge turns `ring` and the bezel turns `bezelFocus`.
 
 Never add elevation to static content like cards, lists, or text. Never build a new shadow by hand. Reuse the `elevation` styles.
@@ -99,7 +99,7 @@ Geist Sans and Geist Mono load through the Astro Fonts API from [src/assets/font
 - Lists for writing and projects are full-width rows with the title left and the date or meta right, in `mutedForeground` mono. Don't use card grids for lists.
 - Use hairline `border` dividers only where they separate information. Don't use boxes around everything.
 - Design mobile first. There is no horizontal scroll. Nav wraps or collapses instead of scrolling.
-- Leave at least 8px between neighbouring controls so their bezels don't touch.
+- Leave at least 8px between neighbouring controls.
 
 ## Components
 
@@ -122,7 +122,7 @@ Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for b
 ## States
 
 - **Hover**: raised buttons drop to 0.9 opacity. Ghost buttons get a `muted` background. No movement on hover.
-- **Focus**: buttons, switches, and checkboxes show `outline: 2px solid ring` with a 6px offset, outside the bezel. Fields darken their edge and bezel instead.
+- **Focus**: buttons show `outline: 2px solid ring` with a 3px offset. Switches and checkboxes use a 6px offset to clear their bezel. Fields darken their edge and bezel instead.
 - **Active**: buttons scale to `0.97` and checkboxes to `0.94`.
 - **Disabled**: `opacity: 0.5`, `cursor: not-allowed`, no hover or press change.
 - **Loading**: the button keeps its width, hides the label, and shows a centered `Spinner` with `aria-busy`.
