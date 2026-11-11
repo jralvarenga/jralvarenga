@@ -119,10 +119,23 @@ const styles = stylex.create({
   },
 });
 
+/**
+ * Buttons drop the 1px edge of the shared elevation and keep the highlight,
+ * the bezel ring and the drop shadow.
+ */
+const edgeless = stylex.create({
+  primary: {
+    boxShadow: `inset 0 1px 0 ${colors.primaryHighlight}, 0 0 0 4px ${colors.bezel}, 0 2px 4px 3px ${colors.drop}`,
+  },
+  secondary: {
+    boxShadow: `inset 0 1px 0 ${colors.highlight}, 0 0 0 4px ${colors.bezel}, 0 2px 4px 3px ${colors.drop}`,
+  },
+});
+
 const variants = {
-  primary: elevation.raisedPrimary,
-  secondary: elevation.raisedSurface,
-  danger: elevation.raisedDanger,
+  primary: [elevation.raisedPrimary, edgeless.primary],
+  secondary: [elevation.raisedSurface, edgeless.secondary],
+  danger: [elevation.raisedDanger, edgeless.primary],
   ghost: styles.ghost,
 } satisfies Record<Variant, stylex.StyleXStyles>;
 

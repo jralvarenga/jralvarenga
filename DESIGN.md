@@ -24,7 +24,7 @@ Styling is StyleX on React components, with Base UI for interactive primitives. 
 
 There are two elevation styles:
 
-- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. This is the only place gradients are allowed.
+- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. This is the only place gradients are allowed. Buttons drop the 1px edge (layer 2) and keep the highlight, bezel, and drop shadow. Checkboxes and the switch keep the edge, because they are small and need it to hold their shape.
 - **Recessed** (`recessed`): inputs, textareas, and the switch track. An inset shadow replaces the highlight. On focus the edge turns `ring` and the bezel turns `bezelFocus`.
 
 Never add elevation to static content like cards, lists, or text. Never build a new shadow by hand. Reuse the `elevation` styles.
