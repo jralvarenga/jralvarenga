@@ -8,8 +8,8 @@ import {
   weight,
 } from '../../styles/tokens.stylex';
 import { MetaList } from '../page';
+import { PixelReveal } from '../pixel-reveal';
 import { socialLinks } from '../social-links';
-import { PixelReveal } from './pixel-reveal';
 
 const rise = stylex.keyframes({
   from: { opacity: 0, transform: 'translateY(8px)' },

@@ -76,6 +76,7 @@ export function SkillsIndex({ skills }: Props) {
   return (
     <PageLayout
       title="Skills"
+      lead="The rules I give coding agents, from how to write code to how to review it."
       meta={[
         { icon: <BoxIcon size={14} />, label: count },
         {
@@ -86,9 +87,8 @@ export function SkillsIndex({ skills }: Props) {
       ]}
     >
       <p {...stylex.props(styles.intro)}>
-        These are the rules I give coding agents, from how to write code to how
-        to review it. They work with Claude Code, Codex, Cursor, and any agent
-        that supports the Agent Skills format.
+        They work with Claude Code, Codex, Cursor, and any agent that supports
+        the Agent Skills format.
       </p>
 
       <Section label="INSTALLATION">

@@ -13,7 +13,6 @@ Read [DESIGN.md](DESIGN.md) before any UI work.
 - Biome 2.6 for formatting, linting, and import sorting ([biome.json](biome.json)). ESLint and Prettier are not used.
 - Changesets for versioning and GitHub releases ([.changeset/config.json](.changeset/config.json))
 - React 19 through `@astrojs/react` for UI components
-- `torph` for the page title morph between pages ([page-title.ts](apps/web/src/lib/page-title.ts))
 - StyleX 0.19 for all styling, compiled at build time by `@stylexjs/unplugin` in [astro.config.mjs](apps/web/astro.config.mjs). Tailwind is not used.
 - Base UI (`@base-ui/react`) for unstyled, accessible primitives (dialog, menu, popover, tooltip, and so on)
 - Geist Sans, Mono, and Pixel (Square) fonts, loaded with the Astro Fonts API (`fonts` in [astro.config.mjs](apps/web/astro.config.mjs)) from `src/assets/fonts`
@@ -25,13 +24,14 @@ This is a Turborepo monorepo with one app today:
 - `apps/web` is the Astro site. Pages in `src/pages` map to routes, and each page wraps its content in a layout from `src/layouts`.
 - UI is built from React components in `src/components`, styled with StyleX. Astro files only handle routing, data loading, `<head>`, and composing components. They don't hold visual styles, because StyleX only compiles in `.ts`/`.tsx` files. When an Astro file needs a StyleX class, precompile it in a `.ts` module and import the class string, like `bodyClass` in [root.ts](apps/web/src/styles/root.ts).
 - React components render to static HTML by default. Add a `client:*` directive (prefer `client:visible` or `client:idle`) only when a component needs interactivity, for example the theme toggle or Base UI popovers.
+- Navigation is plain multi-page: `prefetch.prefetchAll` in [astro.config.mjs](apps/web/astro.config.mjs) fetches a page on link hover, and `@view-transition { navigation: auto }` in global.css fades the old page out and the new one in without a blank frame. The site header and the page header (title, subtitle, meta) keep still through their own `view-transition-name`s. Don't add Astro's `<ClientRouter />`: page scripts like the pixel reveal expect a full page load.
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
 - `/projects` and `/projects/<slug>` come from the `projects` content collection: one markdown file per project in [src/content/projects](apps/web/src/content/projects), validated by the schema in [content.config.ts](apps/web/src/content.config.ts). Add a project by adding a file. The home page lists them too.
 - `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one GitHub API call for the file tree, then raw downloads. Routes use the directory name (`skill.id`), not the frontmatter `name`. `build` and `dev` need network access, and the build fails if GitHub is unreachable, rate-limited, or returns a truncated tree. An optional `GITHUB_TOKEN` (or `GH_TOKEN`) avoids GitHub API rate-limit failures; without it the public unauthenticated limit applies. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/markdown.tsx)). Restart `dev` to pick up new skills.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
-[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, name, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
+[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, avatar linking home, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
 
 ## Project structure
 
@@ -39,12 +39,12 @@ This is a Turborepo monorepo with one app today:
   - `src/pages/` holds routes.
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner, tag), one component per kebab-case file.
-  - `src/components/layout/` holds the site header and `PageLayout`, the shell every inner page uses for its `<main>`, breadcrumbs, and title.
+  - `src/components/layout/` holds the site header and `PageLayout`, the shell every inner page uses for its `<main>`, breadcrumbs, title, and required subtitle (`lead`).
   - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
-  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate. [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
-  - `src/styles/` holds [layout.ts](apps/web/src/styles/layout.ts) (the 640px page column), [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
+  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the pixel reveal ([pixel-reveal.ts](apps/web/src/lib/pixel-reveal.ts)) that builds the hero name and every page title, started for each `[data-pixel-reveal]` element from a `<script>` in [Layout.astro](apps/web/src/layouts/Layout.astro) so React doesn't need to hydrate. Its markup is [PixelReveal](apps/web/src/components/pixel-reveal.tsx). [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
+  - `src/styles/` holds [layout.ts](apps/web/src/styles/layout.ts) (the 640px page column), [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset, `color-scheme`, and the page view transition).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.
@@ -77,7 +77,7 @@ cd apps/web && bun run preview # serve the production build
 
 - Follow the code-guidelines, frontend, design, and app-architecture skills.
 - Biome formats with 2 spaces, LF, single quotes in JS/TS, and double quotes in JSX/HTML attributes. Run `bun run format` instead of formatting by hand.
-- Style only with StyleX: `stylex.create` in the component file and `{...stylex.props(...)}` on elements. Don't use Tailwind, CSS modules, inline `style`, or `<style>` blocks in Astro files. [global.css](apps/web/src/styles/global.css) is only for the reset and `color-scheme`.
+- Style only with StyleX: `stylex.create` in the component file and `{...stylex.props(...)}` on elements. Don't use Tailwind, CSS modules, inline `style`, or `<style>` blocks in Astro files. [global.css](apps/web/src/styles/global.css) is only for the reset, `color-scheme`, and the `@view-transition` rules, which StyleX can't emit.
 - Design tokens are StyleX variables (`stylex.defineVars`) in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). StyleX requires that file extension, and the file may only export `defineVars` results. Components import tokens and never hardcode values.
 - StyleX CSS layers are off on purpose (`stylex.vite()` with no `useCSSLayers`). The unlayered element rules in global.css would otherwise beat every StyleX style, for example `button { color: inherit }`.
 - Build interactive primitives on Base UI (`@base-ui/react/<component>`) and wrap them in `components/ui`. Style state through Base UI's `className={(state) => stylex.props(...).className ?? ''}` callback, since StyleX can't target `data-*` attributes. Don't hand-roll focus traps, menus, or popovers.

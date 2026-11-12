@@ -37,6 +37,17 @@ export const colors = stylex.defineVars({
   dangerForeground: 'oklch(0.985 0 0)',
   /** LinkedIn's brand blue, only for its logo. Same in both themes. */
   linkedin: '#0A66C2',
+  /** Denzo Studios' brand blue, only for its logo. Same in both themes. */
+  denzo: '#0F52BA',
+  /** Caban's mark: blue on light pages, white on dark ones. */
+  caban: 'light-dark(#0246F3, #FFFFFF)',
+  /** Caban's green dot. Same in both themes. */
+  cabanDot: '#00F970',
+  /** Fiverr's brand green and the white "fi" on it, in both themes. */
+  fiverr: '#1DBF73',
+  fiverrForeground: '#FFFFFF',
+  /** The white tile behind UCA's black-on-white crest, in both themes. */
+  ucaTile: '#FFFFFF',
 });
 
 /** Spacing scale on a 4px grid. */
@@ -88,7 +99,7 @@ export const weight = stylex.defineVars({
   bold: '700',
 });
 
-/** Motion durations and easings. UI stays within 300ms; title morph and the hero pixel reveal are documented exceptions. */
+/** Motion durations and easings. UI stays within 300ms; the pixel reveal is the documented exception. */
 export const motion = stylex.defineVars({
   fast: '150ms',
   base: '200ms',

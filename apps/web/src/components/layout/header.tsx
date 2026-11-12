@@ -1,11 +1,11 @@
 import * as stylex from '@stylexjs/stylex';
+import avatar from '../../assets/avatar.jpg';
 import {
   colors,
   motion,
   radius,
   space,
   text,
-  weight,
 } from '../../styles/tokens.stylex';
 
 interface NavLink {
@@ -47,6 +47,8 @@ const styles = stylex.create({
     position: 'sticky',
     top: 0,
     zIndex: 10,
+    // Its own view transition group, so page fades don't touch the header.
+    viewTransitionName: 'site-header',
   },
   backdrop: {
     position: 'absolute',
@@ -80,12 +82,37 @@ const styles = stylex.create({
     },
     paddingBlock: space.x4,
   },
+  // A 40px touch target around the 32px avatar. The negative margin keeps
+  // the avatar's left edge on the column edge.
   home: {
-    color: colors.foreground,
-    fontSize: text.md,
-    fontWeight: weight.medium,
-    letterSpacing: '-0.01em',
-    textDecoration: 'none',
+    display: 'inline-flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+    margin: '-4px',
+    borderRadius: radius.full,
+    opacity: {
+      default: 1,
+      ':hover': 0.9,
+    },
+    transitionProperty: 'opacity',
+    transitionDuration: motion.fast,
+    transitionTimingFunction: motion.easeOut,
+    outline: {
+      default: 'none',
+      ':focus-visible': `2px solid ${colors.ring}`,
+    },
+    outlineOffset: '1px',
+  },
+  avatar: {
+    display: 'block',
+    width: '32px',
+    height: '32px',
+    borderRadius: radius.full,
+    objectFit: 'cover',
+    // A hairline ring so the dark photo keeps its edge on a dark page.
+    boxShadow: `0 0 0 1px ${colors.border}`,
   },
   list: {
     display: 'flex',
@@ -148,7 +175,8 @@ interface Props {
 }
 
 /**
- * Site header: the name on the left, nav links on the right. It sticks to
+ * Site header: my photo on the left, linking home, and nav links on the
+ * right. It sticks to
  * the top over a soft backdrop that tints and blurs the content scrolling
  * under it, fading out with no hard edge.
  */
@@ -168,8 +196,18 @@ export function Header({ pathname }: Props) {
           ))}
         </div>
         <header {...stylex.props(styles.header)}>
-          <a href="/" {...stylex.props(styles.home)}>
-            Rigo Alvarenga
+          <a
+            href="/"
+            aria-label="Rigo Alvarenga, home"
+            {...stylex.props(styles.home)}
+          >
+            <img
+              src={avatar.src}
+              alt=""
+              width={32}
+              height={32}
+              {...stylex.props(styles.avatar)}
+            />
           </a>
           <nav aria-label="Main">
             <ul {...stylex.props(styles.list)}>

@@ -9,13 +9,3 @@ const projects = await getProjectSummaries();
 <Layout>
   <HomePage projects={projects} />
 </Layout>
-
-<script>
-import { revealPixels } from '../lib/home/pixel-reveal';
-
-for (const element of document.querySelectorAll<HTMLElement>(
-  '[data-pixel-reveal]',
-)) {
-  void revealPixels(element);
-}
-</script>

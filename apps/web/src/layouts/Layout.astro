@@ -43,11 +43,17 @@ const { title = 'Rigo Alvarenga' } = Astro.props;
     <Header pathname={Astro.url.pathname} />
     <slot />
     <script>
-    import { morphPageTitle } from '../lib/page-title';
+    import { revealPixels } from '../lib/pixel-reveal';
     import { bindThemeHotkey } from '../lib/theme';
 
     bindThemeHotkey();
-    void morphPageTitle();
+
+    // The hero name and every page title build themselves out of pixels.
+    for (const element of document.querySelectorAll<HTMLElement>(
+      '[data-pixel-reveal]',
+    )) {
+      void revealPixels(element);
+    }
     </script>
   </body>
 </html>

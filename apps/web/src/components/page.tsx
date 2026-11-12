@@ -10,6 +10,12 @@ import {
   text,
   weight,
 } from '../styles/tokens.stylex';
+import { PixelReveal } from './pixel-reveal';
+
+const enter = stylex.keyframes({
+  from: { opacity: 0, transform: 'translateY(4px)' },
+  to: { opacity: 1, transform: 'translateY(0)' },
+});
 
 const styles = stylex.create({
   crumbs: {
@@ -40,6 +46,9 @@ const styles = stylex.create({
     flexDirection: 'column',
     gap: space.x3,
     marginTop: space.x4,
+    // Its own view transition group, so the title and subtitle stay put
+    // while the page content fades (see global.css).
+    viewTransitionName: 'page-header',
   },
   titleRow: {
     display: 'flex',
@@ -100,12 +109,22 @@ const styles = stylex.create({
   metaText: {
     color: colors.mutedForeground,
   },
+  // The subtitle fades in while the title builds out of its pixels, so the
+  // header doesn't sit empty during the reveal.
   lead: {
-    marginTop: space.x3,
+    maxWidth: '52ch',
     color: colors.mutedForeground,
     fontSize: text.lg,
     lineHeight: 1.6,
     textWrap: 'pretty',
+    animationName: {
+      default: enter,
+      '@media (prefers-reduced-motion: reduce)': 'none',
+    },
+    animationDuration: motion.slow,
+    animationTimingFunction: motion.easeOut,
+    animationDelay: '300ms',
+    animationFillMode: 'both',
   },
   metaLink: {
     textDecorationLine: {
@@ -178,11 +197,11 @@ interface PageHeaderProps {
   meta?: MetaItem[];
   /** Shown next to the title, such as a status tag. */
   badge?: ReactNode;
-  /** Lead text under the meta row. */
+  /** Subtitle under the title. */
   children?: ReactNode;
 }
 
-/** The page title with a row of small facts or links under it. */
+/** The page title, its subtitle, and a row of small facts or links. */
 export function PageHeader({
   title,
   meta = [],
@@ -192,13 +211,13 @@ export function PageHeader({
   return (
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.titleRow)}>
-        <h1 data-page-title="" {...stylex.props(styles.title)}>
-          {title}
+        <h1 {...stylex.props(styles.title)}>
+          <PixelReveal>{title}</PixelReveal>
         </h1>
         {badge}
       </div>
-      {meta.length > 0 && <MetaList items={meta} />}
       {children && <p {...stylex.props(styles.lead)}>{children}</p>}
+      {meta.length > 0 && <MetaList items={meta} />}
     </header>
   );
 }
