@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { splitSkillDescription } from '../../lib/skills/description';
 import {
   installCommand,
   resolveSkillHref,
@@ -12,12 +13,10 @@ import { Section } from '../page';
 import { Command } from './command';
 
 const styles = stylex.create({
-  breadcrumbs: {
-    marginBottom: space.x2,
-  },
-  summary: {
+  rest: {
+    marginTop: space.x6,
     color: colors.mutedForeground,
-    lineHeight: 1.7,
+    lineHeight: 1.6,
     textWrap: 'pretty',
   },
 });
@@ -33,8 +32,10 @@ interface Props {
   body: string;
 }
 
-/** `/skills/<name>`: install command, summary, and the full SKILL.md. */
+/** `/skills/<name>`: description, install command, and the full SKILL.md. */
 export function SkillDetail({ slug, name, description, path, body }: Props) {
+  const { lead, rest } = splitSkillDescription(description);
+
   return (
     <PageLayout
       title={name}
@@ -42,6 +43,7 @@ export function SkillDetail({ slug, name, description, path, body }: Props) {
         { href: '/skills', label: 'skills' },
         { href: `/skills/${slug}`, label: name },
       ]}
+      lead={lead}
       meta={[
         {
           icon: <GitHubIcon size={14} />,
@@ -50,12 +52,9 @@ export function SkillDetail({ slug, name, description, path, body }: Props) {
         },
       ]}
     >
+      {rest ? <p {...stylex.props(styles.rest)}>{rest}</p> : null}
       <Section label="INSTALLATION">
         <Command command={installCommand(slug)} />
-      </Section>
-
-      <Section label="SUMMARY">
-        <p {...stylex.props(styles.summary)}>{description}</p>
       </Section>
 
       <Section label="SKILL.md">

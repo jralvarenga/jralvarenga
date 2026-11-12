@@ -1,13 +1,20 @@
 /**
- * About page content. Logos are placeholders until `logo` is set to an
- * image URL (for example an import from `src/assets/logos`).
+ * About page content. Countries show their flag emoji, organizations a
+ * `logo` key, and the rest a placeholder tile with their initials.
+ * `inline-logo.tsx` maps each key to a component.
  */
+
+/** Keys for the logos in `components/about/logos.tsx`. */
+export type LogoName = 'denzo' | 'caban' | 'fiverr' | 'uca';
 
 export interface Organization {
   name: string;
   /** Shown in the placeholder tile until there is a logo. */
   initials: string;
-  logo?: string;
+  /** Logo key. `inline-logo.tsx` maps it to a component. */
+  logo?: LogoName;
+  /** Flag emoji, used for countries instead of a logo. */
+  emoji?: string;
 }
 
 export interface Chapter {
@@ -20,15 +27,24 @@ export interface Chapter {
   story: string;
 }
 
-export const denzo: Organization = { name: 'Denzo Studios', initials: 'DS' };
-export const elSalvador: Organization = { name: 'El Salvador', initials: 'SV' };
+export const denzo: Organization = {
+  name: 'Denzo Studios',
+  initials: 'DS',
+  logo: 'denzo',
+};
+export const elSalvador: Organization = {
+  name: 'El Salvador',
+  initials: 'SV',
+  emoji: '🇸🇻',
+};
 
-const caban: Organization = { name: 'Caban', initials: 'C' };
+const caban: Organization = { name: 'Caban', initials: 'C', logo: 'caban' };
 const fiverr: Organization = {
   name: 'Fiverr and other freelance projects',
   initials: 'F',
+  logo: 'fiverr',
 };
-const uca: Organization = { name: 'UCA', initials: 'U' };
+const uca: Organization = { name: 'UCA', initials: 'U', logo: 'uca' };
 
 /** Newest first. */
 export const chapters: Chapter[] = [

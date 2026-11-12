@@ -6,6 +6,12 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+  // Fetch a page when its link is hovered or focused, so the click loads
+  // from cache instead of the network.
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'hover',
+  },
   integrations: [react()],
   vite: {
     plugins: [stylex.vite()],

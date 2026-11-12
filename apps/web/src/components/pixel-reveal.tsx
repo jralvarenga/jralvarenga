@@ -35,7 +35,8 @@ interface Props {
 /**
  * Text that builds itself out of its own pixels on load. This only renders
  * the markup: the animation runs from `revealPixels` in
- * `lib/home/pixel-reveal.ts`, started by the page. The text stays in the DOM
+ * `lib/pixel-reveal.ts`, started for every `[data-pixel-reveal]` by
+ * `Layout.astro`. The text stays in the DOM
  * the whole time, so screen readers and search engines read it as is.
  */
 export function PixelReveal({ children, xstyle }: Props) {

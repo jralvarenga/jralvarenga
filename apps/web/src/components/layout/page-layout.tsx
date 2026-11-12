@@ -12,8 +12,8 @@ interface Props {
   meta?: MetaItem[];
   /** Shown next to the title, such as a status tag. */
   badge?: ReactNode;
-  /** Lead text under the header. */
-  lead?: ReactNode;
+  /** One-line subtitle under the title. Every page has one. */
+  lead: ReactNode;
   children: ReactNode;
 }
 

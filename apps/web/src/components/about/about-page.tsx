@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
+import avatar from '../../assets/avatar.jpg';
 import { chapters, denzo, elSalvador, stack } from '../../lib/about/about';
-import { colors, space, weight } from '../../styles/tokens.stylex';
+import { colors, radius, space, weight } from '../../styles/tokens.stylex';
 import { PageLayout } from '../layout/page-layout';
 import { Section } from '../page';
 import { socialLinks } from '../social-links';
@@ -18,6 +19,18 @@ const styles = stylex.create({
   },
   muted: {
     color: colors.mutedForeground,
+  },
+  // My photo next to my name, round like the header avatar. A bit larger
+  // than the 1em logo tiles, so the face still reads at text size.
+  avatar: {
+    display: 'inline-block',
+    width: '1.25em',
+    height: '1.25em',
+    marginInline: '0.08em',
+    borderRadius: radius.full,
+    objectFit: 'cover',
+    verticalAlign: 'middle',
+    boxShadow: `0 0 0 1px ${colors.border}`,
   },
   stack: {
     display: 'flex',
@@ -51,10 +64,22 @@ const styles = stylex.create({
  */
 export function AboutPage() {
   return (
-    <PageLayout title="About me" meta={socialLinks}>
+    <PageLayout
+      title="About me"
+      lead="Engineer, tech lead, and builder of my own products."
+      meta={socialLinks}
+    >
       <div {...stylex.props(styles.intro)}>
         <p>
-          I'm Rigo Alvarenga, a fullstack software engineer and Tech Lead at{' '}
+          I'm{' '}
+          <img
+            src={avatar.src}
+            alt=""
+            width={20}
+            height={20}
+            {...stylex.props(styles.avatar)}
+          />{' '}
+          Rigo Alvarenga, a fullstack software engineer and Tech Lead at{' '}
           <InlineLogo organization={denzo} /> Denzo Studios, based in{' '}
           <InlineLogo organization={elSalvador} /> El Salvador.
         </p>
