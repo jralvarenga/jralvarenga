@@ -4,6 +4,7 @@ import { space } from './tokens.stylex';
 /** The master layout: one centered 640px column with a responsive gutter. */
 export const layout = stylex.create({
   column: {
+    width: '100%',
     maxWidth: '640px',
     marginInline: 'auto',
     paddingInline: {
