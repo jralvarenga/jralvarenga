@@ -55,14 +55,12 @@ function parseSkill(raw: string, path: string) {
   return { fields, body: match ? raw.slice(match[0].length) : raw };
 }
 
-/** Optional token from the environment. Avoids a Node `process` type. */
-function githubToken() {
-  const env = (
-    globalThis as {
-      process?: { env?: Record<string, string | undefined> };
-    }
-  ).process?.env;
-  return env?.GITHUB_TOKEN ?? env?.GH_TOKEN;
+/**
+ * Optional token. `import.meta.env` holds both shell variables and values
+ * from `apps/web/.env`; `process.env` only holds shell variables.
+ */
+function githubToken(): string | undefined {
+  return import.meta.env.GITHUB_TOKEN || import.meta.env.GH_TOKEN || undefined;
 }
 
 function requestHeaders(url: string) {
