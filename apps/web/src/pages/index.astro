@@ -3,7 +3,10 @@ import { HomePage } from '../components/home/home-page';
 import Layout from '../layouts/Layout.astro';
 import { getProjectSummaries } from '../lib/projects/collection';
 
-const projects = await getProjectSummaries();
+/** The home page shows the first projects by `order`; /projects lists all. */
+const HOME_PROJECT_COUNT = 2;
+
+const projects = (await getProjectSummaries()).slice(0, HOME_PROJECT_COUNT);
 ---
 
 <Layout>
