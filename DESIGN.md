@@ -199,6 +199,8 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 
 Each page's Open Graph and X card image (`/og/<path>.png`, [og-image.tsx](apps/web/src/lib/seo/og-image.tsx)) is a 1200×630 light-theme card, as flat as the pages: a muted eyebrow (role or section), the title in Geist Pixel, a muted description of up to about three lines, and a hairline over a footer with the avatar, the name, and the host. Satori takes inline styles and can't read StyleX variables, so its palette mirrors the `background`, `foreground`, `mutedForeground`, and `border` light tokens. Keep the two in sync when those tokens change. `theme-color` and the manifest mirror `background` the same way ([site.ts](apps/web/src/lib/seo/site.ts)).
 
+The README's stack image ([readme-stack.tsx](apps/web/scripts/readme-stack.tsx)) redraws the About page's tool pills the same way: hairline pills with a 16px brand mark and a medium label, group names muted in a left column, groups split by hairlines. The background is transparent so it sits on GitHub's own theme, with a light and a dark variant.
+
 ## Open questions
 
 - Should the primary color stay black and white, or take a hue like the purple reference? It changes only `primary*` tokens.

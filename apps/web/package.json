@@ -10,7 +10,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check-types": "astro sync && tsc --noEmit"
+    "check-types": "astro sync && tsc --noEmit",
+    "readme:stack": "bun scripts/readme-stack.tsx"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.7",
