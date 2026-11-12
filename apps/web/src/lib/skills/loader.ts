@@ -86,9 +86,10 @@ async function fetchOk(url: string) {
     const rateLimited =
       (response.status === 403 || response.status === 429) &&
       url.startsWith('https://api.github.com/');
-    const hint = rateLimited
-      ? ' Set GITHUB_TOKEN to raise the GitHub API rate limit.'
-      : '';
+    const hint =
+      rateLimited && !githubToken()
+        ? ' Set GITHUB_TOKEN to raise the GitHub API rate limit.'
+        : '';
     throw new Error(`Fetching ${url} failed with ${response.status}.${hint}`);
   }
   return response;

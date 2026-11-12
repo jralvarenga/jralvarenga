@@ -30,14 +30,16 @@ export function subscribeTheme(listener: () => void) {
   return () => window.removeEventListener(THEME_CHANGE, listener);
 }
 
-/** The stored preference, or `system` when none is stored or storage is blocked. */
+/** The stored preference, or `system` when none is stored. */
 export function readPreference(): ThemePreference {
   try {
     const theme = localStorage.getItem(STORAGE_KEY);
     if (theme === 'light' || theme === 'dark') return theme;
   } catch {
-    // Storage can be blocked.
+    // Storage can be blocked. Fall through to the live theme on `<html>`.
   }
+  const forced = document.documentElement.dataset.theme;
+  if (forced === 'light' || forced === 'dark') return forced;
   return 'system';
 }
 
