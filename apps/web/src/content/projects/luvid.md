@@ -19,9 +19,7 @@ parts:
   summary: Tokens, typography, color, and components for the Luvid interface, shared by the web and iOS apps.
   status: live
   stack: [TanStack Start, Tailwind CSS, Vercel]
-  link:
-  label: Website
-  href: https://luvid-design.vercel.app
+  site: { label: Website, href: https://luvid-design.vercel.app }
 
 ---
 

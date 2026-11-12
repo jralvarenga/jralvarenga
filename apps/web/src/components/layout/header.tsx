@@ -125,6 +125,7 @@ const styles = stylex.create({
   },
   skip: {
     position: 'absolute',
+    zIndex: 11,
     insetInlineStart: space.x4,
     top: space.x4,
     paddingBlock: space.x2,

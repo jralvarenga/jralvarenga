@@ -26,6 +26,8 @@ const styles = stylex.create({
     },
     columnGap: space.x6,
     rowGap: space.x1,
+  },
+  gap: {
     paddingBottom: GAP,
   },
   years: {
@@ -60,7 +62,7 @@ const styles = stylex.create({
   line: {
     position: 'absolute',
     top: '22px',
-    bottom: `calc(-1 * ${GAP} + 4px)`,
+    bottom: `calc(-1 * ${GAP} - 4px)`,
     width: '1px',
     backgroundColor: colors.border,
   },
@@ -108,7 +110,7 @@ export function Timeline({ chapters }: Props) {
         return (
           <li
             key={`${chapter.role}-${chapter.start}`}
-            {...stylex.props(styles.item)}
+            {...stylex.props(styles.item, !isLast && styles.gap)}
           >
             <span {...stylex.props(styles.years)}>{formatYears(chapter)}</span>
             <div aria-hidden="true" {...stylex.props(styles.rail)}>

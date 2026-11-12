@@ -16,6 +16,7 @@ const { skill } = Astro.props;
 
 <Layout title={`${skill.data.name} · Skills · Rigo Alvarenga`}>
   <SkillDetail
+    slug={skill.id}
     name={skill.data.name}
     description={skill.data.description}
     path={skill.data.path}

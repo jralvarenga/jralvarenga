@@ -1,5 +1,11 @@
 import * as stylex from '@stylexjs/stylex';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import {
+  applyPreference,
+  readPreference,
+  subscribeTheme,
+  type ThemePreference,
+} from '../../lib/theme';
 import { colors, space, text, weight } from '../../styles/tokens.stylex';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
@@ -8,8 +14,6 @@ import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
 import { Tag } from '../ui/tag';
 import { Textarea } from '../ui/textarea';
-
-type Theme = 'system' | 'light' | 'dark';
 
 const styles = stylex.create({
   page: {
@@ -64,28 +68,25 @@ const styles = stylex.create({
 });
 
 /**
- * Applies a forced theme to `<html>` or clears it to follow the system.
- */
-function applyTheme(theme: Theme): void {
-  const root = document.documentElement;
-  if (theme === 'system') {
-    delete root.dataset.theme;
-    return;
-  }
-  root.dataset.theme = theme;
-}
-
-/**
  * Preview of every UI primitive in each variant and state. Used by the
  * `/ui` route to review the design system in light and dark mode.
  */
 export function Primitives() {
-  const [theme, setTheme] = useState<Theme>('system');
+  const [theme, setTheme] = useState<ThemePreference>('system');
   const [loading, setLoading] = useState(false);
 
-  function selectTheme(next: Theme) {
+  useEffect(() => {
+    function sync() {
+      setTheme(readPreference());
+    }
+
+    sync();
+    return subscribeTheme(sync);
+  }, []);
+
+  function selectTheme(next: ThemePreference) {
+    applyPreference(next);
     setTheme(next);
-    applyTheme(next);
   }
 
   function simulateLoading() {

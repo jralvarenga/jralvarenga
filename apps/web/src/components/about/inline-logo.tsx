@@ -25,7 +25,7 @@ const styles = stylex.create({
   initials: {
     color: colors.mutedForeground,
     fontFamily: font.mono,
-    fontSize: '0.36em',
+    fontSize: '0.5em',
     fontWeight: weight.regular,
     letterSpacing: 0,
     lineHeight: 1,

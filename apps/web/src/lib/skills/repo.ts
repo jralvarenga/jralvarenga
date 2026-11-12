@@ -26,5 +26,5 @@ export function resolveSkillHref(href: string, skillPath: string) {
   const skill = url.pathname.match(/^\/skills\/([^/]+)\/SKILL\.md$/);
   if (skill) return `/skills/${skill[1]}${url.hash}`;
 
-  return sourceUrl(url.pathname.slice(1)) + url.hash;
+  return sourceUrl(url.pathname.slice(1)) + url.search + url.hash;
 }

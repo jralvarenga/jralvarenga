@@ -52,7 +52,7 @@ const styles = stylex.create({
   title: {
     fontFamily: font.pixel,
     fontSize: {
-      default: '32px',
+      default: text.displaySm,
       '@media (min-width: 640px)': text.display,
     },
     fontWeight: weight.medium,

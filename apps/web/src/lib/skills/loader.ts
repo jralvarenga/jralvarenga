@@ -3,32 +3,93 @@ import { SKILLS_BRANCH, SKILLS_REPO } from './repo';
 
 const SKILL_PATH = /^skills\/([^/]+)\/SKILL\.md$/;
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---\r?\n?/;
+const FIELD = /^([\w-]+):\s*(.*)$/;
+const YAML_BLOCK = /^[>|][+-]?$/;
 
 interface TreeResponse {
   tree: { path: string; type: string }[];
+  truncated?: boolean;
+}
+
+/**
+ * Strips matching quotes and unescapes the YAML subset this loader supports:
+ * `\"` / `\\` in double quotes, and `''` in single quotes.
+ */
+function unquote(value: string) {
+  if (value.length >= 2 && value.startsWith('"') && value.endsWith('"')) {
+    return value.slice(1, -1).replace(/\\([\\"])/g, '$1');
+  }
+  if (value.length >= 2 && value.startsWith("'") && value.endsWith("'")) {
+    return value.slice(1, -1).replace(/''/g, "'");
+  }
+  return value;
 }
 
 /**
  * Reads the flat `key: value` frontmatter of a SKILL.md. Multi-line YAML
  * values aren't supported; the collection schema rejects what this misses.
  */
-function parseSkill(raw: string) {
+function parseSkill(raw: string, path: string) {
   const match = raw.match(FRONTMATTER);
   const fields: Record<string, string> = {};
 
   for (const line of match?.[1]?.split(/\r?\n/) ?? []) {
-    const field = line.match(/^([\w-]+):\s*(.*)$/);
+    if (line.trim() === '') continue;
+    if (/^\s/.test(line) || YAML_BLOCK.test(line)) {
+      throw new Error(
+        `${path}: multi-line YAML is not supported in SKILL.md frontmatter.`,
+      );
+    }
+
+    const field = line.match(FIELD);
     if (!field?.[1]) continue;
-    fields[field[1]] = (field[2] ?? '').trim().replace(/^(['"])(.*)\1$/, '$2');
+    const value = (field[2] ?? '').trim();
+    if (YAML_BLOCK.test(value)) {
+      throw new Error(
+        `${path}: multi-line YAML is not supported in SKILL.md frontmatter.`,
+      );
+    }
+    fields[field[1]] = unquote(value);
   }
 
   return { fields, body: match ? raw.slice(match[0].length) : raw };
 }
 
+/** Optional token from the environment. Avoids a Node `process` type. */
+function githubToken() {
+  const env = (
+    globalThis as {
+      process?: { env?: Record<string, string | undefined> };
+    }
+  ).process?.env;
+  return env?.GITHUB_TOKEN ?? env?.GH_TOKEN;
+}
+
+function requestHeaders(url: string) {
+  const headers: Record<string, string> = {
+    'User-Agent': 'jralvarenga/jralvarenga',
+  };
+
+  if (url.startsWith('https://api.github.com/')) {
+    headers.Accept = 'application/vnd.github+json';
+    headers['X-GitHub-Api-Version'] = '2022-11-28';
+    const token = githubToken();
+    if (token) headers.Authorization = `Bearer ${token}`;
+  }
+
+  return headers;
+}
+
 async function fetchOk(url: string) {
-  const response = await fetch(url);
+  const response = await fetch(url, { headers: requestHeaders(url) });
   if (!response.ok) {
-    throw new Error(`Fetching ${url} failed with ${response.status}.`);
+    const rateLimited =
+      (response.status === 403 || response.status === 429) &&
+      url.startsWith('https://api.github.com/');
+    const hint = rateLimited
+      ? ' Set GITHUB_TOKEN to raise the GitHub API rate limit.'
+      : '';
+    throw new Error(`Fetching ${url} failed with ${response.status}.${hint}`);
   }
   return response;
 }
@@ -46,6 +107,12 @@ export function skillsLoader(): Loader {
           `https://api.github.com/repos/${SKILLS_REPO}/git/trees/${SKILLS_BRANCH}?recursive=1`,
         )
       ).json()) as TreeResponse;
+
+      if (tree.truncated) {
+        throw new Error(
+          `GitHub tree for ${SKILLS_REPO}@${SKILLS_BRANCH} is truncated. Refusing to publish an incomplete skill list.`,
+        );
+      }
 
       const paths = tree.tree
         .filter((entry) => entry.type === 'blob' && SKILL_PATH.test(entry.path))
@@ -66,7 +133,7 @@ export function skillsLoader(): Loader {
 
       for (const { path, raw } of skills) {
         const id = path.match(SKILL_PATH)?.[1] ?? path;
-        const { fields, body } = parseSkill(raw);
+        const { fields, body } = parseSkill(raw, path);
         const data = await parseData({
           id,
           data: { ...fields, path },

@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 import type { ComponentProps } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { linkTarget } from '../lib/links';
+import { isSafeHref, linkTarget } from '../lib/links';
 import {
   colors,
   font,
@@ -107,7 +107,6 @@ const styles = stylex.create({
     borderBottomWidth: '1px',
     borderBottomStyle: 'solid',
     borderBottomColor: colors.border,
-    textAlign: 'start',
     verticalAlign: 'top',
   },
   th: {
@@ -125,21 +124,84 @@ function textOf(node: unknown): string {
   return '';
 }
 
+/** GitHub-style heading slug, unique within one markdown body. */
+function slugger() {
+  const seen = new Map<string, number>();
+
+  return (value: string) => {
+    const base =
+      value
+        .toLowerCase()
+        .trim()
+        .replace(/[^\p{L}\p{N}\s-]/gu, '')
+        .replace(/[\s-]+/g, '-')
+        .replace(/^-|-$/g, '') || 'section';
+    const count = seen.get(base) ?? 0;
+    seen.set(base, count + 1);
+    return count === 0 ? base : `${base}-${count}`;
+  };
+}
+
 function components(resolveHref: (href: string) => string): Components {
+  const slug = slugger();
+
   return {
-    h1: ({ node, ...props }) => <h2 {...props} {...stylex.props(styles.h1)} />,
-    h2: ({ node, ...props }) => <h3 {...props} {...stylex.props(styles.h2)} />,
-    h3: ({ node, ...props }) => <h4 {...props} {...stylex.props(styles.h3)} />,
-    h4: ({ node, ...props }) => <h5 {...props} {...stylex.props(styles.h3)} />,
-    p: ({ node, ...props }) => <p {...props} {...stylex.props(styles.p)} />,
-    a: ({ node, href = '', ...props }) => (
-      <a
+    h1: ({ node, id, ...props }) => (
+      <h2
+        id={id ?? slug(textOf(node))}
         {...props}
-        href={resolveHref(href)}
-        {...linkTarget(resolveHref(href))}
-        {...stylex.props(styles.a)}
+        {...stylex.props(styles.h1)}
       />
     ),
+    h2: ({ node, id, ...props }) => (
+      <h3
+        id={id ?? slug(textOf(node))}
+        {...props}
+        {...stylex.props(styles.h2)}
+      />
+    ),
+    h3: ({ node, id, ...props }) => (
+      <h4
+        id={id ?? slug(textOf(node))}
+        {...props}
+        {...stylex.props(styles.h3)}
+      />
+    ),
+    h4: ({ node, id, ...props }) => (
+      <h5
+        id={id ?? slug(textOf(node))}
+        {...props}
+        {...stylex.props(styles.h3)}
+      />
+    ),
+    h5: ({ node, id, ...props }) => (
+      <h6
+        id={id ?? slug(textOf(node))}
+        {...props}
+        {...stylex.props(styles.h3)}
+      />
+    ),
+    h6: ({ node, id, ...props }) => (
+      <h6
+        id={id ?? slug(textOf(node))}
+        {...props}
+        {...stylex.props(styles.h3)}
+      />
+    ),
+    p: ({ node, ...props }) => <p {...props} {...stylex.props(styles.p)} />,
+    a: ({ node, href = '', ...props }) => {
+      const resolved = resolveHref(href);
+      const safe = isSafeHref(resolved) ? resolved : undefined;
+
+      return (
+        <a
+          {...props}
+          href={safe}
+          {...(safe ? linkTarget(safe) : {})}
+          {...stylex.props(styles.a)}
+        />
+      );
+    },
     ul: ({ node, ...props }) => (
       <ul {...props} {...stylex.props(styles.list)} />
     ),

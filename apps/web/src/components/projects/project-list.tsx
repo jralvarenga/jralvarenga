@@ -31,6 +31,11 @@ const styles = stylex.create({
     paddingBlock: space.x4,
     color: colors.foreground,
     textDecoration: 'none',
+    outline: {
+      default: 'none',
+      ':focus-visible': `2px solid ${colors.ring}`,
+    },
+    outlineOffset: '3px',
   },
   top: {
     display: 'flex',

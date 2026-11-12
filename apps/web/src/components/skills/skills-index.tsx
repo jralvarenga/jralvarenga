@@ -7,6 +7,8 @@ import { Section } from '../page';
 import { Command } from './command';
 
 export interface SkillSummary {
+  /** Directory name, used as the `/skills/<name>` slug. */
+  slug: string;
   name: string;
   description: string;
 }
@@ -35,6 +37,11 @@ const styles = stylex.create({
     paddingBlock: space.x4,
     color: colors.foreground,
     textDecoration: 'none',
+    outline: {
+      default: 'none',
+      ':focus-visible': `2px solid ${colors.ring}`,
+    },
+    outlineOffset: '3px',
   },
   name: {
     fontWeight: weight.medium,
@@ -79,7 +86,7 @@ export function SkillsIndex({ skills }: Props) {
       ]}
     >
       <p {...stylex.props(styles.intro)}>
-        This are the rules I give coding agents, from how to write code to how
+        These are the rules I give coding agents, from how to write code to how
         to review it. They work with Claude Code, Codex, Cursor, and any agent
         that supports the Agent Skills format.
       </p>
@@ -96,7 +103,7 @@ export function SkillsIndex({ skills }: Props) {
             {skills.map((skill) => (
               <li key={skill.name} {...stylex.props(styles.item)}>
                 <a
-                  href={`/skills/${skill.name}`}
+                  href={`/skills/${skill.slug}`}
                   {...stylex.props(styles.row, stylex.defaultMarker())}
                 >
                   <span {...stylex.props(styles.name)}>{skill.name}</span>

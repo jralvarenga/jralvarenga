@@ -14,11 +14,29 @@ const skills = defineCollection({
 });
 
 const status = z.enum(['live', 'building']);
-/** A full URL, or a path on this site such as `/skills`. */
+/** A full http(s) URL, or a path on this site such as `/skills`. */
+const href = z
+  .string()
+  .min(1)
+  .refine((value) => {
+    if (/^\/[^/]/.test(value)) return true;
+    try {
+      const url = new URL(value);
+      return url.protocol === 'http:' || url.protocol === 'https:';
+    } catch {
+      return false;
+    }
+  }, 'Must be an http(s) URL or a site path');
 const link = z.object({
   label: z.string(),
-  href: z.union([z.string().url(), z.string().regex(/^\/[^/]/)]),
+  href,
 });
+const stackItems = z
+  .array(z.string())
+  .default([])
+  .refine((items) => new Set(items).size === items.length, {
+    message: 'Stack items must be unique',
+  });
 
 const projects = defineCollection({
   loader: glob({ pattern: '*.md', base: './src/content/projects' }),
@@ -27,12 +45,12 @@ const projects = defineCollection({
     /** One or two sentences, shown in lists and as the page lead. */
     summary: z.string().min(1),
     /** Month the project started, as `YYYY-MM`. */
-    started: z.string().regex(/^\d{4}-\d{2}$/),
+    started: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
     /** `building` shows an "In progress" tag. */
     status,
     /** Position in lists, lowest first. */
     order: z.number().int(),
-    stack: z.array(z.string()).default([]),
+    stack: stackItems,
     links: z.array(link).default([]),
     /** Apps or sites the project is made of, each with its own status. */
     parts: z
@@ -41,7 +59,7 @@ const projects = defineCollection({
           name: z.string().min(1),
           summary: z.string().min(1),
           status,
-          stack: z.array(z.string()).default([]),
+          stack: stackItems,
           // Named `site`, not `link`: Astro rejects a nested `link` key with
           // "Expected type object, received object".
           site: link.optional(),

@@ -16,6 +16,11 @@ export function bindCopyButtons() {
       try {
         await navigator.clipboard.writeText(button.dataset.copy ?? '');
       } catch {
+        button.setAttribute('aria-label', 'Copy failed');
+        window.clearTimeout(timer);
+        timer = window.setTimeout(() => {
+          button.setAttribute('aria-label', label);
+        }, DONE_MS);
         return;
       }
 

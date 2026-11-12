@@ -215,11 +215,20 @@ export async function revealPixels(root: HTMLElement) {
   const size = pixel + 0.5 / ratio;
   let origin: number | undefined;
   let lastFrame = -1;
+  let frameId = 0;
+  let aborted = false;
 
-  const abort = () => finish(text, canvas);
+  const abort = () => {
+    aborted = true;
+    cancelAnimationFrame(frameId);
+    window.removeEventListener('resize', abort);
+    finish(text, canvas);
+  };
   window.addEventListener('resize', abort, { once: true });
 
   const draw = (now: number) => {
+    if (aborted) return;
+
     origin ??= now;
     const time = now - origin;
     const frame = Math.floor(time / STEP_MS);
@@ -241,8 +250,8 @@ export async function revealPixels(root: HTMLElement) {
       }
     }
 
-    requestAnimationFrame(draw);
+    frameId = requestAnimationFrame(draw);
   };
 
-  requestAnimationFrame(draw);
+  frameId = requestAnimationFrame(draw);
 }

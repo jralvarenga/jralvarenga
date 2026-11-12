@@ -28,17 +28,17 @@ This is a Turborepo monorepo with one app today:
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
 - `/projects` and `/projects/<slug>` come from the `projects` content collection: one markdown file per project in [src/content/projects](apps/web/src/content/projects), validated by the schema in [content.config.ts](apps/web/src/content.config.ts). Add a project by adding a file. The home page lists them too.
-- `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one unauthenticated GitHub API call for the file tree, then raw downloads. So `build` and `dev` need network access, and the build fails if GitHub is unreachable. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/skills/markdown.tsx)). Restart `dev` to pick up new skills.
+- `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one GitHub API call for the file tree, then raw downloads. Routes use the directory name (`skill.id`), not the frontmatter `name`. `build` and `dev` need network access, and the build fails if GitHub is unreachable, rate-limited, or returns a truncated tree. An optional `GITHUB_TOKEN` (or `GH_TOKEN`) raises the API rate limit; without it the public unauthenticated limit applies. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/markdown.tsx)). Restart `dev` to pick up new skills.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
-[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, name, nav). Each page renders its own `<main id="content">` inside a React component, for example [Hero](apps/web/src/components/home/hero.tsx) on the home page. The nav links to `/projects`, `/writing`, and `/about`, which don't exist yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
+[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, name, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
 
 ## Project structure
 
 - `apps/web/` is the Astro website. See [apps/web/AGENTS.md](apps/web/AGENTS.md) for Astro-specific instructions.
   - `src/pages/` holds routes.
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
-  - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
+  - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner, tag), one component per kebab-case file.
   - `src/components/layout/` holds the site header and `PageLayout`, the shell every inner page uses for its `<main>`, breadcrumbs, and title.
   - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
@@ -71,7 +71,7 @@ cd apps/web && bun run preview # serve the production build
 
 - Node.js 26, pinned in [.nvmrc](.nvmrc) and used by CI. The root `engines` allows >= 24. Run `nvm use` first: Astro 7 refuses to run on older Node versions, so the build fails with "Node.js ... is not supported by Astro".
 - Bun 1.2.23 (`devEngines`).
-- No environment variables are used yet. If any are added, document them here and add a `.env.example`.
+- Optional `GITHUB_TOKEN` or `GH_TOKEN` for the skills loader's GitHub API call. The repo is public, so a token is not required, but it raises the rate limit (useful in CI and on shared IPs). See [`.env.example`](.env.example). GitHub Actions passes `GITHUB_TOKEN` to `bun run build`.
 
 ## Conventions
 

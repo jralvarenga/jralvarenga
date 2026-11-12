@@ -23,6 +23,8 @@ const styles = stylex.create({
 });
 
 interface Props {
+  /** Directory name, used as the `/skills/<name>` slug. */
+  slug: string;
   name: string;
   description: string;
   /** Path of the SKILL.md inside the repository. */
@@ -32,13 +34,13 @@ interface Props {
 }
 
 /** `/skills/<name>`: install command, summary, and the full SKILL.md. */
-export function SkillDetail({ name, description, path, body }: Props) {
+export function SkillDetail({ slug, name, description, path, body }: Props) {
   return (
     <PageLayout
       title={name}
       breadcrumbs={[
         { href: '/skills', label: 'skills' },
-        { href: `/skills/${name}`, label: name },
+        { href: `/skills/${slug}`, label: name },
       ]}
       meta={[
         {
@@ -49,7 +51,7 @@ export function SkillDetail({ name, description, path, body }: Props) {
       ]}
     >
       <Section label="INSTALLATION">
-        <Command command={installCommand(name)} />
+        <Command command={installCommand(slug)} />
       </Section>
 
       <Section label="SUMMARY">

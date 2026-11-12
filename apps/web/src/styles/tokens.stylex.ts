@@ -75,6 +75,8 @@ export const text = stylex.defineVars({
   md: '16px',
   lg: '18px',
   xl: '24px',
+  /** Page titles on mobile. Desktop uses `display`. */
+  displaySm: '32px',
   display: '40px',
   hero: 'clamp(40px, 11vw, 72px)',
 });
@@ -86,7 +88,7 @@ export const weight = stylex.defineVars({
   bold: '700',
 });
 
-/** Motion durations and easings. Nothing should run longer than 300ms. */
+/** Motion durations and easings. UI stays within 300ms; title morph and the hero pixel reveal are documented exceptions. */
 export const motion = stylex.defineVars({
   fast: '150ms',
   base: '200ms',

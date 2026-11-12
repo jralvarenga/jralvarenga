@@ -33,6 +33,12 @@ export async function morphPageTitle() {
   const previous = readPrevious();
   remember(title);
 
+  // bfcache restores skip this script. Re-record the title so the next
+  // navigation morphs from this page, not from the page we left.
+  window.addEventListener('pageshow', (event) => {
+    if (event.persisted) remember(title);
+  });
+
   if (!heading || !title || !previous || previous === title) return;
 
   // TextMorph measures glyph widths, so measuring before Geist Pixel loads
@@ -59,10 +65,17 @@ export async function morphPageTitle() {
     onAnimationCancel: release,
   });
 
+  const reducedMotion = window.matchMedia(
+    '(prefers-reduced-motion: reduce)',
+  ).matches;
+
   // The first update renders without animating; the second morphs.
   morph.update(previous);
   requestAnimationFrame(() => {
     heading.style.whiteSpace = 'nowrap';
     morph.update(title);
+    // TextMorph skips its callbacks under reduced motion, so nowrap would
+    // stick and long titles would overflow on small screens.
+    if (reducedMotion) release();
   });
 }

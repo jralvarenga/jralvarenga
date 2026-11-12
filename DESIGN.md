@@ -11,7 +11,7 @@ Styling is StyleX on React components, with Base UI for interactive primitives. 
   - [emilkowal.ski](https://emilkowal.ski) for the single narrow column, content first, and small purposeful motion.
   - [shadcn](https://ui.shadcn.com) for the neutral token system and simple component variants.
 - Plain black and white with light and dark mode. Grays carry hierarchy. Color is never decoration.
-- Pages stay flat: no glows, blurred blobs, glassmorphism, or decorative gradients. The header's soft scroll edge is the one exception (see Spacing and layout). Depth belongs only to controls (see Signature).
+- Pages stay flat: no glows, blurred blobs, glassmorphism, or decorative gradients. The header's soft scroll edge (a fading page-tint, see Spacing and layout) is the one page-level exception. Depth belongs only to controls (see Signature).
 
 ## Signature
 
@@ -24,7 +24,7 @@ Styling is StyleX on React components, with Base UI for interactive primitives. 
 
 There are two elevation styles:
 
-- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. This is the only place gradients are allowed. Buttons drop the 4px bezel ring (layer 3) and keep the highlight, the 1px edge, and a tighter `0 1px 3px` drop shadow. Checkboxes, the switch, and fields keep the full bezel.
+- **Raised** (`raisedPrimary`, `raisedSurface`, `raisedDanger`): buttons, checkboxes, and the switch thumb. A subtle top-to-bottom gradient sits on the fill. Raised fills and the header's fading scroll-edge tint are the only gradients allowed. Buttons drop the 4px bezel ring (layer 3) and keep the highlight, the 1px edge, and a tighter `0 1px 3px` drop shadow. Checkboxes, the switch, and fields keep the full bezel.
 - **Recessed** (`recessed`): inputs, textareas, and the switch track. An inset shadow replaces the highlight. On focus the edge turns `ring` and the bezel turns `bezelFocus`.
 
 Never add elevation to static content like cards, lists, or text. Never build a new shadow by hand. Reuse the `elevation` styles.
@@ -62,8 +62,7 @@ All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.sty
 | `dangerSolid`       | `oklch(0.577 0.245 27.325)` | `oklch(0.56 0.22 25)`       | Danger button fill (`dangerTop` and `dangerEdge` go with it) |
 | `dangerForeground`  | `oklch(0.985 0 0)`          | `oklch(0.985 0 0)`          | Text on danger buttons                                       |
 
-- `warning` and the `danger*` tokens are the only hues. They appear only in states, never in decoration.
-- `linkedin` (`#0A66C2`, both themes) is the one brand color, used only to fill the LinkedIn logo. Other logos, like X and Instagram, use `currentColor` so they follow the theme.
+- `warning` and the `danger*` tokens are the only hues in the UI, and they appear only in states, never in decoration. The one brand-color exception is `linkedin` (`#0A66C2`, both themes), used only to fill the LinkedIn logo. Other logos, like X and Instagram, use `currentColor` so they follow the theme.
 - Status never relies on color alone. Pair it with an icon, a label, or `aria-invalid`.
 
 ## Typography
@@ -145,7 +144,7 @@ Projects are markdown files in [src/content/projects](apps/web/src/content/proje
 
 ## About page
 
-`/about` ([about-page.tsx](apps/web/src/components/about/about-page.tsx)), with all copy and data in [about.ts](apps/web/src/lib/about/about.ts). It should read like a story, not a résumé: no locations, no job-board fields.
+`/about` ([about-page.tsx](apps/web/src/components/about/about-page.tsx)). Timeline chapters, organizations, and tools live in [about.ts](apps/web/src/lib/about/about.ts); the intro and outside-work sentences live in the page so they can sit next to inline logos. It should read like a story, not a résumé: no job-board fields. The intro may name Denzo Studios and El Salvador next to their logos.
 
 - **Title**: "About me" in the shared `PageHeader`, Geist Pixel like every other page title.
 - **Intro**: plain body text. The first paragraph in `foreground`, the second in `mutedForeground`.
@@ -170,12 +169,12 @@ Projects are markdown files in [src/content/projects](apps/web/src/content/proje
 Motion is rare, fast, and informative, following Emil Kowalski's principles. Use the `motion` tokens.
 
 - **Easing**: `easeOut` (`cubic-bezier(0.23, 1, 0.32, 1)`) for enter, exit, and feedback. `easeInOut` (`cubic-bezier(0.77, 0, 0.175, 1)`) for things that move on screen, like the switch thumb. Never use `ease-in` for UI.
-- **Duration**: `fast` (150ms) for hover, press, and focus. `base` (200ms) for the switch, popovers, and menus. Never more than `slow` (300ms).
-- **Properties**: only animate `transform`, `opacity`, `box-shadow`, and `background-color`. Prefer CSS transitions, which can be interrupted, over keyframes.
+- **Duration**: `fast` (150ms) for hover, press, and focus. `base` (200ms) for the switch, popovers, and menus. Never more than `slow` (300ms), except the pixel reveal (~1.1s) and the title morph (400ms).
+- **Properties**: only animate `transform`, `opacity`, `box-shadow`, and `background-color`. The title morph is the exception: `TextMorph` also animates heading width. Prefer CSS transitions, which can be interrupted, over keyframes.
 - **Enter animations**: start from `scale(0.95)` or above, never `scale(0)`. Popovers scale from their trigger with `transform-origin`.
 - **Page load**: at most one subtle fade-and-rise of the main column (opacity 0 to 1, `translateY(8px)` to 0, 300ms). No stagger on every element.
-- **Pixel reveal**: the hero name builds itself out of its own pixels once on load ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)). Each glyph is sampled on Geist Pixel's grid (0.038em squares) and drawn on a canvas over the text. Pixels pop in solid, left to right with jitter, but the canvas only redraws every 80ms, so they land in visible batches with a pause between each. Then the real text replaces the canvas. It takes about 1.1s, the one exception to the 300ms limit. Use it only on the hero name.
-- **Title morph**: moving between pages morphs the previous page's title into the new one with `torph`'s `TextMorph` ([page-title.ts](apps/web/src/lib/page-title.ts)), using its 400ms default and `cubic-bezier(0.19, 1, 0.22, 1)`. The last title is kept in `sessionStorage`, and the home page clears it. Under reduced motion the title just appears.
+- **Pixel reveal**: the hero name builds itself out of its own pixels once on load ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)). Each glyph is sampled on Geist Pixel's grid (0.038em squares) and drawn on a canvas over the text. Pixels pop in solid, left to right with jitter, but the canvas only redraws every 80ms, so they land in visible batches with a pause between each. Then the real text replaces the canvas. It takes about 1.1s, an exception to the 300ms limit. Use it only on the hero name.
+- **Title morph**: moving between pages morphs the previous page's title into the new one with `torph`'s `TextMorph` ([page-title.ts](apps/web/src/lib/page-title.ts)), using its 400ms default and `cubic-bezier(0.19, 1, 0.22, 1)`, the other exception to the 300ms limit. It also animates heading width, which is otherwise not an allowed motion property. The last title is kept in `sessionStorage`, and the home page clears it. Under reduced motion the title just appears.
 - Don't animate actions done with the keyboard or things seen many times a day, like nav or theme switching.
 - **Reduced motion**: under `prefers-reduced-motion: reduce`, remove movement (the switch thumb jumps and the spinner stops).
 
@@ -184,7 +183,7 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 - Text meets WCAG AA contrast in both themes. Don't use `mutedForeground` for essential content.
 - Use semantic landmarks (`header`, `nav`, `main`, `footer`), one `h1` per page, and a "Skip to content" link.
 - Every icon-only button has an `aria-label`. Decorative SVGs have `aria-hidden="true"`.
-- Touch targets are at least 40px, counting the bezel.
+- Touch targets are at least 40px, counting the bezel, except compact `Button` sizes (`sm` 28px, `md` and `icon` 32px, `lg` 36px), which follow the shadcn-style control heights. Icon-only social links stay at 40px.
 - Respect `prefers-color-scheme` and `prefers-reduced-motion`.
 
 ## Open questions

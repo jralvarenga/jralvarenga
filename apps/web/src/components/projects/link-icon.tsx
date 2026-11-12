@@ -6,6 +6,8 @@ export function LinkIcon({ href }: { href: string }) {
   if (href.startsWith('/')) return <BoxIcon size={14} />;
   const host = new URL(href).hostname;
   if (host === 'github.com') return <GitHubIcon size={14} />;
-  if (host.endsWith('npmjs.com')) return <PackageIcon size={14} />;
+  if (host === 'npmjs.com' || host.endsWith('.npmjs.com')) {
+    return <PackageIcon size={14} />;
+  }
   return <GlobeIcon size={14} />;
 }
