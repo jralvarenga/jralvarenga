@@ -1,12 +1,27 @@
 // @ts-check
 
 import react from '@astrojs/react';
+import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import stylex from '@stylexjs/unplugin';
-import { defineConfig, fontProviders } from 'astro/config';
+import { defineConfig, envField, fontProviders } from 'astro/config';
+
+/**
+ * The production origin. Canonical URLs, Open Graph tags, the sitemap, and
+ * robots.txt are built from it, so preview deployments still point search
+ * engines at production. Override with `SITE_URL` for another domain.
+ */
+const site = process.env.SITE_URL ?? 'https://jralvarenga.com';
+
+/** Pages that must stay out of the sitemap. They also send `noindex`. */
+const NOT_IN_SITEMAP = ['/ui', '/404'];
 
 // https://astro.build/config
 export default defineConfig({
+  site,
+  // One URL per page. `/about/` redirects to `/about` on Vercel, so the
+  // canonical, the sitemap, and internal links all agree.
+  trailingSlash: 'never',
   // Pages stay static HTML. The Vercel adapter is here so `/mcp` can be a
   // serverless function (`prerender = false`) without flipping the rest of
   // the site to SSR.
@@ -18,7 +33,29 @@ export default defineConfig({
     prefetchAll: true,
     defaultStrategy: 'hover',
   },
-  integrations: [react()],
+  integrations: [
+    react(),
+    sitemap({
+      filter: (page) =>
+        !NOT_IN_SITEMAP.some((path) => new URL(page).pathname === path),
+    }),
+  ],
+  env: {
+    schema: {
+      // Search engine ownership tokens, rendered as `<meta>` tags. Use only
+      // the value of `content`, not the whole tag.
+      GOOGLE_SITE_VERIFICATION: envField.string({
+        context: 'server',
+        access: 'public',
+        optional: true,
+      }),
+      BING_SITE_VERIFICATION: envField.string({
+        context: 'server',
+        access: 'public',
+        optional: true,
+      }),
+    },
+  },
   vite: {
     plugins: [stylex.vite()],
   },

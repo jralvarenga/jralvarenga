@@ -1,12 +1,37 @@
 ---
 import { SkillsIndex } from '../../components/skills/skills-index';
 import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../lib/about/profile';
+import { metaDescription, pageDescriptions } from '../../lib/seo/site';
+import {
+  breadcrumbNode,
+  collectionPageNode,
+} from '../../lib/seo/structured-data';
 import { getSkillSummaries } from '../../lib/skills/collection';
 
 const skills = await getSkillSummaries();
+const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
-<Layout title="Skills · Rigo Alvarenga">
+<Layout
+  title={`Skills · ${profile.name}`}
+  description={pageDescriptions.skills}
+  structuredData={[
+    collectionPageNode(
+      site,
+      { name: 'Skills', path: '/skills', description: pageDescriptions.skills },
+      skills.map((skill) => ({
+        name: skill.name,
+        path: `/skills/${skill.slug}`,
+        description: metaDescription(skill.description),
+      })),
+    ),
+    breadcrumbNode(site, [
+      { name: 'Home', path: '/' },
+      { name: 'Skills', path: '/skills' },
+    ]),
+  ]}
+>
   <SkillsIndex skills={skills} />
 </Layout>
 

@@ -1,14 +1,67 @@
 ---
 import { Font } from 'astro:assets';
+import {
+  BING_SITE_VERIFICATION,
+  GOOGLE_SITE_VERIFICATION,
+} from 'astro:env/server';
+import avatar from '../assets/avatar.jpg';
 import { Header } from '../components/layout/header';
+import { profile } from '../lib/about/profile';
+import {
+  absoluteUrl,
+  DEFAULT_DESCRIPTION,
+  LOCALE,
+  metaDescription,
+  OG_HEIGHT,
+  OG_WIDTH,
+  ogImagePath,
+  SITE_NAME,
+  THEME_COLORS,
+  X_HANDLE,
+} from '../lib/seo/site';
+import {
+  type JsonLd,
+  personNode,
+  serializeJsonLd,
+  websiteNode,
+} from '../lib/seo/structured-data';
 import '../styles/global.css';
 import { bodyClass } from '../styles/root';
 
 interface Props {
   title?: string;
+  /** Search result snippet and social preview text, ideally 70–160 chars. */
+  description?: string;
+  /** `og:type`. Inner pages about one thing use `article` or `profile`. */
+  type?: 'website' | 'article' | 'profile';
+  /** Keeps the page out of search results, such as `/ui` and the 404. */
+  noindex?: boolean;
+  /** Page-specific JSON-LD, added to the person and website nodes. */
+  structuredData?: JsonLd[];
 }
 
-const { title = 'Rigo Alvarenga' } = Astro.props;
+const {
+  title = `${profile.name} · ${profile.title}`,
+  description: rawDescription = DEFAULT_DESCRIPTION,
+  type = 'website',
+  noindex = false,
+  structuredData = [],
+} = Astro.props;
+
+// `site` is always set in astro.config.mjs.
+const site = Astro.site ?? new URL(Astro.url.origin);
+const canonical = absoluteUrl(Astro.url.pathname, site);
+const image = absoluteUrl(
+  noindex ? ogImagePath('/') : ogImagePath(Astro.url.pathname),
+  site,
+);
+const description = metaDescription(rawDescription);
+const imageAlt = title;
+const jsonLd = serializeJsonLd([
+  websiteNode(site),
+  personNode(site, absoluteUrl(avatar.src, site)),
+  ...structuredData,
+]);
 ---
 
 <!doctype html>
@@ -16,8 +69,35 @@ const { title = 'Rigo Alvarenga' } = Astro.props;
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{title}</title>
+    <meta name="description" content={description}>
+    <meta name="author" content={profile.name}>
+    {noindex ? (
+      <meta name="robots" content="noindex, follow">
+    ) : (
+      <>
+        <meta
+          name="robots"
+          content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+        >
+        <link rel="canonical" href={canonical}>
+      </>
+    )}
+    <link rel="icon" href="/favicon.ico" sizes="32x32">
     <link rel="icon" type="image/svg+xml" href="/favicon.svg">
-    <link rel="icon" href="/favicon.ico">
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+    <link rel="manifest" href="/manifest.webmanifest">
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: light)"
+      content={THEME_COLORS.light}
+    >
+    <meta
+      name="theme-color"
+      media="(prefers-color-scheme: dark)"
+      content={THEME_COLORS.dark}
+    >
+    <link rel="sitemap" href="/sitemap-index.xml">
     <link
       rel="describedby"
       type="text/plain"
@@ -25,7 +105,31 @@ const { title = 'Rigo Alvarenga' } = Astro.props;
       title="LLM information"
     >
     <meta name="generator" content={Astro.generator}>
-    <title>{title}</title>
+    {GOOGLE_SITE_VERIFICATION && (
+      <meta name="google-site-verification" content={GOOGLE_SITE_VERIFICATION}>
+    )}
+    {BING_SITE_VERIFICATION && (
+      <meta name="msvalidate.01" content={BING_SITE_VERIFICATION}>
+    )}
+    <meta property="og:site_name" content={SITE_NAME}>
+    <meta property="og:locale" content={LOCALE}>
+    <meta property="og:type" content={type}>
+    <meta property="og:title" content={title}>
+    <meta property="og:description" content={description}>
+    <meta property="og:url" content={canonical}>
+    <meta property="og:image" content={image}>
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content={String(OG_WIDTH)}>
+    <meta property="og:image:height" content={String(OG_HEIGHT)}>
+    <meta property="og:image:alt" content={imageAlt}>
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content={X_HANDLE}>
+    <meta name="twitter:creator" content={X_HANDLE}>
+    <meta name="twitter:title" content={title}>
+    <meta name="twitter:description" content={description}>
+    <meta name="twitter:image" content={image}>
+    <meta name="twitter:image:alt" content={imageAlt}>
+    <script is:inline type="application/ld+json" set:html={jsonLd} />
     <script is:inline>
     // Apply the stored theme before paint. The key matches lib/theme.ts.
     try {

@@ -1,0 +1,13 @@
+---
+import { NotFoundPage } from '../components/not-found/not-found-page';
+import Layout from '../layouts/Layout.astro';
+import { profile } from '../lib/about/profile';
+---
+
+<Layout
+  title={`Not found · ${profile.name}`}
+  description="There's no page at this address."
+  noindex
+>
+  <NotFoundPage />
+</Layout>

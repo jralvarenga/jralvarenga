@@ -33,6 +33,9 @@ This is a Turborepo monorepo with one app today:
 - `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one GitHub API call for the file tree, then raw downloads. Routes use the directory name (`skill.id`), not the frontmatter `name`. `build` and `dev` need network access, and the build fails if GitHub is unreachable, rate-limited, or returns a truncated tree. An optional `GITHUB_TOKEN` (or `GH_TOKEN`) avoids GitHub API rate-limit failures; without it the public unauthenticated limit applies. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/markdown.tsx)). Restart `dev` to pick up new skills. Query helpers are in [collection.ts](apps/web/src/lib/skills/collection.ts).
 - `/mcp` is the remote MCP server. It uses Vercel's `mcp-handler` on `@modelcontextprotocol/server` (the official SDK v2 package; v1 was `@modelcontextprotocol/sdk`). That adapter returns a Fetch `Request` → `Response` function, which matches Astro endpoints and Vercel Functions. Tools and resources are registered in [server.ts](apps/web/src/lib/mcp/server.ts) and read the same catalog as the pages ([catalog.ts](apps/web/src/lib/mcp/catalog.ts)).
 - `/llms.txt` and `/llms-full.txt` are static text files generated at build time from that catalog, for crawlers that do not speak MCP.
+- SEO is built in. `site` in [astro.config.mjs](apps/web/astro.config.mjs) is the production origin (`SITE_URL`, default `https://jralvarenga.com`), and `trailingSlash: 'never'` gives each page one URL (Vercel 308-redirects `/about/` to `/about`). [Layout.astro](apps/web/src/layouts/Layout.astro) takes `title`, `description`, `type`, `noindex`, and `structuredData`, and renders the description (shortened to about 160 characters by `metaDescription`), canonical, robots, Open Graph, X card, theme-color, manifest, search engine verification metas, and one JSON-LD `@graph` (`WebSite` and `Person` on every page, plus what the page passes). Every new page passes a `description`; pages that should stay out of search pass `noindex` (`/ui`, the 404) and are listed in `NOT_IN_SITEMAP` in astro.config.mjs. SEO copy and helpers are in [site.ts](apps/web/src/lib/seo/site.ts), and JSON-LD builders in [structured-data.ts](apps/web/src/lib/seo/structured-data.ts).
+- `@astrojs/sitemap` writes `/sitemap-index.xml`. [robots.txt.ts](apps/web/src/pages/robots.txt.ts) and [manifest.webmanifest.ts](apps/web/src/pages/manifest.webmanifest.ts) are generated at build time. `/mcp` sends `X-Robots-Tag: noindex` and robots.txt disallows it.
+- Each indexable page gets a 1200×630 social image at `/og/<path>.png` (`/og/index.png` for home), rendered at build time by [og-image.tsx](apps/web/src/lib/seo/og-image.tsx) with Satori and sharp from the list in [pages.ts](apps/web/src/lib/seo/pages.ts). New projects and skills get one automatically; a new top-level page must be added to that list. Satori can't read woff2, so it uses the TTF copies in `src/assets/fonts/og` (Geist Pixel was converted from the woff2).
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
 [Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, avatar linking home, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
@@ -47,10 +50,10 @@ This is a Turborepo monorepo with one app today:
   - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
-  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the pixel reveal ([pixel-reveal.ts](apps/web/src/lib/pixel-reveal.ts)) that builds the hero name and every page title, started for each `[data-pixel-reveal]` element from a `<script>` in [Layout.astro](apps/web/src/layouts/Layout.astro) so React doesn't need to hydrate. Its markup is [PixelReveal](apps/web/src/components/pixel-reveal.tsx). [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint. [mcp/](apps/web/src/lib/mcp) is the MCP catalog and Streamable HTTP server. [llms/](apps/web/src/lib/llms) builds `/llms.txt`.
+  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the pixel reveal ([pixel-reveal.ts](apps/web/src/lib/pixel-reveal.ts)) that builds the hero name and every page title, started for each `[data-pixel-reveal]` element from a `<script>` in [Layout.astro](apps/web/src/layouts/Layout.astro) so React doesn't need to hydrate. Its markup is [PixelReveal](apps/web/src/components/pixel-reveal.tsx). [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint. [mcp/](apps/web/src/lib/mcp) is the MCP catalog and Streamable HTTP server. [llms/](apps/web/src/lib/llms) builds `/llms.txt`. [seo/](apps/web/src/lib/seo) holds SEO copy, JSON-LD builders, and the Open Graph image renderer.
   - `src/styles/` holds [layout.ts](apps/web/src/styles/layout.ts) (the 640px page column), [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset, `color-scheme`, and the page view transition).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
-  - `public/` holds files served as is (favicons).
+  - `public/` holds files served as is (favicons, the apple-touch icon, and the manifest icons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.
 - `.changeset/` holds pending changesets and the Changesets config.
 - `.github/workflows/` holds CI ([release.yml](.github/workflows/release.yml)).
@@ -99,7 +102,8 @@ Tools: `get_profile`, `get_experience`, `list_projects`, `get_project`, `list_sk
 
 - Node.js 26, pinned in [.nvmrc](.nvmrc) and used by CI. The root `engines` allows >= 24. Run `nvm use` first: Astro 7 refuses to run on older Node versions, so the build fails with "Node.js ... is not supported by Astro".
 - Bun 1.2.23 (`devEngines`).
-- Optional `GITHUB_TOKEN` or `GH_TOKEN` for the skills loader's GitHub API call. Without it, a GitHub rate limit fails the build. See [apps/web/.env.example](apps/web/.env.example). CI's check job passes a read-only `GITHUB_TOKEN` into `bun run build`.
+- Optional `GITHUB_TOKEN` or `GH_TOKEN` for the skills loader's GitHub API call. Without it, a GitHub rate limit fails the build. See [apps/web/.env.example](apps/web/.env.example). CI's check job passes a read-only `GITHUB_TOKEN` into `bun run build`. Turborepo runs in strict env mode, so it is listed in `passThroughEnv` in [turbo.json](turbo.json).
+- Optional `SITE_URL` for the production origin (default `https://jralvarenga.com`). Optional `GOOGLE_SITE_VERIFICATION` and `BING_SITE_VERIFICATION` render the Search Console and Bing Webmaster ownership metas; set only the tag's `content` value. All three are read at build time, so change them and redeploy. They are listed in the build task's `env` in turbo.json; add any new build-time variable there too.
 
 ## Conventions
 
@@ -121,7 +125,8 @@ There are no tests yet. Verify UI changes on `/ui` and the affected pages with `
 
 - Every push to `main` runs [release.yml](.github/workflows/release.yml): a read-only check job (`bun install --frozen-lockfile`, `bun run check`, `bun run build`), then a write-scoped Changesets job that opens a "chore: version packages" PR, or creates GitHub releases when that PR is merged.
 - Deploy to Vercel with the Astro framework (the `@astrojs/vercel` adapter emits the Build Output API). Pages stay static; `/mcp` is a serverless function. Set the Vercel Root Directory to `apps/web`, since the adapter writes `.vercel/output` there.
-- No production domain is wired in this repo yet. Point MCP clients at the deployed origin plus `/mcp`.
+- The production domain is `https://jralvarenga.com` (`site` in astro.config.mjs). Point MCP clients at it plus `/mcp`.
+- Search engines: add the domain in Google Search Console (a Domain property verified with a DNS TXT record, or a URL-prefix property verified with `GOOGLE_SITE_VERIFICATION`), then submit `https://jralvarenga.com/sitemap-index.xml`. Bing Webmaster Tools can import the Search Console property or use `BING_SITE_VERIFICATION`.
 
 ## Rules
 
@@ -133,7 +138,6 @@ There are no tests yet. Verify UI changes on `/ui` and the affected pages with `
 
 ## Open questions
 
-- Hosting target for the site (`.vercel` is in `.gitignore`, but nothing is configured).
 - Writing: there is no writing section yet. If one is added, it can follow the projects collection pattern.
 - Should `packages/eslint-config` and `packages/typescript-config` be removed? They target Next.js and are unused, and Biome replaces ESLint.
 - Add `@astrojs/check` so `check-types` also type-checks `.astro` files? Today it only checks `.ts` and `.tsx`.

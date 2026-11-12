@@ -1,7 +1,11 @@
 ---
 import { SkillDetail } from '../../components/skills/skill-detail';
 import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../lib/about/profile';
+import { metaDescription } from '../../lib/seo/site';
+import { breadcrumbNode, skillNode } from '../../lib/seo/structured-data';
 import { getSkills } from '../../lib/skills/collection';
+import { sourceUrl } from '../../lib/skills/repo';
 
 export async function getStaticPaths() {
   const skills = await getSkills();
@@ -12,9 +16,29 @@ export async function getStaticPaths() {
 }
 
 const { skill } = Astro.props;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const path = `/skills/${skill.id}`;
+const description = metaDescription(skill.data.description);
 ---
 
-<Layout title={`${skill.data.name} · Skills · Rigo Alvarenga`}>
+<Layout
+  title={`${skill.data.name} · Skills · ${profile.name}`}
+  description={description}
+  type="article"
+  structuredData={[
+    skillNode(site, {
+      name: skill.data.name,
+      path,
+      description,
+      sourceUrl: sourceUrl(skill.data.path),
+    }),
+    breadcrumbNode(site, [
+      { name: 'Home', path: '/' },
+      { name: 'Skills', path: '/skills' },
+      { name: skill.data.name, path },
+    ]),
+  ]}
+>
   <SkillDetail
     slug={skill.id}
     name={skill.data.name}

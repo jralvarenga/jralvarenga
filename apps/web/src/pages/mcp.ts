@@ -10,6 +10,8 @@ const CORS = {
     'Content-Type, Accept, Authorization, MCP-Protocol-Version, Mcp-Session-Id, Mcp-Method, Mcp-Name, Last-Event-ID',
   'Access-Control-Expose-Headers': 'Mcp-Session-Id, MCP-Protocol-Version',
   'Access-Control-Max-Age': '86400',
+  // An API, not a page.
+  'X-Robots-Tag': 'noindex, nofollow',
 };
 
 /**
