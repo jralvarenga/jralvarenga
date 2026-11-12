@@ -3,8 +3,8 @@ import { installCommand, SKILLS_REPO_URL } from '../../lib/skills/repo';
 import { layout } from '../../styles/layout';
 import { colors, font, space, text, weight } from '../../styles/tokens.stylex';
 import { BoxIcon, GitHubIcon } from '../icons';
+import { PageHeader, Section } from '../page';
 import { Command } from './command';
-import { PageHeader, Section } from './parts';
 
 export interface SkillSummary {
   name: string;

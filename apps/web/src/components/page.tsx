@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import type { ReactNode } from 'react';
+import { linkTarget } from '../lib/links';
 import {
   colors,
   font,
@@ -7,7 +8,7 @@ import {
   space,
   text,
   weight,
-} from '../../styles/tokens.stylex';
+} from '../styles/tokens.stylex';
 
 const styles = stylex.create({
   crumbs: {
@@ -39,6 +40,12 @@ const styles = stylex.create({
     gap: space.x3,
     marginTop: space.x4,
   },
+  titleRow: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    alignItems: 'center',
+    gap: space.x3,
+  },
   title: {
     fontSize: {
       default: '32px',
@@ -67,6 +74,16 @@ const styles = stylex.create({
     gap: space.x1,
     color: colors.foreground,
     textDecoration: 'none',
+  },
+  metaText: {
+    color: colors.mutedForeground,
+  },
+  lead: {
+    marginTop: space.x3,
+    color: colors.mutedForeground,
+    fontSize: text.lg,
+    lineHeight: 1.6,
+    textWrap: 'pretty',
   },
   metaLink: {
     textDecorationLine: {
@@ -126,42 +143,57 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 }
 
 export interface MetaItem {
-  icon: ReactNode;
+  icon?: ReactNode;
   label: string;
   href?: string;
+}
+
+interface PageHeaderProps {
+  title: string;
+  meta?: MetaItem[];
+  /** Shown next to the title, such as a status tag. */
+  badge?: ReactNode;
+  /** Lead text under the meta row. */
+  children?: ReactNode;
 }
 
 /** The page title with a row of small facts or links under it. */
 export function PageHeader({
   title,
-  meta,
-}: {
-  title: string;
-  meta: MetaItem[];
-}) {
+  meta = [],
+  badge,
+  children,
+}: PageHeaderProps) {
   return (
     <header {...stylex.props(styles.header)}>
-      <h1 {...stylex.props(styles.title)}>{title}</h1>
-      <ul {...stylex.props(styles.meta)}>
-        {meta.map((item) => (
-          <li key={item.label}>
-            {item.href ? (
-              <a
-                href={item.href}
-                {...stylex.props(styles.metaItem, styles.metaLink)}
-              >
-                {item.icon}
-                {item.label}
-              </a>
-            ) : (
-              <span {...stylex.props(styles.metaItem)}>
-                {item.icon}
-                {item.label}
-              </span>
-            )}
-          </li>
-        ))}
-      </ul>
+      <div {...stylex.props(styles.titleRow)}>
+        <h1 {...stylex.props(styles.title)}>{title}</h1>
+        {badge}
+      </div>
+      {meta.length > 0 && (
+        <ul {...stylex.props(styles.meta)}>
+          {meta.map((item) => (
+            <li key={item.label}>
+              {item.href ? (
+                <a
+                  href={item.href}
+                  {...linkTarget(item.href)}
+                  {...stylex.props(styles.metaItem, styles.metaLink)}
+                >
+                  {item.icon}
+                  {item.label}
+                </a>
+              ) : (
+                <span {...stylex.props(styles.metaItem, styles.metaText)}>
+                  {item.icon}
+                  {item.label}
+                </span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+      {children && <p {...stylex.props(styles.lead)}>{children}</p>}
     </header>
   );
 }
@@ -170,14 +202,17 @@ export function PageHeader({
 export function Section({
   label,
   children,
+  xstyle,
 }: {
   label: string;
   children: ReactNode;
+  /** StyleX overrides, such as a larger top margin between page sections. */
+  xstyle?: stylex.StyleXStyles;
 }) {
   const id = `section-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
 
   return (
-    <section aria-labelledby={id} {...stylex.props(styles.section)}>
+    <section aria-labelledby={id} {...stylex.props(styles.section, xstyle)}>
       <h2 id={id} {...stylex.props(styles.label)}>
         {label}
       </h2>

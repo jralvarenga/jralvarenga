@@ -26,6 +26,7 @@ This is a Turborepo monorepo with one app today:
 - React components render to static HTML by default. Add a `client:*` directive (prefer `client:visible` or `client:idle`) only when a component needs interactivity, for example the theme toggle or Base UI popovers.
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
+- `/projects` and `/projects/<slug>` come from the `projects` content collection: one markdown file per project in [src/content/projects](apps/web/src/content/projects), validated by the schema in [content.config.ts](apps/web/src/content.config.ts). Add a project by adding a file. The home page lists them too.
 - `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one unauthenticated GitHub API call for the file tree, then raw downloads. So `build` and `dev` need network access, and the build fails if GitHub is unreachable. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/skills/markdown.tsx)). Restart `dev` to pick up new skills.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
@@ -38,6 +39,7 @@ This is a Turborepo monorepo with one app today:
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
   - `src/components/layout/` holds the site header.
+  - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
   - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate. [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
@@ -102,7 +104,7 @@ There are no tests yet. Verify UI changes on `/ui` and the affected pages with `
 ## Open questions
 
 - Hosting target for the site (`.vercel` is in `.gitignore`, but nothing is configured).
-- Site sections and content model: home, projects, writing, about? If there is writing, should it use Astro content collections with MDX?
+- Writing and About pages: the nav links to `/about`, which doesn't exist yet. If there is writing, it can follow the projects collection pattern.
 - Should `packages/eslint-config` and `packages/typescript-config` be removed? They target Next.js and are unused, and Biome replaces ESLint.
 - Add `@astrojs/check` so `check-types` also type-checks `.astro` files? Today it only checks `.ts` and `.tsx`.
 

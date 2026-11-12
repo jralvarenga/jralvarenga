@@ -1,0 +1,11 @@
+---
+import { ProjectsIndex } from '../../components/projects/projects-index';
+import Layout from '../../layouts/Layout.astro';
+import { getProjectSummaries } from '../../lib/projects/collection';
+
+const projects = await getProjectSummaries();
+---
+
+<Layout title="Projects · Rigo Alvarenga">
+  <ProjectsIndex projects={projects} />
+</Layout>

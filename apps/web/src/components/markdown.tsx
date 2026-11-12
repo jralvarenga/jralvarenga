@@ -2,7 +2,7 @@ import * as stylex from '@stylexjs/stylex';
 import type { ComponentProps } from 'react';
 import ReactMarkdown, { type Components } from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { resolveSkillHref } from '../../lib/skills/repo';
+import { linkTarget } from '../lib/links';
 import {
   colors,
   font,
@@ -10,7 +10,7 @@ import {
   space,
   text,
   weight,
-} from '../../styles/tokens.stylex';
+} from '../styles/tokens.stylex';
 
 const styles = stylex.create({
   root: {
@@ -125,7 +125,7 @@ function textOf(node: unknown): string {
   return '';
 }
 
-function components(path: string): Components {
+function components(resolveHref: (href: string) => string): Components {
   return {
     h1: ({ node, ...props }) => <h2 {...props} {...stylex.props(styles.h1)} />,
     h2: ({ node, ...props }) => <h3 {...props} {...stylex.props(styles.h2)} />,
@@ -135,7 +135,8 @@ function components(path: string): Components {
     a: ({ node, href = '', ...props }) => (
       <a
         {...props}
-        href={resolveSkillHref(href, path)}
+        href={resolveHref(href)}
+        {...linkTarget(resolveHref(href))}
         {...stylex.props(styles.a)}
       />
     ),
@@ -173,18 +174,21 @@ function components(path: string): Components {
 }
 
 interface Props extends Pick<ComponentProps<typeof ReactMarkdown>, 'children'> {
-  /** Repository path of the file, used to resolve relative links. */
-  path: string;
+  /** Rewrites link targets, for example relative links in a repository. */
+  resolveHref?: (href: string) => string;
 }
 
 /**
- * Renders a SKILL.md body to static HTML with the site's type styles.
+ * Renders a markdown body to static HTML with the site's type styles.
  * Headings shift down one level, since the page already has an `h1`.
  */
-export function Markdown({ children, path }: Props) {
+export function Markdown({ children, resolveHref = (href) => href }: Props) {
   return (
     <div {...stylex.props(styles.root)}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]} components={components(path)}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={components(resolveHref)}
+      >
         {children}
       </ReactMarkdown>
     </div>

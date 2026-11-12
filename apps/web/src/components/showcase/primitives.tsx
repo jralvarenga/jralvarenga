@@ -6,6 +6,7 @@ import { Checkbox } from '../ui/checkbox';
 import { Field } from '../ui/field';
 import { Input } from '../ui/input';
 import { Switch } from '../ui/switch';
+import { Tag } from '../ui/tag';
 import { Textarea } from '../ui/textarea';
 
 type Theme = 'system' | 'light' | 'dark';
@@ -216,6 +217,18 @@ export function Primitives() {
         <p {...stylex.props(styles.muted)}>
           All controls share one elevation: a lit top edge, a 1px edge, and a
           4px bezel ring.
+        </p>
+      </section>
+
+      <section {...stylex.props(styles.section)}>
+        <h2 {...stylex.props(styles.heading)}>Tag</h2>
+        <div {...stylex.props(styles.row)}>
+          <Tag>In progress</Tag>
+          <Tag>TypeScript</Tag>
+          <Tag>Next.js</Tag>
+        </div>
+        <p {...stylex.props(styles.muted)}>
+          Tags are static content, so they stay flat.
         </p>
       </section>
     </main>

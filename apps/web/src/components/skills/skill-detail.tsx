@@ -1,11 +1,15 @@
 import * as stylex from '@stylexjs/stylex';
-import { installCommand, sourceUrl } from '../../lib/skills/repo';
+import {
+  installCommand,
+  resolveSkillHref,
+  sourceUrl,
+} from '../../lib/skills/repo';
 import { layout } from '../../styles/layout';
 import { colors, space } from '../../styles/tokens.stylex';
 import { GitHubIcon } from '../icons';
+import { Markdown } from '../markdown';
+import { Breadcrumbs, PageHeader, Section } from '../page';
 import { Command } from './command';
-import { Markdown } from './markdown';
-import { Breadcrumbs, PageHeader, Section } from './parts';
 
 const styles = stylex.create({
   breadcrumbs: {
@@ -57,7 +61,9 @@ export function SkillDetail({ name, description, path, body }: Props) {
       </Section>
 
       <Section label="SKILL.md">
-        <Markdown path={path}>{body}</Markdown>
+        <Markdown resolveHref={(href) => resolveSkillHref(href, path)}>
+          {body}
+        </Markdown>
       </Section>
     </main>
   );

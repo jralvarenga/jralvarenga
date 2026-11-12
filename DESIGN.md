@@ -116,8 +116,9 @@ Primitives live in [components/ui](apps/web/src/components/ui). Reuse them befor
 | `Checkbox` | Base UI `Checkbox`      | Raised 20px box, primary when checked. `indeterminate`                                                                            |
 | `Field`    | Base UI `Field`         | `label`, `description`, `error`, `disabled`. `layout`: `stacked` (fields) or `inline` (checkbox, switch)                          |
 | `Spinner`  | SVG                     | Inherits `currentColor`. `label`, `size`                                                                                          |
+| `Tag`      | `span`                  | Flat `muted` label, 24px tall, radius `sm`, Geist Mono 14px in `mutedForeground`. For statuses and stack items                    |
 
-Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows no hint for it. Still to build: Link, a ThemeToggle button for touch screens, ListItem, Card (flat, 1px `border`, radius 12px), and Tag.
+Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows no hint for it. Still to build: Link, a ThemeToggle button for touch screens, ListItem and Card (flat, 1px `border`, radius 12px).
 
 Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for buttons and fields, `lg` 12px for cards, `full` for the switch.
 
@@ -130,6 +131,14 @@ Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for b
 - Install command: `muted` fill, radius `md`, `$` prompt in `mutedForeground`, Geist Mono 14px, scrolls sideways inside its box on narrow screens, with a ghost icon copy button that shows a check for 1.5s.
 - Skill list: full-width rows split by hairlines, the name in medium weight (underlined on row hover) over a one-line description in Geist Mono 14px `mutedForeground`, cut with an ellipsis.
 - SKILL.md: headings shift down one level under the page `h1`, body at 16px / 1.7, code blocks and inline code on `muted`, tables with hairline rows. Links to another skill stay on the site; other relative links go to GitHub.
+
+## Projects
+
+Projects are markdown files in [src/content/projects](apps/web/src/content/projects), one per project, with `name`, `summary`, `started` (`YYYY-MM`), `status` (`live` or `building`), `order`, `stack`, `links` (full URLs, or site paths like `/skills`), and optional `parts` in the frontmatter, and the write-up as the body. A part is an app or site the project is made of (luvid has a web app, an iOS app, and a design system), with its own `name`, `summary`, `status`, `stack`, and optional `site` link.
+
+- Rows ([project-list.tsx](apps/web/src/components/projects/project-list.tsx)) appear on the home page under the hero and on `/projects`: the name in medium weight with an "In progress" `Tag` when building, the start month on the right in Geist Mono `mutedForeground`, and the summary underneath in `mutedForeground`. Hovering underlines the name. Projects with parts list their names on a last line in Geist Mono `mutedForeground`, joined by `·`.
+- `/projects/<slug>` uses the same page parts as the skills pages: breadcrumb, title with the status tag beside it, a meta row (start month, then links with GitHub, npm, or globe icons picked from the URL), the summary as an 18px lead, an ABOUT section with the write-up, a PARTS section (one hairline row per part: name and status tag, its link on the right, the summary, and its stack in mono joined by `·`), and a STACK section of tags when the project has a top-level stack.
+- Shared page parts live in [page.tsx](apps/web/src/components/page.tsx) and the markdown renderer in [markdown.tsx](apps/web/src/components/markdown.tsx).
 
 ## States
 

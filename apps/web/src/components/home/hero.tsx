@@ -15,18 +15,6 @@ const rise = stylex.keyframes({
 });
 
 const styles = stylex.create({
-  main: {
-    maxWidth: '640px',
-    marginInline: 'auto',
-    paddingInline: {
-      default: space.x4,
-      '@media (min-width: 640px)': space.x6,
-    },
-    paddingBlock: {
-      default: space.x16,
-      '@media (min-width: 640px)': space.x24,
-    },
-  },
   hero: {
     display: 'flex',
     flexDirection: 'column',
@@ -69,19 +57,20 @@ const styles = stylex.create({
 /** Home intro: a greeting, the name in Geist Pixel, and a short bio. */
 export function Hero() {
   return (
-    <main id="content" {...stylex.props(styles.main)}>
-      <section aria-labelledby="hero-title" {...stylex.props(styles.hero)}>
-        <h1 id="hero-title" {...stylex.props(styles.title)}>
-          <span {...stylex.props(styles.greeting)}>Hi, I'm</span>
-          <PixelReveal xstyle={styles.name}>Rigo Alvarenga</PixelReveal>
-        </h1>
-        <p {...stylex.props(styles.description)}>
-          I'm a Tech lead engineer on the development team at Denzo Studios.
-          Working on different projects like{' '}
-          <a href="https://orviadx.com">Orvia</a> and many others.
-        </p>
-        <p {...stylex.props(styles.description)}>And also on personal projects</p>
-      </section>
-    </main>
+    <section aria-labelledby="hero-title" {...stylex.props(styles.hero)}>
+      <h1 id="hero-title" {...stylex.props(styles.title)}>
+        <span {...stylex.props(styles.greeting)}>Hi, I'm</span>
+        <PixelReveal xstyle={styles.name}>Rigo Alvarenga</PixelReveal>
+      </h1>
+      <p {...stylex.props(styles.description)}>
+        I'm a Tech lead engineer on the development team at Denzo Studios.
+        Working on different projects like{' '}
+        <a href="https://orviadx.com" target="_blank" rel="noopener noreferrer">
+          Orvia
+        </a>{' '}
+        and many others.
+      </p>
+      <p {...stylex.props(styles.description)}>And also on personal projects</p>
+    </section>
   );
 }
