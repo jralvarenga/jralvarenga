@@ -72,7 +72,7 @@ export function Hero() {
         </a>{' '}
         and many others.
       </p>
-      <p {...stylex.props(styles.description)}>And also on personal projects</p>
+      <p {...stylex.props(styles.description)}>And also on my projects</p>
       <MetaList items={socialLinks} />
     </section>
   );

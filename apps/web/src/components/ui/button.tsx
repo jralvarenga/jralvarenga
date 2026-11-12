@@ -68,24 +68,26 @@ const styles = stylex.create({
     color: colors.foreground,
     opacity: 1,
   },
+  // Compact like shadcn: 14px labels at every size.
   sm: {
+    height: '28px',
+    gap: '6px',
+    paddingInline: '10px',
+    fontSize: text.sm,
+  },
+  md: {
     height: '32px',
     paddingInline: space.x3,
     fontSize: text.sm,
   },
-  md: {
+  lg: {
     height: '36px',
     paddingInline: space.x4,
-    fontSize: text.md,
-  },
-  lg: {
-    height: '44px',
-    paddingInline: space.x6,
-    fontSize: text.md,
+    fontSize: text.sm,
   },
   icon: {
-    width: '36px',
-    height: '36px',
+    width: '32px',
+    height: '32px',
     paddingInline: 0,
   },
   disabled: {

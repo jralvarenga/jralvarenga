@@ -67,8 +67,10 @@ export const font = stylex.defineVars({
   pixel: 'var(--font-geist-pixel), var(--font-geist-mono), monospace',
 });
 
-/** Font sizes. 16px is the base, 14px is the minimum. */
+/** Font sizes. 16px is the base, 14px the minimum for running text. */
 export const text = stylex.defineVars({
+  /** Only for compact labels such as tags. */
+  xs: '12px',
   sm: '14px',
   md: '16px',
   lg: '18px',

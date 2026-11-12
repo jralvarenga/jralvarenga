@@ -87,7 +87,7 @@ Geist Sans, Geist Mono, and Geist Pixel (Square) load through the Astro Fonts AP
 | Small   | 14px / 1.5                                         | 400    | 0, for labels, captions, metadata |
 | Mono    | 14px / 1.5                                         | 400    | 0                                 |
 
-- The base size is 16px. Don't go below 14px.
+- The base size is 16px. Don't go below 14px, except the 12px `text.xs` in tags.
 - Use only the `weight` tokens: 400, 500, and 700. Never 600 or 900.
 - Never use all caps with wide tracking.
 - Set `font-variant-numeric: tabular-nums` on dates and numbers in lists.
@@ -108,16 +108,16 @@ Geist Sans, Geist Mono, and Geist Pixel (Square) load through the Astro Fonts AP
 
 Primitives live in [components/ui](apps/web/src/components/ui). Reuse them before creating new ones. Each accepts an `xstyle` prop for StyleX overrides.
 
-| Component  | Built on                | Variants and props                                                                                                                |
-| ---------- | ----------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
-| `Button`   | Base UI `Button`        | `variant`: `primary`, `secondary`, `ghost`, `danger`. `size`: `sm` 32px, `md` 36px, `lg` 44px, `icon` 36px. `loading`, `disabled` |
-| `Input`    | Base UI `Input`         | 36px tall, recessed. `invalid` for use outside a `Field`                                                                          |
-| `Textarea` | Base UI `Field.Control` | Recessed, 96px minimum, vertical resize. `invalid`                                                                                |
-| `Switch`   | Base UI `Switch`        | Recessed 40×24 track, raised 18px thumb. Checked track uses `primary`                                                             |
-| `Checkbox` | Base UI `Checkbox`      | Raised 20px box, primary when checked. `indeterminate`                                                                            |
-| `Field`    | Base UI `Field`         | `label`, `description`, `error`, `disabled`. `layout`: `stacked` (fields) or `inline` (checkbox, switch)                          |
-| `Spinner`  | SVG                     | Inherits `currentColor`. `label`, `size`                                                                                          |
-| `Tag`      | `span`                  | Flat `muted` label, 24px tall, radius `sm`, Geist Mono 14px in `mutedForeground`. For statuses and stack items                    |
+| Component  | Built on                | Variants and props                                                                                                                                                             |
+| ---------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `Button`   | Base UI `Button`        | `variant`: `primary`, `secondary`, `ghost`, `danger`. `size`: `sm` 28px, `md` 32px, `lg` 36px, `icon` 32px, all with 14px labels (compact, like shadcn). `loading`, `disabled` |
+| `Input`    | Base UI `Input`         | 36px tall, recessed. `invalid` for use outside a `Field`                                                                                                                       |
+| `Textarea` | Base UI `Field.Control` | Recessed, 96px minimum, vertical resize. `invalid`                                                                                                                             |
+| `Switch`   | Base UI `Switch`        | Recessed 40×24 track, raised 18px thumb. Checked track uses `primary`                                                                                                          |
+| `Checkbox` | Base UI `Checkbox`      | Raised 20px box, primary when checked. `indeterminate`                                                                                                                         |
+| `Field`    | Base UI `Field`         | `label`, `description`, `error`, `disabled`. `layout`: `stacked` (fields) or `inline` (checkbox, switch)                                                                       |
+| `Spinner`  | SVG                     | Inherits `currentColor`. `label`, `size`                                                                                                                                       |
+| `Tag`      | `span`                  | Flat `muted` label, 20px tall, radius `sm`, Geist Mono 12px medium in `mutedForeground`. For statuses and stack items                                                          |
 
 Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows no hint for it. Still to build: Link, a ThemeToggle button for touch screens, ListItem and Card (flat, 1px `border`, radius 12px).
 
