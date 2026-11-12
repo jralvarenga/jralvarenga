@@ -39,7 +39,7 @@ This is a Turborepo monorepo with one app today:
 - The root README's stack section is two SVGs in `.github/readme/` (light and dark, swapped with `<picture>`), drawn by [readme-stack.tsx](apps/web/scripts/readme-stack.tsx) from `toolGroups` and the About page's brand marks. Run `cd apps/web && bun run readme:stack` after changing `toolGroups` or a mark; the script redraws the SVGs and rewrites the image alt text from `toolGroups`.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
-[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, avatar linking home, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
+[Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell, the site [Header](apps/web/src/components/layout/header.tsx) (skip link, avatar linking home, nav), and the site [Footer](apps/web/src/components/layout/footer.tsx) (copyright and license, the `FooterSettings` island with the theme toggle and the not-yet-working language menu, and a bottom [ScrollEdge](apps/web/src/components/layout/scroll-edge.tsx) that mirrors the header's). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
 
 ## Project structure
 
@@ -56,6 +56,7 @@ This is a Turborepo monorepo with one app today:
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons, the apple-touch icon, and the manifest icons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.
+- [LICENSE](LICENSE) is MIT, in my name. The footer links to it.
 - `.changeset/` holds pending changesets and the Changesets config.
 - `.github/workflows/` holds CI ([release.yml](.github/workflows/release.yml)).
 

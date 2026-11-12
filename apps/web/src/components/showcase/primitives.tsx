@@ -20,6 +20,7 @@ const styles = stylex.create({
     display: 'flex',
     flexDirection: 'column',
     gap: space.x16,
+    width: '100%',
     maxWidth: '640px',
     marginInline: 'auto',
     paddingInline: {
