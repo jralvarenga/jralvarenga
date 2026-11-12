@@ -117,9 +117,19 @@ Primitives live in [components/ui](apps/web/src/components/ui). Reuse them befor
 | `Field`    | Base UI `Field`         | `label`, `description`, `error`, `disabled`. `layout`: `stacked` (fields) or `inline` (checkbox, switch)                          |
 | `Spinner`  | SVG                     | Inherits `currentColor`. `label`, `size`                                                                                          |
 
-Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows a `D` key hint next to the name: a `kbd` with a 1px `border`, radius `sm`, Geist Mono 14px in `mutedForeground`, hidden on touch screens. Still to build: Link, a ThemeToggle button for touch screens, ListItem, Card (flat, 1px `border`, radius 12px), and Tag.
+Always wrap form controls in `Field` so the label, description, and error are linked. Theme switching is built as a hotkey: pressing D anywhere outside a text field flips light and dark ([theme.ts](apps/web/src/lib/theme.ts)). It sets `data-theme` on `<html>`, stores the choice in `localStorage`, switches with transitions turned off, and an inline script in `Layout.astro` applies it before paint. With nothing stored, the site follows the system. The header shows no hint for it. Still to build: Link, a ThemeToggle button for touch screens, ListItem, Card (flat, 1px `border`, radius 12px), and Tag.
 
 Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for buttons and fields, `lg` 12px for cards, `full` for the switch.
+
+## Skills pages
+
+`/skills` and `/skills/<name>`, modeled on skills.sh, without install counts or stars.
+
+- Page header: an optional breadcrumb (`skills / <name>`, `mutedForeground`, 14px), the title in the Display style, then a row of 14px facts or links with 14px icons (skill count, GitHub, Source).
+- Sections: a label in Geist Mono 14px, uppercase with no extra tracking, over a 1px `border` hairline, 48px apart.
+- Install command: `muted` fill, radius `md`, `$` prompt in `mutedForeground`, Geist Mono 14px, scrolls sideways inside its box on narrow screens, with a ghost icon copy button that shows a check for 1.5s.
+- Skill list: full-width rows split by hairlines, the name in medium weight (underlined on row hover) over a one-line description in Geist Mono 14px `mutedForeground`, cut with an ellipsis.
+- SKILL.md: headings shift down one level under the page `h1`, body at 16px / 1.7, code blocks and inline code on `muted`, tables with hairline rows. Links to another skill stay on the site; other relative links go to GitHub.
 
 ## States
 

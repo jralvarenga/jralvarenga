@@ -1,0 +1,30 @@
+---
+import { getCollection } from 'astro:content';
+import { SkillDetail } from '../../components/skills/skill-detail';
+import Layout from '../../layouts/Layout.astro';
+
+export async function getStaticPaths() {
+  const skills = await getCollection('skills');
+  return skills.map((skill) => ({
+    params: { name: skill.id },
+    props: { skill },
+  }));
+}
+
+const { skill } = Astro.props;
+---
+
+<Layout title={`${skill.data.name} · Skills · Rigo Alvarenga`}>
+  <SkillDetail
+    name={skill.data.name}
+    description={skill.data.description}
+    path={skill.data.path}
+    body={skill.body ?? ''}
+  />
+</Layout>
+
+<script>
+import { bindCopyButtons } from '../../lib/copy';
+
+bindCopyButtons();
+</script>

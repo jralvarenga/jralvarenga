@@ -26,6 +26,7 @@ This is a Turborepo monorepo with one app today:
 - React components render to static HTML by default. Add a `client:*` directive (prefer `client:visible` or `client:idle`) only when a component needs interactivity, for example the theme toggle or Base UI popovers.
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
 - The site has no backend, database, auth, or API. All content ships as static HTML at build time.
+- `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one unauthenticated GitHub API call for the file tree, then raw downloads. So `build` and `dev` need network access, and the build fails if GitHub is unreachable. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/skills/markdown.tsx)). Restart `dev` to pick up new skills.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
 [Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, name, nav). Each page renders its own `<main id="content">` inside a React component, for example [Hero](apps/web/src/components/home/hero.tsx) on the home page. The nav links to `/projects`, `/writing`, and `/about`, which don't exist yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
@@ -37,9 +38,10 @@ This is a Turborepo monorepo with one app today:
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
   - `src/components/layout/` holds the site header.
+  - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
   - `src/lib/<feature>/` holds browser logic that isn't a component, for example the hero's pixel reveal ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)), started from a `<script>` in the page so React doesn't need to hydrate. [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
-  - `src/styles/` holds [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
+  - `src/styles/` holds [layout.ts](apps/web/src/styles/layout.ts) (the 640px page column), [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset and `color-scheme`).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.

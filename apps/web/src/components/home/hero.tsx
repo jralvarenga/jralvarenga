@@ -80,7 +80,7 @@ export function Hero() {
           Working on different projects like{' '}
           <a href="https://orviadx.com">Orvia</a> and many others.
         </p>
-        <p {...stylex.props(styles.description)}>As well as personal ones</p>
+        <p {...stylex.props(styles.description)}>And also on personal projects</p>
       </section>
     </main>
   );

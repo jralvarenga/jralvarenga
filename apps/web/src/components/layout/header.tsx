@@ -1,7 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import {
   colors,
-  font,
   motion,
   radius,
   space,
@@ -15,9 +14,9 @@ interface NavLink {
 }
 
 const links: NavLink[] = [
-  { href: '/projects', label: 'Projects' },
-  { href: '/writing', label: 'Writing' },
   { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/skills', label: 'Skills' },
 ];
 
 /** How far the fade reaches below the header, so the edge has no line. */
@@ -80,31 +79,6 @@ const styles = stylex.create({
       '@media (min-width: 640px)': space.x6,
     },
     paddingBlock: space.x4,
-  },
-  brand: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: space.x2,
-  },
-  hint: {
-    // A keyboard hint means nothing on touch screens.
-    display: {
-      default: 'inline-flex',
-      '@media (pointer: coarse)': 'none',
-    },
-    alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: '22px',
-    height: '22px',
-    paddingInline: space.x1,
-    borderWidth: '1px',
-    borderStyle: 'solid',
-    borderColor: colors.border,
-    borderRadius: radius.sm,
-    color: colors.mutedForeground,
-    fontFamily: font.mono,
-    fontSize: text.sm,
-    lineHeight: 1,
   },
   home: {
     color: colors.foreground,
@@ -193,14 +167,9 @@ export function Header({ pathname }: Props) {
           ))}
         </div>
         <header {...stylex.props(styles.header)}>
-          <div {...stylex.props(styles.brand)}>
-            <a href="/" {...stylex.props(styles.home)}>
-              Rigo Alvarenga
-            </a>
-            <kbd title="Press D to switch theme" {...stylex.props(styles.hint)}>
-              D
-            </kbd>
-          </div>
+          <a href="/" {...stylex.props(styles.home)}>
+            Rigo Alvarenga
+          </a>
           <nav aria-label="Main">
             <ul {...stylex.props(styles.list)}>
               {links.map((link) => {
