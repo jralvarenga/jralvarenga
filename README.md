@@ -30,15 +30,18 @@ I also build my own projects on the side.
 | [better-translate](https://better-translate.com)  | Type-safe i18n for TypeScript, one config across frameworks.          |
 | [skills](https://github.com/jralvarenga/skills)   | The rules I give coding agents, packaged as Agent Skills.             |
 
-## This site
+## Stack
 
-A single narrow column, plain black and white, set in Geist. Built with Astro, React, StyleX, and Base UI, in a Bun and Turborepo monorepo.
+What I build with today, by kind. It's the same list as my [about page](https://jralvarenga.com/about).
 
-```sh
-nvm use          # Node 26
-bun install
-bun run dev      # http://localhost:4321
-bun run build    # static output in apps/web/dist
-```
-
-The build fetches skills from GitHub, so it needs network access. See [AGENTS.md](AGENTS.md) for the architecture and [DESIGN.md](DESIGN.md) for the design system.
+<picture>
+  <source
+    media="(prefers-color-scheme: dark)"
+    srcset=".github/readme/stack-dark.svg"
+  >
+  <img
+    src=".github/readme/stack-light.svg"
+    width="880"
+    alt="My stack: TypeScript, React, Next.js, TanStack Start, React Native, Vue.js, SwiftUI, Node.js, Bun, Astro, Tailwind CSS, StyleX, Python, Rust, and PHP. Infrastructure on Vercel, Cloudflare, Render, Railway, AWS, Google Cloud, Docker, Jenkins, Depot, Expo EAS, PostgreSQL, Neon, Convex, Sentry, and PostHog. AI and tools: Claude Code, Codex, Cursor, T3 Code, Grok, Grok Bot, CodeRabbit, Cubic, and Graphite."
+  >
+</picture>

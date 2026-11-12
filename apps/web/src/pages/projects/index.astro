@@ -1,11 +1,40 @@
 ---
 import { ProjectsIndex } from '../../components/projects/projects-index';
 import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../lib/about/profile';
 import { getProjectSummaries } from '../../lib/projects/collection';
+import { metaDescription, pageDescriptions } from '../../lib/seo/site';
+import {
+  breadcrumbNode,
+  collectionPageNode,
+} from '../../lib/seo/structured-data';
 
 const projects = await getProjectSummaries();
+const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
-<Layout title="Projects · Rigo Alvarenga">
+<Layout
+  title={`Projects · ${profile.name}`}
+  description={pageDescriptions.projects}
+  structuredData={[
+    collectionPageNode(
+      site,
+      {
+        name: 'Projects',
+        path: '/projects',
+        description: pageDescriptions.projects,
+      },
+      projects.map((project) => ({
+        name: project.name,
+        path: `/projects/${project.slug}`,
+        description: metaDescription(project.summary),
+      })),
+    ),
+    breadcrumbNode(site, [
+      { name: 'Home', path: '/' },
+      { name: 'Projects', path: '/projects' },
+    ]),
+  ]}
+>
   <ProjectsIndex projects={projects} />
 </Layout>

@@ -31,7 +31,7 @@ Never add elevation to static content like cards, lists, or text. Never build a 
 
 ## Colors
 
-All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). Each value is `light-dark(<light>, <dark>)`, so the theme follows `color-scheme`. [global.css](apps/web/src/styles/global.css) sets `color-scheme: light dark` on `:root`, and `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme. Components only use these variables. Never put hex, rgb, or oklch literals outside the tokens file.
+All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). Each value is `light-dark(<light>, <dark>)`, so the theme follows `color-scheme`. [global.css](apps/web/src/styles/global.css) sets `color-scheme: light dark` on `:root`, and `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme. Components only use these variables. Never put hex, rgb, or oklch literals outside the tokens file, except the hex mirrors that Satori, the README stack image, and `theme-color` / the web manifest need because they cannot read StyleX variables (see [Social images](#social-images)).
 
 | Token               | Light                       | Dark                        | Purpose                                                      |
 | ------------------- | --------------------------- | --------------------------- | ------------------------------------------------------------ |
@@ -194,6 +194,12 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 - Every icon-only button has an `aria-label`. Decorative SVGs have `aria-hidden="true"`.
 - Touch targets are at least 40px, counting the bezel, except compact `Button` sizes (`sm` 28px, `md` and `icon` 32px, `lg` 36px), which follow the shadcn-style control heights. Icon-only social links stay at 40px.
 - Respect `prefers-color-scheme` and `prefers-reduced-motion`.
+
+## Social images
+
+Each page's Open Graph and X card image (`/og/<path>.png`, [og-image.tsx](apps/web/src/lib/seo/og-image.tsx)) is a 1200×630 light-theme card, as flat as the pages: a muted eyebrow (role or section), the title in Geist Pixel, a muted description of up to about three lines, and a hairline over a footer with the avatar, the name, and the host. Satori takes inline styles and can't read StyleX variables, so its palette mirrors the `background`, `foreground`, `mutedForeground`, and `border` light tokens. Keep the two in sync when those tokens change. `theme-color` and the manifest mirror `background` the same way ([site.ts](apps/web/src/lib/seo/site.ts)).
+
+The README's stack image ([readme-stack.tsx](apps/web/scripts/readme-stack.tsx)) redraws the About page's tool pills the same way: hairline pills with a 16px brand mark and a medium label, group names muted in a left column, groups split by hairlines. The background is transparent so it sits on GitHub's own theme, with a light and a dark variant.
 
 ## Open questions
 

@@ -3,17 +3,19 @@
   "type": "module",
   "version": "0.0.1",
   "engines": {
-    "node": ">=22.23.4"
+    "node": ">=24"
   },
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
     "astro": "astro",
-    "check-types": "astro sync && tsc --noEmit"
+    "check-types": "astro sync && tsc --noEmit",
+    "readme:stack": "bun scripts/readme-stack.tsx"
   },
   "dependencies": {
     "@astrojs/react": "^7.1.7",
+    "@astrojs/sitemap": "^3.7.4",
     "@astrojs/vercel": "^11.0.21",
     "@base-ui/react": "^1.9.0",
     "@modelcontextprotocol/server": "^2",
@@ -27,9 +29,12 @@
     "react-dom": "^19.3.1",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
+    "satori": "^0.63.2",
+    "sharp": "^0.35.5",
     "zod": "^4"
   },
   "devDependencies": {
-    "@stylexjs/unplugin": "^0.19.1"
+    "@stylexjs/unplugin": "^0.19.1",
+    "@types/node": "^24"
   }
 }

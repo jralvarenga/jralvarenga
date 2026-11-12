@@ -1,8 +1,24 @@
 ---
 import { AboutPage } from '../components/about/about-page';
 import Layout from '../layouts/Layout.astro';
+import { profile } from '../lib/about/profile';
+import { pageDescriptions } from '../lib/seo/site';
+import { breadcrumbNode, profilePageNode } from '../lib/seo/structured-data';
+
+const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
-<Layout title="About · Rigo Alvarenga">
+<Layout
+  title={`About · ${profile.name}`}
+  description={pageDescriptions.about}
+  type="profile"
+  structuredData={[
+    profilePageNode(site, '/about'),
+    breadcrumbNode(site, [
+      { name: 'Home', path: '/' },
+      { name: 'About', path: '/about' },
+    ]),
+  ]}
+>
   <AboutPage />
 </Layout>

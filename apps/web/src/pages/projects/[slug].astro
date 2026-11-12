@@ -1,7 +1,10 @@
 ---
 import { ProjectDetail } from '../../components/projects/project-detail';
 import Layout from '../../layouts/Layout.astro';
+import { profile } from '../../lib/about/profile';
 import { getProjects } from '../../lib/projects/collection';
+import { metaDescription } from '../../lib/seo/site';
+import { breadcrumbNode, projectNode } from '../../lib/seo/structured-data';
 
 export async function getStaticPaths() {
   const projects = await getProjects();
@@ -13,9 +16,31 @@ export async function getStaticPaths() {
 
 const { project } = Astro.props;
 const { data } = project;
+const site = Astro.site ?? new URL(Astro.url.origin);
+const path = `/projects/${project.id}`;
+const description = metaDescription(data.summary);
 ---
 
-<Layout title={`${data.name} · Projects · Rigo Alvarenga`}>
+<Layout
+  title={`${data.name} · Projects · ${profile.name}`}
+  description={description}
+  type="article"
+  structuredData={[
+    projectNode(site, {
+      name: data.name,
+      path,
+      description,
+      started: data.started,
+      stack: data.stack,
+      links: data.links,
+    }),
+    breadcrumbNode(site, [
+      { name: 'Home', path: '/' },
+      { name: 'Projects', path: '/projects' },
+      { name: data.name, path },
+    ]),
+  ]}
+>
   <ProjectDetail
     slug={project.id}
     name={data.name}

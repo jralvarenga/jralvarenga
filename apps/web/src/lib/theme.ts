@@ -77,6 +77,34 @@ function persistPreference(theme: ThemePreference) {
 }
 
 /**
+ * Points `<meta name="theme-color">` at the theme on screen. The layout's
+ * media-query tags follow the OS; a stored or toggled theme needs a tag
+ * without `media` so the browser chrome matches the page.
+ */
+function syncThemeColor(theme: ThemePreference) {
+  const forced = document.querySelector<HTMLMetaElement>(
+    'meta[name="theme-color"]:not([media])',
+  );
+  if (theme !== 'light' && theme !== 'dark') {
+    forced?.remove();
+    return;
+  }
+  const fromMedia = document.querySelector<HTMLMetaElement>(
+    `meta[name="theme-color"][media*="${theme}"]`,
+  );
+  const content = fromMedia?.content;
+  if (!fromMedia || !content) return;
+  if (forced) {
+    forced.content = content;
+    return;
+  }
+  const meta = document.createElement('meta');
+  meta.name = 'theme-color';
+  meta.content = content;
+  fromMedia.before(meta);
+}
+
+/**
  * Forces light or dark, or clears the force so the page follows the system.
  * The choice is stored, and `/ui` is notified so its selector stays in sync.
  */
@@ -89,6 +117,7 @@ export function applyPreference(theme: ThemePreference) {
     }
   });
   persistPreference(theme);
+  syncThemeColor(theme);
   notifyThemeChange();
 }
 
