@@ -8,6 +8,6 @@ export const social = {
   x: { label: 'X', href: 'https://x.com/rigo_alvarenga1' },
   instagram: {
     label: 'Instagram',
-    href: 'https://www.instagram.com/rigo_alvarenga',
+    href: 'https://www.instagram.com/rigo_alvarenga1',
   },
 } as const;

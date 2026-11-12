@@ -1,23 +1,18 @@
-import type { ComponentType } from 'react';
-import {
-  CabanLogo,
-  DenzoLogo,
-  FiverrLogo,
-  type LogoProps,
-  UcaLogo,
-} from '../../components/about/logos';
-
 /**
- * About page content. Countries show their flag emoji, organizations their
- * `logo`, and the rest a placeholder tile with their initials.
+ * About page content. Countries show their flag emoji, organizations a
+ * `logo` key, and the rest a placeholder tile with their initials.
+ * `inline-logo.tsx` maps each key to a component.
  */
+
+/** Keys for the logos in `components/about/logos.tsx`. */
+export type LogoName = 'denzo' | 'caban' | 'fiverr' | 'uca';
 
 export interface Organization {
   name: string;
   /** Shown in the placeholder tile until there is a logo. */
   initials: string;
-  /** Logo component from `components/about/logos.tsx`. */
-  logo?: ComponentType<LogoProps>;
+  /** Logo key. `inline-logo.tsx` maps it to a component. */
+  logo?: LogoName;
   /** Flag emoji, used for countries instead of a logo. */
   emoji?: string;
 }
@@ -35,7 +30,7 @@ export interface Chapter {
 export const denzo: Organization = {
   name: 'Denzo Studios',
   initials: 'DS',
-  logo: DenzoLogo,
+  logo: 'denzo',
 };
 export const elSalvador: Organization = {
   name: 'El Salvador',
@@ -43,13 +38,13 @@ export const elSalvador: Organization = {
   emoji: '🇸🇻',
 };
 
-const caban: Organization = { name: 'Caban', initials: 'C', logo: CabanLogo };
+const caban: Organization = { name: 'Caban', initials: 'C', logo: 'caban' };
 const fiverr: Organization = {
   name: 'Fiverr and other freelance projects',
   initials: 'F',
-  logo: FiverrLogo,
+  logo: 'fiverr',
 };
-const uca: Organization = { name: 'UCA', initials: 'U', logo: UcaLogo };
+const uca: Organization = { name: 'UCA', initials: 'U', logo: 'uca' };
 
 /** Newest first. */
 export const chapters: Chapter[] = [

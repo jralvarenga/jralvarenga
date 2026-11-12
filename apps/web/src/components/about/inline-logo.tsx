@@ -1,6 +1,21 @@
 import * as stylex from '@stylexjs/stylex';
-import type { Organization } from '../../lib/about/about';
+import type { ComponentType } from 'react';
+import type { LogoName, Organization } from '../../lib/about/about';
 import { colors, font, weight } from '../../styles/tokens.stylex';
+import {
+  CabanLogo,
+  DenzoLogo,
+  FiverrLogo,
+  type LogoProps,
+  UcaLogo,
+} from './logos';
+
+const logos: Record<LogoName, ComponentType<LogoProps>> = {
+  denzo: DenzoLogo,
+  caban: CabanLogo,
+  fiverr: FiverrLogo,
+  uca: UcaLogo,
+};
 
 const styles = stylex.create({
   tile: {
@@ -56,7 +71,7 @@ interface Props {
  * is always written next to it, so the tile is hidden from screen readers.
  */
 export function InlineLogo({ organization, xstyle }: Props) {
-  const Logo = organization.logo;
+  const Logo = organization.logo ? logos[organization.logo] : undefined;
 
   return (
     <span
