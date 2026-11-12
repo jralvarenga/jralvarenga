@@ -1,12 +1,13 @@
 import * as stylex from '@stylexjs/stylex';
 import avatar from '../../assets/avatar.jpg';
-import { chapters, denzo, elSalvador, stack } from '../../lib/about/about';
-import { colors, radius, space, weight } from '../../styles/tokens.stylex';
+import { chapters, denzo, elSalvador, toolGroups } from '../../lib/about/about';
+import { colors, radius, space } from '../../styles/tokens.stylex';
 import { PageLayout } from '../layout/page-layout';
 import { Section } from '../page';
 import { socialLinks } from '../social-links';
 import { InlineLogo } from './inline-logo';
 import { Timeline } from './timeline';
+import { ToolList } from './tool-list';
 
 const styles = stylex.create({
   intro: {
@@ -32,24 +33,6 @@ const styles = stylex.create({
     verticalAlign: 'middle',
     boxShadow: `0 0 0 1px ${colors.border}`,
   },
-  stack: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: space.x3,
-    margin: 0,
-  },
-  stackRow: {
-    lineHeight: 1.6,
-  },
-  stackGroup: {
-    display: 'inline',
-    fontWeight: weight.medium,
-  },
-  stackItems: {
-    display: 'inline',
-    margin: 0,
-    color: colors.mutedForeground,
-  },
   link: {
     color: colors.foreground,
     textDecorationLine: 'underline',
@@ -60,7 +43,7 @@ const styles = stylex.create({
 
 /**
  * `/about`: the page title, a plain intro, the story so far as a
- * timeline, the tools I use, and side projects.
+ * timeline, and the tools I use.
  */
 export function AboutPage() {
   return (
@@ -84,35 +67,31 @@ export function AboutPage() {
           <InlineLogo organization={elSalvador} /> El Salvador.
         </p>
         <p {...stylex.props(styles.muted)}>
-          I've spent more than six years building web and mobile products, from
-          frontend architecture to APIs, databases, and infrastructure.
+          I work on both ends of a product, on the web and on mobile, most of my
+          time goes into planning and building apps, then the APIs and databases
+          behind them, SQL or NoSQL depending on what the product needs.
+        </p>
+        <p {...stylex.props(styles.muted)}>
+          I've worked on a lot of different kinds of products over the years,
+          that taught me to look at a problem from the frontend and the backend
+          before I pick a solution, instead of forcing everything into the tools
+          I already know.
+        </p>
+        <p {...stylex.props(styles.muted)}>
+          I like learning, so I'm usually trying something new, lately that's
+          coding agents and I share the rules I give them as open{' '}
+          <a href="/skills" {...stylex.props(styles.link)}>
+            skills
+          </a>
         </p>
       </div>
 
-      <Section label="SO FAR">
+      <Section label="MY EXPERIENCE">
         <Timeline chapters={chapters} />
       </Section>
 
       <Section label="TOOLS">
-        <dl {...stylex.props(styles.stack)}>
-          {stack.map(({ group, items }) => (
-            <div key={group} {...stylex.props(styles.stackRow)}>
-              <dt {...stylex.props(styles.stackGroup)}>{group} </dt>
-              <dd {...stylex.props(styles.stackItems)}>{items.join(', ')}</dd>
-            </div>
-          ))}
-        </dl>
-      </Section>
-
-      <Section label="OUTSIDE WORK">
-        <p {...stylex.props(styles.muted, styles.stackRow)}>
-          I like building side projects, like{' '}
-          <a href="/projects/luvid" {...stylex.props(styles.link)}>
-            luvid
-          </a>
-          , my own budgeting app built on Convex and Polar, and this site, which
-          I built with Astro.
-        </p>
+        <ToolList groups={toolGroups} />
       </Section>
     </PageLayout>
   );
