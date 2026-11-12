@@ -5,7 +5,7 @@ export function NotFoundPage() {
   return (
     <PageLayout
       title="Not found"
-      lead="There's no page at this address. It may have moved, or the link has a typo."
+      lead="There is nothing here, stop sniffing around."
       meta={[
         { label: 'Home', href: '/' },
         { label: 'About', href: '/about' },
