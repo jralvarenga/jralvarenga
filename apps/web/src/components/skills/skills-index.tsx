@@ -1,9 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
 import { installCommand, SKILLS_REPO_URL } from '../../lib/skills/repo';
-import { layout } from '../../styles/layout';
 import { colors, font, space, text, weight } from '../../styles/tokens.stylex';
 import { BoxIcon, GitHubIcon } from '../icons';
-import { PageHeader, Section } from '../page';
+import { PageLayout } from '../layout/page-layout';
+import { Section } from '../page';
 import { Command } from './command';
 
 export interface SkillSummary {
@@ -67,18 +67,17 @@ export function SkillsIndex({ skills }: Props) {
   const count = `${skills.length} ${skills.length === 1 ? 'skill' : 'skills'}`;
 
   return (
-    <main id="content" {...stylex.props(layout.column, layout.page)}>
-      <PageHeader
-        title="Skills"
-        meta={[
-          { icon: <BoxIcon size={14} />, label: count },
-          {
-            icon: <GitHubIcon size={14} />,
-            label: 'GitHub',
-            href: SKILLS_REPO_URL,
-          },
-        ]}
-      />
+    <PageLayout
+      title="Skills"
+      meta={[
+        { icon: <BoxIcon size={14} />, label: count },
+        {
+          icon: <GitHubIcon size={14} />,
+          label: 'GitHub',
+          href: SKILLS_REPO_URL,
+        },
+      ]}
+    >
       <p {...stylex.props(styles.intro)}>
         This are the rules I give coding agents, from how to write code to how
         to review it. They work with Claude Code, Codex, Cursor, and any agent
@@ -110,6 +109,6 @@ export function SkillsIndex({ skills }: Props) {
           </ul>
         )}
       </Section>
-    </main>
+    </PageLayout>
   );
 }

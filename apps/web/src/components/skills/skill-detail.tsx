@@ -4,11 +4,11 @@ import {
   resolveSkillHref,
   sourceUrl,
 } from '../../lib/skills/repo';
-import { layout } from '../../styles/layout';
 import { colors, space } from '../../styles/tokens.stylex';
 import { GitHubIcon } from '../icons';
+import { PageLayout } from '../layout/page-layout';
 import { Markdown } from '../markdown';
-import { Breadcrumbs, PageHeader, Section } from '../page';
+import { Section } from '../page';
 import { Command } from './command';
 
 const styles = stylex.create({
@@ -34,24 +34,20 @@ interface Props {
 /** `/skills/<name>`: install command, summary, and the full SKILL.md. */
 export function SkillDetail({ name, description, path, body }: Props) {
   return (
-    <main id="content" {...stylex.props(layout.column, layout.page)}>
-      <Breadcrumbs
-        items={[
-          { href: '/skills', label: 'skills' },
-          { href: `/skills/${name}`, label: name },
-        ]}
-      />
-      <PageHeader
-        title={name}
-        meta={[
-          {
-            icon: <GitHubIcon size={14} />,
-            label: 'Source',
-            href: sourceUrl(path),
-          },
-        ]}
-      />
-
+    <PageLayout
+      title={name}
+      breadcrumbs={[
+        { href: '/skills', label: 'skills' },
+        { href: `/skills/${name}`, label: name },
+      ]}
+      meta={[
+        {
+          icon: <GitHubIcon size={14} />,
+          label: 'Source',
+          href: sourceUrl(path),
+        },
+      ]}
+    >
       <Section label="INSTALLATION">
         <Command command={installCommand(name)} />
       </Section>
@@ -65,6 +61,6 @@ export function SkillDetail({ name, description, path, body }: Props) {
           {body}
         </Markdown>
       </Section>
-    </main>
+    </PageLayout>
   );
 }

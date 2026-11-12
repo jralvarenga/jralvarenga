@@ -18,6 +18,12 @@ const styles = stylex.create({
       '@media (min-width: 640px)': space.x24,
     },
   },
+  brief: {
+    maxWidth: '56ch',
+    color: colors.mutedForeground,
+    lineHeight: 1.6,
+    textWrap: 'pretty',
+  },
   more: {
     alignSelf: 'flex-start',
     color: {
@@ -33,11 +39,21 @@ interface Props {
   projects: ProjectSummary[];
 }
 
-/** `/`: the hero, then the projects. */
+/** `/`: the hero, a short about with a link to `/about`, then projects. */
 export function HomePage({ projects }: Props) {
   return (
     <main id="content" {...stylex.props(layout.column, styles.main)}>
       <Hero />
+      <Section label="ABOUT" xstyle={styles.section}>
+        <p {...stylex.props(styles.brief)}>
+          More than six years building web and mobile products, from frontend
+          architecture to APIs, databases, and infrastructure. These days I lead
+          development at Denzo Studios, in El Salvador.
+        </p>
+        <a href="/about" {...stylex.props(styles.more)}>
+          Read more about me →
+        </a>
+      </Section>
       <Section label="PROJECTS" xstyle={styles.section}>
         <ProjectList projects={projects} />
         <a href="/projects" {...stylex.props(styles.more)}>

@@ -5,10 +5,10 @@ import type {
   ProjectPart,
   ProjectStatus,
 } from '../../lib/projects/types';
-import { layout } from '../../styles/layout';
 import { space } from '../../styles/tokens.stylex';
+import { PageLayout } from '../layout/page-layout';
 import { Markdown } from '../markdown';
-import { Breadcrumbs, type MetaItem, PageHeader, Section } from '../page';
+import { type MetaItem, Section } from '../page';
 import { Tag } from '../ui/tag';
 import { LinkIcon } from './link-icon';
 import { ProjectParts } from './project-parts';
@@ -59,21 +59,16 @@ export function ProjectDetail({
   ];
 
   return (
-    <main id="content" {...stylex.props(layout.column, layout.page)}>
-      <Breadcrumbs
-        items={[
-          { href: '/projects', label: 'projects' },
-          { href: `/projects/${slug}`, label: name },
-        ]}
-      />
-      <PageHeader
-        title={name}
-        meta={meta}
-        badge={status === 'building' && <Tag>In progress</Tag>}
-      >
-        {summary}
-      </PageHeader>
-
+    <PageLayout
+      title={name}
+      breadcrumbs={[
+        { href: '/projects', label: 'projects' },
+        { href: `/projects/${slug}`, label: name },
+      ]}
+      meta={meta}
+      badge={status === 'building' && <Tag>In progress</Tag>}
+      lead={summary}
+    >
       <Section label="ABOUT">
         <Markdown>{body}</Markdown>
       </Section>
@@ -95,6 +90,6 @@ export function ProjectDetail({
           </ul>
         </Section>
       )}
-    </main>
+    </PageLayout>
   );
 }

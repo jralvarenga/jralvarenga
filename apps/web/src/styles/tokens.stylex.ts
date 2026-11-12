@@ -35,6 +35,8 @@ export const colors = stylex.defineVars({
   dangerTop: 'light-dark(oklch(0.64 0.22 27), oklch(0.63 0.2 25))',
   dangerEdge: 'light-dark(oklch(0.46 0.2 27), oklch(0.45 0.18 25))',
   dangerForeground: 'oklch(0.985 0 0)',
+  /** LinkedIn's brand blue, only for its logo. Same in both themes. */
+  linkedin: '#0A66C2',
 });
 
 /** Spacing scale on a 4px grid. */

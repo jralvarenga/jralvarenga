@@ -5,6 +5,7 @@ import {
   colors,
   font,
   motion,
+  radius,
   space,
   text,
   weight,
@@ -46,14 +47,16 @@ const styles = stylex.create({
     alignItems: 'center',
     gap: space.x3,
   },
+  // Page titles share the hero's Geist Pixel, at normal tracking so the
+  // pixel grid stays even.
   title: {
+    fontFamily: font.pixel,
     fontSize: {
       default: '32px',
       '@media (min-width: 640px)': text.display,
     },
     fontWeight: weight.medium,
     lineHeight: 1.1,
-    letterSpacing: '-0.03em',
     overflowWrap: 'anywhere',
     textWrap: 'balance',
   },
@@ -74,6 +77,25 @@ const styles = stylex.create({
     gap: space.x1,
     color: colors.foreground,
     textDecoration: 'none',
+  },
+  // A 40px touch target around a 16px logo. The negative margin keeps the
+  // row's spacing as if only the icon were there.
+  iconOnly: {
+    justifyContent: 'center',
+    width: '40px',
+    height: '40px',
+    margin: '-12px',
+    borderRadius: radius.md,
+    opacity: {
+      default: 1,
+      ':hover': 0.7,
+    },
+    transitionProperty: 'opacity',
+    transitionDuration: motion.fast,
+    outline: {
+      default: 'none',
+      ':focus-visible': `2px solid ${colors.ring}`,
+    },
   },
   metaText: {
     color: colors.mutedForeground,
@@ -144,8 +166,11 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 
 export interface MetaItem {
   icon?: ReactNode;
+  /** Visible text, or the accessible name when `iconOnly` is set. */
   label: string;
   href?: string;
+  /** Show only the icon, for well-known logos like LinkedIn or X. */
+  iconOnly?: boolean;
 }
 
 interface PageHeaderProps {
@@ -167,34 +192,49 @@ export function PageHeader({
   return (
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.titleRow)}>
-        <h1 {...stylex.props(styles.title)}>{title}</h1>
+        <h1 data-page-title="" {...stylex.props(styles.title)}>
+          {title}
+        </h1>
         {badge}
       </div>
-      {meta.length > 0 && (
-        <ul {...stylex.props(styles.meta)}>
-          {meta.map((item) => (
-            <li key={item.label}>
-              {item.href ? (
-                <a
-                  href={item.href}
-                  {...linkTarget(item.href)}
-                  {...stylex.props(styles.metaItem, styles.metaLink)}
-                >
-                  {item.icon}
-                  {item.label}
-                </a>
-              ) : (
-                <span {...stylex.props(styles.metaItem, styles.metaText)}>
-                  {item.icon}
-                  {item.label}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
+      {meta.length > 0 && <MetaList items={meta} />}
       {children && <p {...stylex.props(styles.lead)}>{children}</p>}
     </header>
+  );
+}
+
+/**
+ * A row of small facts and links with icons. Links are in `foreground`,
+ * plain facts in `mutedForeground`, and external links open a new tab.
+ */
+export function MetaList({ items }: { items: MetaItem[] }) {
+  return (
+    <ul {...stylex.props(styles.meta)}>
+      {items.map((item) => (
+        <li key={item.label}>
+          {item.href ? (
+            <a
+              href={item.href}
+              aria-label={item.iconOnly ? item.label : undefined}
+              {...linkTarget(item.href)}
+              {...stylex.props(
+                styles.metaItem,
+                styles.metaLink,
+                item.iconOnly && styles.iconOnly,
+              )}
+            >
+              {item.icon}
+              {!item.iconOnly && item.label}
+            </a>
+          ) : (
+            <span {...stylex.props(styles.metaItem, styles.metaText)}>
+              {item.icon}
+              {item.label}
+            </span>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 

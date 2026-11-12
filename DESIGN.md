@@ -63,6 +63,7 @@ All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.sty
 | `dangerForeground`  | `oklch(0.985 0 0)`          | `oklch(0.985 0 0)`          | Text on danger buttons                                       |
 
 - `warning` and the `danger*` tokens are the only hues. They appear only in states, never in decoration.
+- `linkedin` (`#0A66C2`, both themes) is the one brand color, used only to fill the LinkedIn logo. Other logos, like X and Instagram, use `currentColor` so they follow the theme.
 - Status never relies on color alone. Pair it with an icon, a label, or `aria-invalid`.
 
 ## Typography
@@ -71,20 +72,20 @@ Geist Sans, Geist Mono, and Geist Pixel (Square) load through the Astro Fonts AP
 
 | Role    | Font               | Use                                        |
 | ------- | ------------------ | ------------------------------------------ |
-| Display | Geist Sans         | Page titles and section headings           |
+| Display | Geist Pixel Square | Page titles, through `PageLayout`          |
 | Body    | Geist Sans         | All text by default                        |
 | Utility | Geist Mono         | Code, dates, small metadata, keyboard keys |
-| Accent  | Geist Pixel Square | The name in the home hero only             |
+| Hero    | Geist Pixel Square | The name in the home hero                  |
 
-| Style   | Size / line height                           | Weight | Tracking                          |
-| ------- | -------------------------------------------- | ------ | --------------------------------- |
-| Hero    | `clamp(40px, 11vw, 72px)` / 1, Geist Pixel   | 500    | -0.02em                           |
-| Display | 40px / 1.1 on desktop, 32px / 1.15 on mobile | 500    | -0.03em                           |
-| H2      | 24px / 1.3                                   | 500    | -0.02em                           |
-| H3      | 18px / 1.4                                   | 500    | -0.01em                           |
-| Body    | 16px / 1.6                                   | 400    | 0                                 |
-| Small   | 14px / 1.5                                   | 400    | 0, for labels, captions, metadata |
-| Mono    | 14px / 1.5                                   | 400    | 0                                 |
+| Style   | Size / line height                                 | Weight | Tracking                          |
+| ------- | -------------------------------------------------- | ------ | --------------------------------- |
+| Hero    | `clamp(40px, 11vw, 72px)` / 1, Geist Pixel         | 500    | -0.02em                           |
+| Display | 40px / 1.1 on desktop, 32px on mobile, Geist Pixel | 500    | 0                                 |
+| H2      | 24px / 1.3                                         | 500    | -0.02em                           |
+| H3      | 18px / 1.4                                         | 500    | -0.01em                           |
+| Body    | 16px / 1.6                                         | 400    | 0                                 |
+| Small   | 14px / 1.5                                         | 400    | 0, for labels, captions, metadata |
+| Mono    | 14px / 1.5                                         | 400    | 0                                 |
 
 - The base size is 16px. Don't go below 14px.
 - Use only the `weight` tokens: 400, 500, and 700. Never 600 or 900.
@@ -126,7 +127,7 @@ Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for b
 
 `/skills` and `/skills/<name>`, modeled on skills.sh, without install counts or stars.
 
-- Page header: an optional breadcrumb (`skills / <name>`, `mutedForeground`, 14px), the title in the Display style, then a row of 14px facts or links with 14px icons (skill count, GitHub, Source).
+- Page header: rendered by `PageLayout`. An optional breadcrumb (`skills / <name>`, `mutedForeground`, 14px), the title in the Display style (Geist Pixel), then a row of 14px facts or links with 14px icons (skill count, GitHub, Source).
 - Sections: a label in Geist Mono 14px, uppercase with no extra tracking, over a 1px `border` hairline, 48px apart.
 - Install command: `muted` fill, radius `md`, `$` prompt in `mutedForeground`, Geist Mono 14px, scrolls sideways inside its box on narrow screens, with a ghost icon copy button that shows a check for 1.5s.
 - Skill list: full-width rows split by hairlines, the name in medium weight (underlined on row hover) over a one-line description in Geist Mono 14px `mutedForeground`, cut with an ellipsis.
@@ -136,9 +137,21 @@ Radius scale (`radius` tokens): `sm` 6px for checkboxes and tags, `md` 8px for b
 
 Projects are markdown files in [src/content/projects](apps/web/src/content/projects), one per project, with `name`, `summary`, `started` (`YYYY-MM`), `status` (`live` or `building`), `order`, `stack`, `links` (full URLs, or site paths like `/skills`), and optional `parts` in the frontmatter, and the write-up as the body. A part is an app or site the project is made of (luvid has a web app, an iOS app, and a design system), with its own `name`, `summary`, `status`, `stack`, and optional `site` link.
 
+- Social links (LinkedIn, X, and Instagram, from [social.ts](apps/web/src/lib/social.ts)) show as a `MetaList` row under the home intro and in the About page header: icon only, all 16px, each in a 40px touch target with the label as its accessible name, 0.7 opacity on hover, opening in a new tab.
+- The home page has an ABOUT section between the hero and projects: two `mutedForeground` sentences and a "Read more about me →" link to `/about`.
 - Rows ([project-list.tsx](apps/web/src/components/projects/project-list.tsx)) appear on the home page under the hero and on `/projects`: the name in medium weight with an "In progress" `Tag` when building, the start month on the right in Geist Mono `mutedForeground`, and the summary underneath in `mutedForeground`. Hovering underlines the name. Projects with parts list their names on a last line in Geist Mono `mutedForeground`, joined by `·`.
 - `/projects/<slug>` uses the same page parts as the skills pages: breadcrumb, title with the status tag beside it, a meta row (start month, then links with GitHub, npm, or globe icons picked from the URL), the summary as an 18px lead, an ABOUT section with the write-up, a PARTS section (one hairline row per part: name and status tag, its link on the right, the summary, and its stack in mono joined by `·`), and a STACK section of tags when the project has a top-level stack.
-- Shared page parts live in [page.tsx](apps/web/src/components/page.tsx) and the markdown renderer in [markdown.tsx](apps/web/src/components/markdown.tsx).
+- Every inner page (Projects, Skills, About, and their detail pages) wraps its sections in [PageLayout](apps/web/src/components/layout/page-layout.tsx): the `<main>` in the 640px column, optional breadcrumbs, the Geist Pixel title with an optional badge, meta row, and lead. The parts it uses live in [page.tsx](apps/web/src/components/page.tsx), and the markdown renderer in [markdown.tsx](apps/web/src/components/markdown.tsx).
+
+## About page
+
+`/about` ([about-page.tsx](apps/web/src/components/about/about-page.tsx)), with all copy and data in [about.ts](apps/web/src/lib/about/about.ts). It should read like a story, not a résumé: no locations, no job-board fields.
+
+- **Title**: "About me" in the shared `PageHeader`, Geist Pixel like every other page title.
+- **Intro**: plain body text. The first paragraph in `foreground`, the second in `mutedForeground`.
+- **Inline logos** ([inline-logo.tsx](apps/web/src/components/about/inline-logo.tsx)): rounded tiles sized 1em with a 0.26em radius, centered on the text, so they scale with any font size. Until an organization has a `logo` image URL, the tile is a placeholder: `muted` fill, 1px `border`, and mono initials in `mutedForeground`. Tiles are `aria-hidden`, since the name is always written next to them.
+- **So far** ([timeline.tsx](apps/web/src/components/about/timeline.tsx)): chapters newest first. On desktop the years sit in a 112px mono column, then a 1px `border` rail with a 9px dot (filled `foreground` while the chapter is still going, hollow with a `ring` edge otherwise), then the story. On mobile the years move above the story. Each chapter is a sentence ("Role at [logo] Organization", with "at" in `mutedForeground`) and a short `mutedForeground` story. Education is a chapter too.
+- **Tools**: one line per area, the area in medium weight and the tools after it in `mutedForeground`, comma-separated. No tags, so it doesn't read like a skills list.
 
 ## States
 
@@ -162,6 +175,7 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 - **Enter animations**: start from `scale(0.95)` or above, never `scale(0)`. Popovers scale from their trigger with `transform-origin`.
 - **Page load**: at most one subtle fade-and-rise of the main column (opacity 0 to 1, `translateY(8px)` to 0, 300ms). No stagger on every element.
 - **Pixel reveal**: the hero name builds itself out of its own pixels once on load ([pixel-reveal.ts](apps/web/src/lib/home/pixel-reveal.ts)). Each glyph is sampled on Geist Pixel's grid (0.038em squares) and drawn on a canvas over the text. Pixels pop in solid, left to right with jitter, but the canvas only redraws every 80ms, so they land in visible batches with a pause between each. Then the real text replaces the canvas. It takes about 1.1s, the one exception to the 300ms limit. Use it only on the hero name.
+- **Title morph**: moving between pages morphs the previous page's title into the new one with `torph`'s `TextMorph` ([page-title.ts](apps/web/src/lib/page-title.ts)), using its 400ms default and `cubic-bezier(0.19, 1, 0.22, 1)`. The last title is kept in `sessionStorage`, and the home page clears it. Under reduced motion the title just appears.
 - Don't animate actions done with the keyboard or things seen many times a day, like nav or theme switching.
 - **Reduced motion**: under `prefers-reduced-motion: reduce`, remove movement (the switch thumb jumps and the spinner stops).
 
@@ -176,6 +190,7 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 ## Open questions
 
 - Should the primary color stay black and white, or take a hue like the purple reference? It changes only `primary*` tokens.
-- Geist Pixel is used for the hero name. Should the header name use it too, or stay in Geist Sans?
+- Geist Pixel is used for the hero name and page titles. Should the header name use it too, or stay in Geist Sans?
+- Logos for the About page are placeholders. Add each as an image and set `logo` on its organization in about.ts.
 - Will the site have images (project screenshots, photo)? Card styling depends on it.
 - Is there an icon set preference? Lucide matches the current stroke icons.

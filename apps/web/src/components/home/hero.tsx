@@ -7,6 +7,8 @@ import {
   text,
   weight,
 } from '../../styles/tokens.stylex';
+import { MetaList } from '../page';
+import { socialLinks } from '../social-links';
 import { PixelReveal } from './pixel-reveal';
 
 const rise = stylex.keyframes({
@@ -71,6 +73,7 @@ export function Hero() {
         and many others.
       </p>
       <p {...stylex.props(styles.description)}>And also on personal projects</p>
+      <MetaList items={socialLinks} />
     </section>
   );
 }

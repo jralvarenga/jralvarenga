@@ -13,6 +13,7 @@ Read [DESIGN.md](DESIGN.md) before any UI work.
 - Biome 2.6 for formatting, linting, and import sorting ([biome.json](biome.json)). ESLint and Prettier are not used.
 - Changesets for versioning and GitHub releases ([.changeset/config.json](.changeset/config.json))
 - React 19 through `@astrojs/react` for UI components
+- `torph` for the page title morph between pages ([page-title.ts](apps/web/src/lib/page-title.ts))
 - StyleX 0.19 for all styling, compiled at build time by `@stylexjs/unplugin` in [astro.config.mjs](apps/web/astro.config.mjs). Tailwind is not used.
 - Base UI (`@base-ui/react`) for unstyled, accessible primitives (dialog, menu, popover, tooltip, and so on)
 - Geist Sans, Mono, and Pixel (Square) fonts, loaded with the Astro Fonts API (`fonts` in [astro.config.mjs](apps/web/astro.config.mjs)) from `src/assets/fonts`
@@ -38,7 +39,7 @@ This is a Turborepo monorepo with one app today:
   - `src/pages/` holds routes.
   - `src/layouts/` holds page shells (html, head, theme, header, footer).
   - `src/components/ui/` holds the primitives (button, input, textarea, switch, checkbox, field, spinner), one component per kebab-case file.
-  - `src/components/layout/` holds the site header.
+  - `src/components/layout/` holds the site header and `PageLayout`, the shell every inner page uses for its `<main>`, breadcrumbs, and title.
   - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
@@ -104,7 +105,7 @@ There are no tests yet. Verify UI changes on `/ui` and the affected pages with `
 ## Open questions
 
 - Hosting target for the site (`.vercel` is in `.gitignore`, but nothing is configured).
-- Writing and About pages: the nav links to `/about`, which doesn't exist yet. If there is writing, it can follow the projects collection pattern.
+- Writing: there is no writing section yet. If one is added, it can follow the projects collection pattern.
 - Should `packages/eslint-config` and `packages/typescript-config` be removed? They target Next.js and are unused, and Biome replaces ESLint.
 - Add `@astrojs/check` so `check-types` also type-checks `.astro` files? Today it only checks `.ts` and `.tsx`.
 
