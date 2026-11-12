@@ -1,159 +1,44 @@
-# Turborepo starter
+<div align="center">
 
-This Turborepo starter is maintained by the Turborepo core team.
+<img src="apps/web/src/assets/avatar.jpg" width="96" height="96" alt="Rigo Alvarenga">
 
-## Using this example
+<h1>Rigo Alvarenga</h1>
 
-Run the following command:
+Tech Lead on the development team at Denzo Studios, in El Salvador.<br />
+I also build my own projects on the side.
 
-```sh
-npx create-turbo@latest
-```
+<sub>
+  <a href="https://jralvarenga.com">jralvarenga.com</a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/jralvarenga">GitHub</a>
+  &nbsp;·&nbsp;
+  <a href="https://www.linkedin.com/in/jorge-alvarenga-26126b148">LinkedIn</a>
+  &nbsp;·&nbsp;
+  <a href="https://x.com/rigo_alvarenga1">X</a>
+</sub>
 
-## What's inside?
+</div>
 
-This Turborepo includes the following packages/apps:
+<br>
 
-### Apps and Packages
+## Projects
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `@next/eslint-plugin-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+|                                                   |                                                                       |
+| ------------------------------------------------- | --------------------------------------------------------------------- |
+| [luvid](https://luvid-design.vercel.app)          | Money tracking you can share, in spaces you invite people into.       |
+| [exchange](https://exchange-sigma-ten.vercel.app) | A trading dashboard on Alpaca, with your own keys, encrypted at rest. |
+| [better-translate](https://better-translate.com)  | Type-safe i18n for TypeScript, one config across frameworks.          |
+| [skills](https://github.com/jralvarenga/skills)   | The rules I give coding agents, packaged as Agent Skills.             |
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+## This site
 
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
+A single narrow column, plain black and white, set in Geist. Built with Astro, React, StyleX, and Base UI, in a Bun and Turborepo monorepo.
 
 ```sh
-cd my-turborepo
-turbo build
+nvm use          # Node 26
+bun install
+bun run dev      # http://localhost:4321
+bun run build    # static output in apps/web/dist
 ```
 
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo build
-bun exec turbo build
-bun exec turbo build
-```
-
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo build --filter=docs
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo build --filter=docs
-bun exec turbo build --filter=docs
-bun exec turbo build --filter=docs
-```
-
-### Develop
-
-To develop all apps and packages, run the following command:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo dev
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo dev
-bun exec turbo dev
-bun exec turbo dev
-```
-
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo dev --filter=web
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo dev --filter=web
-bun exec turbo dev --filter=web
-bun exec turbo dev --filter=web
-```
-
-### Remote Caching
-
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
-
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended):
-
-```sh
-cd my-turborepo
-turbo login
-```
-
-Without global `turbo`, use your package manager:
-
-```sh
-cd my-turborepo
-npx turbo login
-bun exec turbo login
-bun exec turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed:
-
-```sh
-turbo link
-```
-
-Without global `turbo`:
-
-```sh
-npx turbo link
-bun exec turbo link
-bun exec turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+The build fetches skills from GitHub, so it needs network access. See [AGENTS.md](AGENTS.md) for the architecture and [DESIGN.md](DESIGN.md) for the design system.
