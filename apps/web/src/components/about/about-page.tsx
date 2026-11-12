@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import avatar from '../../assets/avatar.jpg';
-import { chapters, denzo, elSalvador, toolGroups } from '../../lib/about/about';
+import { chapters, elSalvador, toolGroups } from '../../lib/about/about';
+import { currentChapter, profile } from '../../lib/about/profile';
 import { colors, radius, space } from '../../styles/tokens.stylex';
 import { PageLayout } from '../layout/page-layout';
 import { Section } from '../page';
@@ -47,11 +48,7 @@ const styles = stylex.create({
  */
 export function AboutPage() {
   return (
-    <PageLayout
-      title="About me"
-      lead="Engineer, tech lead, and builder of my own products."
-      meta={socialLinks}
-    >
+    <PageLayout title="About me" lead={profile.aboutLead} meta={socialLinks}>
       <div {...stylex.props(styles.intro)}>
         <p>
           I'm{' '}
@@ -62,26 +59,20 @@ export function AboutPage() {
             height={20}
             {...stylex.props(styles.avatar)}
           />{' '}
-          Rigo Alvarenga, a fullstack software engineer and Tech Lead at{' '}
-          <InlineLogo organization={denzo} /> Denzo Studios, based in{' '}
-          <InlineLogo organization={elSalvador} /> El Salvador.
+          {profile.name}, {profile.aboutRole} at{' '}
+          <InlineLogo organization={currentChapter.organization} />{' '}
+          {profile.organization}, based in{' '}
+          <InlineLogo organization={elSalvador} /> {profile.location}.
         </p>
+        {profile.aboutBody.map((paragraph) => (
+          <p key={paragraph} {...stylex.props(styles.muted)}>
+            {paragraph}
+          </p>
+        ))}
         <p {...stylex.props(styles.muted)}>
-          I work on both ends of a product, on the web and on mobile, most of my
-          time goes into planning and building apps, then the APIs and databases
-          behind them, SQL or NoSQL depending on what the product needs.
-        </p>
-        <p {...stylex.props(styles.muted)}>
-          I've worked on a lot of different kinds of products over the years,
-          that taught me to look at a problem from the frontend and the backend
-          before I pick a solution, instead of forcing everything into the tools
-          I already know.
-        </p>
-        <p {...stylex.props(styles.muted)}>
-          I like learning, so I'm usually trying something new, lately that's
-          coding agents and I share the rules I give them as open{' '}
-          <a href="/skills" {...stylex.props(styles.link)}>
-            skills
+          {profile.aboutSkills.before}
+          <a href={profile.aboutSkills.href} {...stylex.props(styles.link)}>
+            {profile.aboutSkills.label}
           </a>
         </p>
       </div>

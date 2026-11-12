@@ -1,11 +1,17 @@
 // @ts-check
 
 import react from '@astrojs/react';
+import vercel from '@astrojs/vercel';
 import stylex from '@stylexjs/unplugin';
 import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
+  // Pages stay static HTML. The Vercel adapter is here so `/mcp` can be a
+  // serverless function (`prerender = false`) without flipping the rest of
+  // the site to SSR.
+  output: 'static',
+  adapter: vercel(),
   // Fetch a page when its link is hovered or focused, so the click loads
   // from cache instead of the network.
   prefetch: {

@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { profile } from '../../lib/about/profile';
 import { layout } from '../../styles/layout';
 import { colors, space, text } from '../../styles/tokens.stylex';
 import { Section } from '../page';
@@ -45,11 +46,7 @@ export function HomePage({ projects }: Props) {
     <main id="content" {...stylex.props(layout.column, styles.main)}>
       <Hero />
       <Section label="ABOUT" xstyle={styles.section}>
-        <p {...stylex.props(styles.brief)}>
-          More than six years building web and mobile products, from frontend
-          architecture to APIs, databases, and infrastructure. These days I lead
-          development at Denzo Studios, in El Salvador.
-        </p>
+        <p {...stylex.props(styles.brief)}>{profile.summary}</p>
         <a href="/about" {...stylex.props(styles.more)}>
           Read more about me →
         </a>

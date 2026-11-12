@@ -8,7 +8,8 @@ Read [DESIGN.md](DESIGN.md) before any UI work.
 
 - Bun 1.2.23 as package manager and script runner, with Bun workspaces (`apps/*`, `packages/*`)
 - Turborepo 2.11 for task orchestration ([turbo.json](turbo.json))
-- Astro 7 for the website, static output, TypeScript strict (`astro/tsconfigs/strict`)
+- Astro 7 for the website, static output plus one on-demand route, TypeScript strict (`astro/tsconfigs/strict`)
+- `@astrojs/vercel` so `/mcp` can run as a Vercel Function while every page stays prerendered HTML
 - TypeScript 7
 - Biome 2.6 for formatting, linting, and import sorting ([biome.json](biome.json)). ESLint and Prettier are not used.
 - Changesets for versioning and GitHub releases ([.changeset/config.json](.changeset/config.json))
@@ -26,9 +27,12 @@ This is a Turborepo monorepo with one app today:
 - React components render to static HTML by default. Add a `client:*` directive (prefer `client:visible` or `client:idle`) only when a component needs interactivity, for example the theme toggle or Base UI popovers.
 - Navigation is plain multi-page: `prefetch.prefetchAll` in [astro.config.mjs](apps/web/astro.config.mjs) fetches a page on link hover, and `@view-transition { navigation: auto }` in global.css fades the old page out and the new one in without a blank frame. The site header and the page header (title, subtitle, meta) keep still through their own `view-transition-name`s. Don't add Astro's `<ClientRouter />`: page scripts like the pixel reveal expect a full page load.
 - StyleX collects all styles into one CSS file at build time. In dev, [Layout.astro](apps/web/src/layouts/Layout.astro) loads `/virtual:stylex.css` and the StyleX runtime for hot reload. Keep those tags.
-- The site has no backend, database, auth, or API. All content ships as static HTML at build time.
-- `/projects` and `/projects/<slug>` come from the `projects` content collection: one markdown file per project in [src/content/projects](apps/web/src/content/projects), validated by the schema in [content.config.ts](apps/web/src/content.config.ts). Add a project by adding a file. The home page lists them too.
-- `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one GitHub API call for the file tree, then raw downloads. Routes use the directory name (`skill.id`), not the frontmatter `name`. `build` and `dev` need network access, and the build fails if GitHub is unreachable, rate-limited, or returns a truncated tree. An optional `GITHUB_TOKEN` (or `GH_TOKEN`) avoids GitHub API rate-limit failures; without it the public unauthenticated limit applies. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/markdown.tsx)). Restart `dev` to pick up new skills.
+- Pages have no backend, database, or auth. They ship as static HTML at build time. The one exception is `/mcp`, an on-demand Streamable HTTP MCP endpoint (`prerender = false`) served by a Vercel Function. It is read-only, stateless, and needs no auth.
+- Profile copy lives in [profile.ts](apps/web/src/lib/about/profile.ts). Work history and tool groups live in [about.ts](apps/web/src/lib/about/about.ts). Social links live in [social.ts](apps/web/src/lib/social.ts). The home page, about page, MCP server, and `/llms.txt` all read those modules so they cannot drift.
+- `/projects` and `/projects/<slug>` come from the `projects` content collection: one markdown file per project in [src/content/projects](apps/web/src/content/projects), validated by the schema in [content.config.ts](apps/web/src/content.config.ts). Add a project by adding a file. The home page lists them too. Query helpers are in [collection.ts](apps/web/src/lib/projects/collection.ts).
+- `/skills` and `/skills/<name>` come from the `skills` content collection ([content.config.ts](apps/web/src/content.config.ts)). Its loader ([loader.ts](apps/web/src/lib/skills/loader.ts)) fetches every `skills/*/SKILL.md` from [jralvarenga/skills](https://github.com/jralvarenga/skills) at build time: one GitHub API call for the file tree, then raw downloads. Routes use the directory name (`skill.id`), not the frontmatter `name`. `build` and `dev` need network access, and the build fails if GitHub is unreachable, rate-limited, or returns a truncated tree. An optional `GITHUB_TOKEN` (or `GH_TOKEN`) avoids GitHub API rate-limit failures; without it the public unauthenticated limit applies. SKILL.md bodies render to static HTML with `react-markdown` and `remark-gfm` through StyleX-styled components ([markdown.tsx](apps/web/src/components/markdown.tsx)). Restart `dev` to pick up new skills. Query helpers are in [collection.ts](apps/web/src/lib/skills/collection.ts).
+- `/mcp` is the remote MCP server. It uses Vercel's `mcp-handler` on `@modelcontextprotocol/server` (the official SDK v2 package; v1 was `@modelcontextprotocol/sdk`). That adapter returns a Fetch `Request` → `Response` function, which matches Astro endpoints and Vercel Functions. Tools and resources are registered in [server.ts](apps/web/src/lib/mcp/server.ts) and read the same catalog as the pages ([catalog.ts](apps/web/src/lib/mcp/catalog.ts)).
+- `/llms.txt` and `/llms-full.txt` are static text files generated at build time from that catalog, for crawlers that do not speak MCP.
 - `packages/*` holds shared config. Nothing in `apps/web` consumes it yet (see Open questions).
 
 [Layout.astro](apps/web/src/layouts/Layout.astro) renders the html shell and the site [Header](apps/web/src/components/layout/header.tsx) (skip link, avatar linking home, nav). Each page renders its own `<main id="content">` inside a React component: [HomePage](apps/web/src/components/home/home-page.tsx) on `/`, and `PageLayout` on the inner pages. The nav links to `/about`, `/projects`, and `/skills`. `/writing` is not built yet. `/ui` ([ui.astro](apps/web/src/pages/ui.astro)) previews every primitive in light and dark mode.
@@ -43,7 +47,7 @@ This is a Turborepo monorepo with one app today:
   - `src/components/page.tsx` holds shared page parts (breadcrumbs, page header, section) and `src/components/markdown.tsx` renders markdown bodies.
   - `src/components/icons.tsx` holds inline SVG icons (Lucide style, plus the GitHub mark).
   - `src/components/<feature>/` holds feature components, for example `home/` for the home page and `showcase/` for the `/ui` preview.
-  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the pixel reveal ([pixel-reveal.ts](apps/web/src/lib/pixel-reveal.ts)) that builds the hero name and every page title, started for each `[data-pixel-reveal]` element from a `<script>` in [Layout.astro](apps/web/src/layouts/Layout.astro) so React doesn't need to hydrate. Its markup is [PixelReveal](apps/web/src/components/pixel-reveal.tsx). [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint.
+  - `src/lib/<feature>/` holds browser logic that isn't a component, for example the pixel reveal ([pixel-reveal.ts](apps/web/src/lib/pixel-reveal.ts)) that builds the hero name and every page title, started for each `[data-pixel-reveal]` element from a `<script>` in [Layout.astro](apps/web/src/layouts/Layout.astro) so React doesn't need to hydrate. Its markup is [PixelReveal](apps/web/src/components/pixel-reveal.tsx). [theme.ts](apps/web/src/lib/theme.ts) runs the D hotkey that toggles the theme, bound in [Layout.astro](apps/web/src/layouts/Layout.astro), whose inline `<head>` script applies the stored theme before paint. [mcp/](apps/web/src/lib/mcp) is the MCP catalog and Streamable HTTP server. [llms/](apps/web/src/lib/llms) builds `/llms.txt`.
   - `src/styles/` holds [layout.ts](apps/web/src/styles/layout.ts) (the 640px page column), [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts) (all design tokens), [elevation.ts](apps/web/src/styles/elevation.ts) (shared control styles), [root.ts](apps/web/src/styles/root.ts) (body class), and [global.css](apps/web/src/styles/global.css) (reset, `color-scheme`, and the page view transition).
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons).
@@ -64,8 +68,32 @@ bun run format                 # biome check --write, applies fixes
 bun run lint                   # biome lint only
 bun run check-types            # astro sync + tsc --noEmit for apps/web
 bun run changeset              # add a changeset for your change
-cd apps/web && bun run preview # serve the production build
+cd apps/web && bun run preview # serve the production build (static pages; use `dev` for `/mcp`)
 ```
+
+## MCP
+
+Remote MCP for assistants (Claude, Cursor, ChatGPT connectors). Read-only, no auth, Streamable HTTP. Stateless serving is POST-only; GET and DELETE return 405.
+
+Local: `bun run dev`, then `http://localhost:4321/mcp`.
+
+Production: `https://<your-domain>/mcp` after the site is deployed to Vercel. No extra environment variables. The skills loader's optional `GITHUB_TOKEN` is still only used at build time.
+
+Cursor / Claude Desktop example (replace the URL with the deployed origin):
+
+```json
+{
+  "mcpServers": {
+    "jralvarenga": {
+      "url": "https://<your-domain>/mcp"
+    }
+  }
+}
+```
+
+Stdio-only clients can proxy with `npx -y mcp-remote https://<your-domain>/mcp`.
+
+Tools: `get_profile`, `get_experience`, `list_projects`, `get_project`, `list_skills`, `get_skill`, `get_stack`, `get_contact`. Resources: `jralvarenga://profile`, `jralvarenga://experience`, `jralvarenga://stack`, `jralvarenga://contact`, `jralvarenga://projects/{slug}`, `jralvarenga://skills/{name}`.
 
 ## Environment
 
@@ -87,18 +115,19 @@ cd apps/web && bun run preview # serve the production build
 
 ## Testing
 
-There are no tests yet. Verify UI changes on `/ui` and the affected pages with `bun run dev`, in light and dark mode, at mobile and desktop widths.
+There are no tests yet. Verify UI changes on `/ui` and the affected pages with `bun run dev`, in light and dark mode, at mobile and desktop widths. For MCP changes, POST `initialize`, `tools/list`, and one `tools/call` to `/mcp` with `Accept: application/json, text/event-stream` (curl or the MCP inspector) and open `/llms.txt`.
 
 ## Deployment
 
 - Every push to `main` runs [release.yml](.github/workflows/release.yml): a read-only check job (`bun install --frozen-lockfile`, `bun run check`, `bun run build`), then a write-scoped Changesets job that opens a "chore: version packages" PR, or creates GitHub releases when that PR is merged.
-- No hosting target is configured yet.
+- Deploy to Vercel with the Astro framework (the `@astrojs/vercel` adapter emits the Build Output API). Pages stay static; `/mcp` is a serverless function. Set the Vercel Root Directory to `apps/web`, since the adapter writes `.vercel/output` there.
+- No production domain is wired in this repo yet. Point MCP clients at the deployed origin plus `/mcp`.
 
 ## Rules
 
 - Always run `bun run check`, `bun run check-types`, and `bun run build` before finishing a change.
 - Never add ESLint or Prettier config. Biome is the only formatter and linter.
-- Never commit `.env` files or generated output (`dist`, `.astro`, `.turbo`).
+- Never commit `.env` files or generated output (`dist`, `.astro`, `.turbo`, `.vercel`).
 - Keep the Turborepo managed block below as it is. `turbo` rewrites it.
 - Update this file and DESIGN.md in the same change that modifies the architecture, commands, or design system.
 
