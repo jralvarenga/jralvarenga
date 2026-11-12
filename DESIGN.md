@@ -31,7 +31,7 @@ Never add elevation to static content like cards, lists, or text. Never build a 
 
 ## Colors
 
-All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). Each value is `light-dark(<light>, <dark>)`, so the theme follows `color-scheme`. [global.css](apps/web/src/styles/global.css) sets `color-scheme: light dark` on `:root`, and `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme. Components only use these variables. Never put hex, rgb, or oklch literals outside the tokens file.
+All colors live in `colors` in [tokens.stylex.ts](apps/web/src/styles/tokens.stylex.ts). Each value is `light-dark(<light>, <dark>)`, so the theme follows `color-scheme`. [global.css](apps/web/src/styles/global.css) sets `color-scheme: light dark` on `:root`, and `data-theme="light"` or `data-theme="dark"` on `<html>` forces a theme. Components only use these variables. Never put hex, rgb, or oklch literals outside the tokens file, except the hex mirrors that Satori, the README stack image, and `theme-color` / the web manifest need because they cannot read StyleX variables (see [Social images](#social-images)).
 
 | Token               | Light                       | Dark                        | Purpose                                                      |
 | ------------------- | --------------------------- | --------------------------- | ------------------------------------------------------------ |

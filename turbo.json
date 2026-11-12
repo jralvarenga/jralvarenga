@@ -13,11 +13,13 @@
       "dependsOn": ["^lint"]
     },
     "check-types": {
-      "dependsOn": ["^check-types"]
+      "dependsOn": ["^check-types"],
+      "passThroughEnv": ["GITHUB_TOKEN", "GH_TOKEN"]
     },
     "dev": {
       "cache": false,
-      "persistent": true
+      "persistent": true,
+      "passThroughEnv": ["GITHUB_TOKEN", "GH_TOKEN"]
     }
   }
 }

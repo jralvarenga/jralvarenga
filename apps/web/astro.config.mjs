@@ -1,17 +1,28 @@
 // @ts-check
 
+import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
 import vercel from '@astrojs/vercel';
 import stylex from '@stylexjs/unplugin';
 import { defineConfig, envField, fontProviders } from 'astro/config';
+import { loadEnv } from 'vite';
 
 /**
  * The production origin. Canonical URLs, Open Graph tags, the sitemap, and
  * robots.txt are built from it, so preview deployments still point search
  * engines at production. Override with `SITE_URL` for another domain.
+ *
+ * `loadEnv` reads `apps/web/.env*` (Astro does not put those files on
+ * `process.env` while this config runs). A real `SITE_URL` in the
+ * environment still wins.
  */
-const site = process.env.SITE_URL ?? 'https://jralvarenga.com';
+const env = loadEnv(
+  process.env.NODE_ENV ?? 'production',
+  fileURLToPath(new URL('.', import.meta.url)),
+  '',
+);
+const site = env.SITE_URL || 'https://jralvarenga.com';
 
 /** Pages that must stay out of the sitemap. They also send `noindex`. */
 const NOT_IN_SITEMAP = ['/ui', '/404'];

@@ -12,7 +12,7 @@ export const GET: APIRoute = () =>
       lang: 'en',
       start_url: '/',
       scope: '/',
-      display: 'browser',
+      display: 'standalone',
       background_color: THEME_COLORS.light,
       theme_color: THEME_COLORS.light,
       icons: [

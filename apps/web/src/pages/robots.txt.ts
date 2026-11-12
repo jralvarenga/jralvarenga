@@ -1,18 +1,17 @@
 import type { APIRoute } from 'astro';
 
 /**
- * Paths crawlers should skip: the MCP endpoint is JSON-RPC, not a page.
- * `/ui` stays crawlable on purpose, so crawlers can read its `noindex`.
+ * Serves `/robots.txt` at build time, pointing at the sitemap.
+ *
+ * `/mcp` and `/ui` stay crawlable so crawlers can read their `noindex`
+ * (`X-Robots-Tag` on `/mcp`, the robots meta on `/ui`). Disallowing a
+ * path would hide that header.
  */
-const DISALLOW = ['/mcp'];
-
-/** Serves `/robots.txt` at build time, pointing at the sitemap. */
 export const GET: APIRoute = ({ site }) => {
   const sitemap = new URL('/sitemap-index.xml', site).href;
   const body = [
     'User-agent: *',
     'Allow: /',
-    ...DISALLOW.map((path) => `Disallow: ${path}`),
     '',
     `Sitemap: ${sitemap}`,
     '',

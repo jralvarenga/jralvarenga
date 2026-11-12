@@ -2,19 +2,9 @@ import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import satori from 'satori';
 import sharp from 'sharp';
-import { OG_HEIGHT, OG_WIDTH } from './site';
+import { OG_HEIGHT, OG_WIDTH, THEME_PALETTE, truncateAtWord } from './site';
 
-/*
- * Satori renders plain inline styles to an SVG, and StyleX variables don't
- * exist in a PNG, so these mirror the light theme's `background`,
- * `foreground`, `mutedForeground`, and `border` tokens in tokens.stylex.ts.
- */
-const palette = {
-  background: '#ffffff',
-  foreground: '#0a0a0a',
-  muted: '#737373',
-  border: '#e5e5e5',
-};
+const palette = THEME_PALETTE.light;
 
 /** Resolved from the app root, which is the working directory at build. */
 const asset = (path: string) => resolve(process.cwd(), 'src/assets', path);
@@ -68,12 +58,6 @@ function titleSize(title: string) {
   return 68;
 }
 
-/** Cuts the description at a word so it fits three lines. */
-function clamp(text: string, max = 120) {
-  if (text.length <= max) return text;
-  return `${text.slice(0, text.lastIndexOf(' ', max)).replace(/[,.;:]$/, '')}…`;
-}
-
 /** Renders a page's 1200×630 social preview as a PNG. */
 export async function renderOgImage(params: OgImageParams) {
   const { fonts, avatar } = await loadAssets();
@@ -116,7 +100,7 @@ export async function renderOgImage(params: OgImageParams) {
             color: palette.muted,
           }}
         >
-          {clamp(params.description)}
+          {truncateAtWord(params.description, 120)}
         </div>
       </div>
       <div

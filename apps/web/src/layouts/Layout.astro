@@ -36,7 +36,7 @@ interface Props {
   type?: 'website' | 'article' | 'profile';
   /** Keeps the page out of search results, such as `/ui` and the 404. */
   noindex?: boolean;
-  /** Page-specific JSON-LD, added to the person and website nodes. */
+  /** Page-specific JSON-LD, appended to the `@graph` after WebSite and Person. */
   structuredData?: JsonLd[];
 }
 
@@ -136,6 +136,22 @@ const jsonLd = serializeJsonLd([
       const theme = localStorage.getItem('theme');
       if (theme === 'light' || theme === 'dark') {
         document.documentElement.dataset.theme = theme;
+        // Media-query theme-color tags follow the OS. A tag without
+        // `media` overrides them so the browser chrome matches the page.
+        const media = document.querySelector(
+          `meta[name="theme-color"][media*="${theme}"]`,
+        );
+        if (media) {
+          let meta = document.querySelector(
+            'meta[name="theme-color"]:not([media])',
+          );
+          if (!meta) {
+            meta = document.createElement('meta');
+            meta.setAttribute('name', 'theme-color');
+            media.before(meta);
+          }
+          meta.setAttribute('content', media.getAttribute('content') ?? '');
+        }
       }
     } catch {}
     </script>

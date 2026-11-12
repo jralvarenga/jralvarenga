@@ -46,16 +46,47 @@ export function ogImagePath(pathname: string) {
 }
 
 /**
- * `<meta name="theme-color">` and the web manifest can't read StyleX
- * variables, so these mirror the `background` token in both themes.
+ * Hex mirrors of StyleX color tokens for surfaces that cannot read CSS
+ * variables: Satori (Open Graph images and the README stack) and
+ * `<meta name="theme-color">` / the web manifest. Keep in sync with
+ * `tokens.stylex.ts`. See DESIGN.md Colors.
  */
+export const THEME_PALETTE = {
+  light: {
+    background: '#ffffff',
+    foreground: '#0a0a0a',
+    muted: '#737373',
+    border: '#e5e5e5',
+  },
+  dark: {
+    background: '#0a0a0a',
+    foreground: '#fafafa',
+    muted: '#a1a1a1',
+    border: '#3d444d',
+  },
+} as const;
+
+/** Page background in each theme, for `theme-color` and the manifest. */
 export const THEME_COLORS = {
-  light: '#ffffff',
-  dark: '#0a0a0a',
+  light: THEME_PALETTE.light.background,
+  dark: THEME_PALETTE.dark.background,
 };
 
 /** Search engines cut snippets near 160 characters. */
 const DESCRIPTION_MAX = 160;
+
+/**
+ * Cuts `text` at the last space at or before `max`, strips a trailing
+ * comma or period, and adds an ellipsis. Falls back to a hard cut at
+ * `max` when there is no space, so a long word cannot blow past the
+ * limit.
+ */
+export function truncateAtWord(text: string, max: number): string {
+  if (text.length <= max) return text;
+  const at = text.lastIndexOf(' ', max);
+  const cut = text.slice(0, at === -1 ? max : at).replace(/[,.;:]$/, '');
+  return `${cut}…`;
+}
 
 /**
  * Shortens text for `<meta name="description">`: whole sentences while
@@ -73,6 +104,5 @@ export function metaDescription(text: string) {
   }
   if (fitted.length >= 70) return fitted;
 
-  const cut = clean.slice(0, clean.lastIndexOf(' ', DESCRIPTION_MAX - 1));
-  return `${cut.replace(/[,.;:]$/, '')}…`;
+  return truncateAtWord(clean, DESCRIPTION_MAX);
 }

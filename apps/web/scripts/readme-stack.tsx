@@ -5,27 +5,68 @@
  * without loading a font.
  *
  * Run from apps/web after changing `toolGroups`: `bun run readme:stack`.
+ * The script also rewrites the stack image alt text in the root README.
  */
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import satori from 'satori';
 import { ToolIcon } from '../src/components/about/tool-icon';
-import { toolGroups } from '../src/lib/about/about';
+import { type ToolGroup, toolGroups } from '../src/lib/about/about';
+import { THEME_PALETTE } from '../src/lib/seo/site';
 
 /** About the width of a profile README on desktop. */
 const WIDTH = 880;
-const OUT_DIR = resolve(process.cwd(), '../../.github/readme');
+const ROOT = resolve(process.cwd(), '../..');
+const OUT_DIR = resolve(ROOT, '.github/readme');
+const README = resolve(ROOT, 'README.md');
 
 /*
- * Mirrors the `foreground`, `mutedForeground`, and `border` tokens. The
- * background stays transparent so the card sits on GitHub's own theme.
+ * Shared with Open Graph images. The background stays transparent so the
+ * card sits on GitHub's own theme.
  */
 const themes = {
-  light: { foreground: '#0a0a0a', muted: '#737373', border: '#e5e5e5' },
-  dark: { foreground: '#fafafa', muted: '#a1a1a1', border: '#3d444d' },
+  light: THEME_PALETTE.light,
+  dark: THEME_PALETTE.dark,
 };
 
 type Theme = (typeof themes)[keyof typeof themes];
+
+/**
+ * Turns a list of names into "A, B, and C".
+ */
+function joinNames(names: string[]): string {
+  if (names.length === 0) return '';
+  if (names.length === 1) return names[0] ?? '';
+  if (names.length === 2) return `${names[0]} and ${names[1]}`;
+  return `${names.slice(0, -1).join(', ')}, and ${names.at(-1)}`;
+}
+
+/**
+ * Alt text for the README stack image, derived from `toolGroups` so it
+ * cannot drift from the SVG.
+ */
+function stackImageAlt(groups: ToolGroup[]): string {
+  const sentences = groups.map((group, index) => {
+    const names = joinNames(group.tools.map((tool) => tool.name));
+    if (index === 0) return `My stack: ${names}`;
+    if (group.group === 'Infrastructure') return `Infrastructure on ${names}`;
+    return `${group.group}: ${names}`;
+  });
+  return `${sentences.join('. ')}.`;
+}
+
+/**
+ * Rewrites the stack `<img>` alt in the root README from `toolGroups`.
+ */
+async function writeReadmeAlt(alt: string) {
+  const readme = await readFile(README, 'utf8');
+  const next = readme.replace(/alt="My stack: [^"]*"/, `alt="${alt}"`);
+  if (next === readme) {
+    throw new Error('Could not find the stack image alt text in README.md');
+  }
+  await writeFile(README, next);
+  console.log('Updated README.md stack alt text');
+}
 
 function Stack({ theme }: { theme: Theme }) {
   return (
@@ -109,3 +150,5 @@ for (const [name, theme] of Object.entries(themes)) {
   await writeFile(resolve(OUT_DIR, `stack-${name}.svg`), `${svg}\n`);
   console.log(`Wrote .github/readme/stack-${name}.svg`);
 }
+
+await writeReadmeAlt(stackImageAlt(toolGroups));
