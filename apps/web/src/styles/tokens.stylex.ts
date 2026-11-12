@@ -35,6 +35,8 @@ export const colors = stylex.defineVars({
   dangerTop: 'light-dark(oklch(0.64 0.22 27), oklch(0.63 0.2 25))',
   dangerEdge: 'light-dark(oklch(0.46 0.2 27), oklch(0.45 0.18 25))',
   dangerForeground: 'oklch(0.985 0 0)',
+  /** LinkedIn's brand blue, only for its logo. Same in both themes. */
+  linkedin: '#0A66C2',
 });
 
 /** Spacing scale on a 4px grid. */
@@ -62,15 +64,21 @@ export const radius = stylex.defineVars({
 export const font = stylex.defineVars({
   sans: 'var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif',
   mono: 'var(--font-geist-mono), ui-monospace, monospace',
+  pixel: 'var(--font-geist-pixel), var(--font-geist-mono), monospace',
 });
 
-/** Font sizes. 16px is the base, 14px is the minimum. */
+/** Font sizes. 16px is the base, 14px the minimum for running text. */
 export const text = stylex.defineVars({
+  /** Only for compact labels such as tags. */
+  xs: '12px',
   sm: '14px',
   md: '16px',
   lg: '18px',
   xl: '24px',
+  /** Page titles on mobile. Desktop uses `display`. */
+  displaySm: '32px',
   display: '40px',
+  hero: 'clamp(40px, 11vw, 72px)',
 });
 
 /** Font weights. Only regular, medium and bold are allowed. */
@@ -80,7 +88,7 @@ export const weight = stylex.defineVars({
   bold: '700',
 });
 
-/** Motion durations and easings. Nothing should run longer than 300ms. */
+/** Motion durations and easings. UI stays within 300ms; title morph and the hero pixel reveal are documented exceptions. */
 export const motion = stylex.defineVars({
   fast: '150ms',
   base: '200ms',

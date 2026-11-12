@@ -1,0 +1,30 @@
+---
+import { ProjectDetail } from '../../components/projects/project-detail';
+import Layout from '../../layouts/Layout.astro';
+import { getProjects } from '../../lib/projects/collection';
+
+export async function getStaticPaths() {
+  const projects = await getProjects();
+  return projects.map((project) => ({
+    params: { slug: project.id },
+    props: { project },
+  }));
+}
+
+const { project } = Astro.props;
+const { data } = project;
+---
+
+<Layout title={`${data.name} · Projects · Rigo Alvarenga`}>
+  <ProjectDetail
+    slug={project.id}
+    name={data.name}
+    summary={data.summary}
+    started={data.started}
+    status={data.status}
+    stack={data.stack}
+    links={data.links}
+    parts={data.parts}
+    body={project.body ?? ''}
+  />
+</Layout>
