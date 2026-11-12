@@ -99,7 +99,7 @@ Tools: `get_profile`, `get_experience`, `list_projects`, `get_project`, `list_sk
 
 - Node.js 26, pinned in [.nvmrc](.nvmrc) and used by CI. The root `engines` allows >= 24. Run `nvm use` first: Astro 7 refuses to run on older Node versions, so the build fails with "Node.js ... is not supported by Astro".
 - Bun 1.2.23 (`devEngines`).
-- Optional `GITHUB_TOKEN` or `GH_TOKEN` for the skills loader's GitHub API call. Without it, a GitHub rate limit fails the build. See [apps/web/.env.example](apps/web/.env.example). CI's check job passes a read-only `GITHUB_TOKEN` into `bun run build`.
+- Optional `GITHUB_TOKEN` or `GH_TOKEN` for the skills loader's GitHub API call. Without it, a GitHub rate limit fails the build. Set it in your shell or in `apps/web/.env` (copy [apps/web/.env.example](apps/web/.env.example)). The loader reads `import.meta.env`, which holds both; `process.env` would miss `.env`. CI's check job passes a read-only `GITHUB_TOKEN` into `bun run build`.
 
 ## Conventions
 
