@@ -28,3 +28,23 @@ export function resolveSkillHref(href: string, skillPath: string) {
 
   return sourceUrl(url.pathname.slice(1)) + url.search + url.hash;
 }
+
+type ResolveSkillMarkdownParams = {
+  body: string;
+  skillPath: string;
+};
+
+/**
+ * Rewrites relative markdown links in a SKILL.md body the same way the
+ * skill page does, so they still work in `/llms-full.txt`.
+ */
+export function resolveSkillMarkdown({
+  body,
+  skillPath,
+}: ResolveSkillMarkdownParams) {
+  return body.replace(
+    /\[([^\]]+)\]\(([^)]+)\)/g,
+    (_match, label: string, href: string) =>
+      `[${label}](${resolveSkillHref(href, skillPath)})`,
+  );
+}

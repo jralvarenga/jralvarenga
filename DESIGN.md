@@ -152,7 +152,7 @@ Projects are markdown files in [src/content/projects](apps/web/src/content/proje
 
 ## About page
 
-`/about` ([about-page.tsx](apps/web/src/components/about/about-page.tsx)). Timeline chapters, organizations, and tools live in [about.ts](apps/web/src/lib/about/about.ts); the intro lives in the page so they can sit next to inline logos. It should read like a story, not a résumé: no job-board fields. The intro may name Denzo Studios and El Salvador next to their logos.
+`/about` ([about-page.tsx](apps/web/src/components/about/about-page.tsx)). Timeline chapters, organizations, and tools live in [about.ts](apps/web/src/lib/about/about.ts). Identity and intro copy live in [profile.ts](apps/web/src/lib/about/profile.ts) so the pages, the MCP server, and `/llms.txt` share one source; the intro markup stays in the page so logos can sit inline. Role, employer, and headline come from the newest chapter. It should read like a story, not a résumé: no job-board fields. The intro may name the current organization and El Salvador next to their logos.
 
 - **Title**: "About me" in the shared `PageHeader`, Geist Pixel like every other page title, with a one-line subtitle.
 - **Intro**: plain body text. My avatar sits inline before my name in the first sentence: round, 1.25em (a little larger than the 1em logo tiles so the face reads), with the same 1px `border` ring as the header avatar. The first paragraph in `foreground`, the rest in `mutedForeground`: what I work on, how I approach problems, and what I'm learning, with no job history (that's the timeline's job).

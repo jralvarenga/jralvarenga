@@ -1,15 +1,9 @@
 ---
-import { getCollection } from 'astro:content';
 import { SkillsIndex } from '../../components/skills/skills-index';
 import Layout from '../../layouts/Layout.astro';
+import { getSkillSummaries } from '../../lib/skills/collection';
 
-const skills = (await getCollection('skills'))
-  .map(({ id, data }) => ({
-    slug: id,
-    name: data.name,
-    description: data.description,
-  }))
-  .sort((a, b) => a.name.localeCompare(b.name));
+const skills = await getSkillSummaries();
 ---
 
 <Layout title="Skills · Rigo Alvarenga">

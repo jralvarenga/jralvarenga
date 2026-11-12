@@ -1,10 +1,10 @@
 ---
-import { getCollection } from 'astro:content';
 import { SkillDetail } from '../../components/skills/skill-detail';
 import Layout from '../../layouts/Layout.astro';
+import { getSkills } from '../../lib/skills/collection';
 
 export async function getStaticPaths() {
-  const skills = await getCollection('skills');
+  const skills = await getSkills();
   return skills.map((skill) => ({
     params: { name: skill.id },
     props: { skill },

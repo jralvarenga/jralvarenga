@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { profile } from '../../lib/about/profile';
 import {
   colors,
   font,
@@ -61,20 +62,21 @@ export function Hero() {
   return (
     <section aria-labelledby="hero-title" {...stylex.props(styles.hero)}>
       <h1 id="hero-title" {...stylex.props(styles.title)}>
-        <span {...stylex.props(styles.greeting)}>Hi, I'm</span>
-        <PixelReveal xstyle={styles.name}>Rigo Alvarenga</PixelReveal>
+        <span {...stylex.props(styles.greeting)}>{profile.greeting}</span>
+        <PixelReveal xstyle={styles.name}>{profile.name}</PixelReveal>
       </h1>
       <p {...stylex.props(styles.description)}>
-        I'm a Tech lead engineer on the development team at Denzo Studios.
-        Working on different projects like{' '}
-        <a href="https://orviadx.com" target="_blank" rel="noopener noreferrer">
-          Orvia
+        {profile.headline} {profile.featuredWorkIntro}{' '}
+        <a
+          href={profile.featuredWork.href}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {profile.featuredWork.name}
         </a>{' '}
-        and many others.
+        {profile.featuredWorkOutro}
       </p>
-      <p {...stylex.props(styles.description)}>
-        I also build my own projects on the side.
-      </p>
+      <p {...stylex.props(styles.description)}>{profile.sideNote}</p>
       <MetaList items={socialLinks} />
     </section>
   );
