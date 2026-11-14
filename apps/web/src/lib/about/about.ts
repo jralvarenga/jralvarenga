@@ -1,13 +1,35 @@
 /**
  * About page content. Countries show their flag emoji, organizations a
  * `logo` key, and the rest a placeholder tile with their initials.
- * `inline-logo.tsx` maps each key to a component.
+ * `inline-logo.tsx` maps each key to a component. Names, roles, and
+ * stories live in `lib/i18n/messages`; the English ones are kept here for
+ * MCP, `/llms.txt`, and SEO.
  */
+
+import { localize, t } from '../i18n/translator';
 
 /** Keys for the logos in `components/about/logos.tsx`. */
 export type LogoName = 'denzo' | 'caban' | 'fiverr' | 'uca';
 
+/** Keys for organization names in the message files (`about.organizations`). */
+export type OrganizationId =
+  | 'denzo'
+  | 'caban'
+  | 'fiverr'
+  | 'uca'
+  | 'elSalvador';
+
+/** Keys for chapters in the message files (`about.chapters`). */
+export type ChapterId =
+  | 'denzoLead'
+  | 'cabanLead'
+  | 'cabanEngineer'
+  | 'freelance'
+  | 'uca';
+
 export interface Organization {
+  id: OrganizationId;
+  /** English name. Pages show `organizationName(organization)`. */
   name: string;
   /** Shown in the placeholder tile until there is a logo. */
   initials: string;
@@ -18,74 +40,69 @@ export interface Organization {
 }
 
 export interface Chapter {
+  id: ChapterId;
   /** `end` is omitted while it's still going. */
   start: number;
   end?: number;
-  /** What I was, before "at". For example "Tech Lead". */
+  /** English role, before "at". For example "Tech Lead". */
   role: string;
   organization: Organization;
+  /** English story. Pages show `chapterCopy(chapter)`. */
   story: string;
 }
 
-export const denzo: Organization = {
-  name: 'Denzo Studios',
-  initials: 'DS',
-  logo: 'denzo',
-};
-export const elSalvador: Organization = {
-  name: 'El Salvador',
+/** Builds an organization with its English name from the message files. */
+function organization(
+  id: OrganizationId,
+  details: Omit<Organization, 'id' | 'name'>,
+): Organization {
+  return { id, name: t(`about.organizations.${id}`), ...details };
+}
+
+/** Builds a chapter with its English role and story from the message files. */
+function chapter(
+  id: ChapterId,
+  details: Omit<Chapter, 'id' | 'role' | 'story'>,
+): Chapter {
+  return {
+    id,
+    role: t(`about.chapters.${id}.role`),
+    story: t(`about.chapters.${id}.story`),
+    ...details,
+  };
+}
+
+export const denzo = organization('denzo', { initials: 'DS', logo: 'denzo' });
+export const elSalvador = organization('elSalvador', {
   initials: 'SV',
   emoji: '🇸🇻',
-};
+});
 
-const caban: Organization = { name: 'Caban', initials: 'C', logo: 'caban' };
-const fiverr: Organization = {
-  name: 'Fiverr and other freelance projects',
-  initials: 'F',
-  logo: 'fiverr',
-};
-const uca: Organization = { name: 'UCA', initials: 'U', logo: 'uca' };
+const caban = organization('caban', { initials: 'C', logo: 'caban' });
+const fiverr = organization('fiverr', { initials: 'F', logo: 'fiverr' });
+const uca = organization('uca', { initials: 'U', logo: 'uca' });
 
 /** Newest first. */
 export const chapters: Chapter[] = [
-  {
-    start: 2026,
-    role: 'Tech Lead',
-    organization: denzo,
-    story:
-      'I lead technical development across frontend, backend, database design, and infrastructure. I set development standards, make architecture calls, and turn business requirements into reliable products.',
-  },
-  {
-    start: 2025,
-    end: 2026,
-    role: 'Frontend Engineer Lead',
-    organization: caban,
-    story:
-      "I led frontend delivery for Caban's web apps: the architecture, implementation, deployment, and performance with React, Next.js, and Tailwind CSS, plus the code reviews and the technical direction with other teams.",
-  },
-  {
-    start: 2022,
-    end: 2025,
-    role: 'Software Engineer',
-    organization: caban,
-    story:
-      'I joined as a fullstack engineer, building web apps for both users and the business with React, Next.js, Auth0, Laravel, and Django.',
-  },
-  {
-    start: 2020,
-    end: 2021,
-    role: 'Freelancing',
-    organization: fiverr,
-    story: 'Where it started: React-focused apps, built with different teams.',
-  },
-  {
-    start: 2019,
-    end: 2024,
-    role: 'Mechanical Engineering',
-    organization: uca,
-    story: 'Studied at Universidad Centroamericana José Simeón Cañas.',
-  },
+  chapter('denzoLead', { start: 2026, organization: denzo }),
+  chapter('cabanLead', { start: 2025, end: 2026, organization: caban }),
+  chapter('cabanEngineer', { start: 2022, end: 2025, organization: caban }),
+  chapter('freelance', { start: 2020, end: 2021, organization: fiverr }),
+  chapter('uca', { start: 2019, end: 2024, organization: uca }),
 ];
+
+/** An organization's name in every locale. */
+export function organizationName(organization: Organization) {
+  return localize(`about.organizations.${organization.id}`);
+}
+
+/** A chapter's role and story in every locale. */
+export function chapterCopy(chapter: Chapter) {
+  return {
+    role: localize(`about.chapters.${chapter.id}.role`),
+    story: localize(`about.chapters.${chapter.id}.story`),
+  };
+}
 
 /** Keys for the brand marks in `components/about/tool-icon.tsx`. */
 export type ToolIconName =
@@ -133,7 +150,12 @@ export interface Tool {
   icon: ToolIconName;
 }
 
+/** Keys for tool group names in the message files (`about.toolGroups`). */
+export type ToolGroupId = 'stack' | 'infrastructure' | 'ai';
+
 export interface ToolGroup {
+  id: ToolGroupId;
+  /** English name. Pages show `localize(`about.toolGroups.${id}`)`. */
   group: string;
   tools: Tool[];
 }
@@ -141,7 +163,8 @@ export interface ToolGroup {
 /** What I work with, by kind, in the order I reach for them. */
 export const toolGroups: ToolGroup[] = [
   {
-    group: 'My current stack',
+    id: 'stack',
+    group: t('about.toolGroups.stack'),
     tools: [
       { name: 'TypeScript', icon: 'typescript' },
       { name: 'React', icon: 'react' },
@@ -161,7 +184,8 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    group: 'Infrastructure',
+    id: 'infrastructure',
+    group: t('about.toolGroups.infrastructure'),
     tools: [
       { name: 'Vercel', icon: 'vercel' },
       { name: 'Cloudflare', icon: 'cloudflare' },
@@ -181,7 +205,8 @@ export const toolGroups: ToolGroup[] = [
     ],
   },
   {
-    group: 'AI and tools',
+    id: 'ai',
+    group: t('about.toolGroups.ai'),
     tools: [
       { name: 'Claude Code', icon: 'claude' },
       { name: 'Codex', icon: 'openai' },
@@ -196,7 +221,16 @@ export const toolGroups: ToolGroup[] = [
   },
 ];
 
-/** "2022 – 2025", or "2026 – now" while it's still going. */
+/** "2022 – 2025", or "2026 – now" while it's still going, in English. */
 export function formatYears(chapter: Pick<Chapter, 'start' | 'end'>) {
-  return `${chapter.start} – ${chapter.end ?? 'now'}`;
+  return localizedYears(chapter).en;
+}
+
+/** The years of a chapter in every locale, such as "2026 – actualidad". */
+export function localizedYears(chapter: Pick<Chapter, 'start' | 'end'>) {
+  if (chapter.end === undefined) {
+    return localize('about.ongoing', { start: chapter.start });
+  }
+  const years = `${chapter.start} – ${chapter.end}`;
+  return { en: years, es: years };
 }

@@ -1,5 +1,8 @@
 import * as stylex from '@stylexjs/stylex';
 import type { ReactNode } from 'react';
+import { localizedAttribute } from '../lib/i18n/attributes';
+import { type Text, textIn } from '../lib/i18n/locales';
+import { localize } from '../lib/i18n/translator';
 import { linkTarget } from '../lib/links';
 import {
   colors,
@@ -11,6 +14,7 @@ import {
   weight,
 } from '../styles/tokens.stylex';
 import { PixelReveal } from './pixel-reveal';
+import { Translation } from './translation';
 
 const enter = stylex.keyframes({
   from: { opacity: 0, transform: 'translateY(4px)' },
@@ -152,13 +156,13 @@ const styles = stylex.create({
 
 export interface Crumb {
   href: string;
-  label: string;
+  label: Text;
 }
 
 /** Path back to the parent pages. The last item is the current page. */
 export function Breadcrumbs({ items }: { items: Crumb[] }) {
   return (
-    <nav aria-label="Breadcrumb">
+    <nav {...localizedAttribute('aria-label', localize('nav.breadcrumb'))}>
       <ol {...stylex.props(styles.crumbs)}>
         {items.map((item, index) => {
           const isLast = index === items.length - 1;
@@ -166,11 +170,13 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
           return (
             <li key={item.href} {...stylex.props(styles.crumb)}>
               {isLast ? (
-                <span aria-current="page">{item.label}</span>
+                <span aria-current="page">
+                  <Translation value={item.label} />
+                </span>
               ) : (
                 <>
                   <a href={item.href} {...stylex.props(styles.crumbLink)}>
-                    {item.label}
+                    <Translation value={item.label} />
                   </a>
                   <span aria-hidden="true">/</span>
                 </>
@@ -186,14 +192,14 @@ export function Breadcrumbs({ items }: { items: Crumb[] }) {
 export interface MetaItem {
   icon?: ReactNode;
   /** Visible text, or the accessible name when `iconOnly` is set. */
-  label: string;
+  label: Text;
   href?: string;
   /** Show only the icon, for well-known logos like LinkedIn or X. */
   iconOnly?: boolean;
 }
 
 interface PageHeaderProps {
-  title: string;
+  title: Text;
   meta?: MetaItem[];
   /** Shown next to the title, such as a status tag. */
   badge?: ReactNode;
@@ -212,7 +218,9 @@ export function PageHeader({
     <header {...stylex.props(styles.header)}>
       <div {...stylex.props(styles.titleRow)}>
         <h1 {...stylex.props(styles.title)}>
-          <PixelReveal>{title}</PixelReveal>
+          <PixelReveal>
+            <Translation value={title} />
+          </PixelReveal>
         </h1>
         {badge}
       </div>
@@ -230,11 +238,13 @@ export function MetaList({ items }: { items: MetaItem[] }) {
   return (
     <ul {...stylex.props(styles.meta)}>
       {items.map((item) => (
-        <li key={item.label}>
+        <li key={textIn(item.label, 'en')}>
           {item.href ? (
             <a
               href={item.href}
-              aria-label={item.iconOnly ? item.label : undefined}
+              {...(item.iconOnly
+                ? localizedAttribute('aria-label', item.label)
+                : {})}
               {...linkTarget(item.href)}
               {...stylex.props(
                 styles.metaItem,
@@ -243,12 +253,12 @@ export function MetaList({ items }: { items: MetaItem[] }) {
               )}
             >
               {item.icon}
-              {!item.iconOnly && item.label}
+              {!item.iconOnly && <Translation value={item.label} />}
             </a>
           ) : (
             <span {...stylex.props(styles.metaItem, styles.metaText)}>
               {item.icon}
-              {item.label}
+              <Translation value={item.label} />
             </span>
           )}
         </li>
@@ -263,17 +273,19 @@ export function Section({
   children,
   xstyle,
 }: {
-  label: string;
+  label: Text;
   children: ReactNode;
   /** StyleX overrides, such as a larger top margin between page sections. */
   xstyle?: stylex.StyleXStyles;
 }) {
-  const id = `section-${label.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`;
+  const id = `section-${textIn(label, 'en')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')}`;
 
   return (
     <section aria-labelledby={id} {...stylex.props(styles.section, xstyle)}>
       <h2 id={id} {...stylex.props(styles.label)}>
-        {label}
+        <Translation value={label} />
       </h2>
       {children}
     </section>

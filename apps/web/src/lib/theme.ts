@@ -9,6 +9,20 @@ type Theme = 'light' | 'dark';
 /** Stored preference, or `system` when nothing is stored. */
 export type ThemePreference = Theme | 'system';
 
+/** The order the footer toggle cycles through. */
+export const themeCycle: readonly ThemePreference[] = [
+  'system',
+  'light',
+  'dark',
+];
+
+/** The preference after `theme` in the footer toggle's cycle. */
+export function nextPreference(theme: ThemePreference): ThemePreference {
+  return (
+    themeCycle[(themeCycle.indexOf(theme) + 1) % themeCycle.length] ?? 'system'
+  );
+}
+
 /** Must match the key read by the inline script in `Layout.astro`. */
 const STORAGE_KEY = 'theme';
 

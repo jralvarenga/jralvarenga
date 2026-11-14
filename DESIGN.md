@@ -164,11 +164,11 @@ Projects are markdown files in [src/content/projects](apps/web/src/content/proje
 
 [Footer](apps/web/src/components/layout/footer.tsx), rendered by `Layout.astro` on every page, in the 640px column under a 1px `border` hairline, pushed to the bottom of short pages (`body` is a flex column). It doesn't repeat my intro or the nav.
 
-- **Text**: one line, `© <year> Rigo Alvarenga · MIT License` in Geist Mono 14px `mutedForeground`, the license linking to [LICENSE](LICENSE) on GitHub. The year is the build year; the license URL lives in [colophon.ts](apps/web/src/lib/colophon.ts).
+- **Text**: one line, `© <year> Rigo Alvarenga · MIT License` (`Licencia MIT` in Spanish) in Geist Mono 14px `mutedForeground`, the license linking to [LICENSE](LICENSE) on GitHub. The year is the build year; the license URL lives in [colophon.ts](apps/web/src/lib/colophon.ts).
 - **Controls**: on the same line, right-aligned, the [FooterSettings](apps/web/src/components/layout/footer-settings.tsx) island (`client:visible`): a ghost `sm` language menu (globe, current language, up-down chevrons) and the theme toggle. On mobile they wrap under the text.
 - **Bottom scroll edge**: [ScrollEdge](apps/web/src/components/layout/scroll-edge.tsx), the header's soft edge flipped, fixed along the bottom of the screen, 48px tall, so content fades out as it scrolls under it. It has its own `view-transition-name` (`bottom-edge`) so it stays still between pages. The footer's bottom padding (48px, 64px from 640px up) keeps its text clear of it.
 - **Theme toggle**: a secondary `icon` button (32px raised key). Each click moves to the next of system (monitor), light (sun), and dark (moon). The icons morph: the old one turns a quarter turn clockwise, shrinks to 0.5, and fades out while the new one turns in from a quarter turn back, in `slow` with `easeOut`. The first sync after hydration doesn't animate, and under reduced motion the icon just swaps. Its `aria-label` names the current theme and the next one.
-- **Language menu** ([language-menu.tsx](apps/web/src/components/layout/language-menu.tsx)): Base UI `Menu` opening above the trigger, a flat `card` popup with the raised elevation, radius `lg`, scaling from 0.96 and fading in `base`; under reduced motion it opens instantly. Radio items with a check on the current language. Only English exists; Español is disabled with a "Soon" `Tag`. Languages are listed in [colophon.ts](apps/web/src/lib/colophon.ts).
+- **Language menu** ([language-menu.tsx](apps/web/src/components/layout/language-menu.tsx)): Base UI `Menu` opening above the trigger, a flat `card` popup with the raised elevation, radius `lg`, scaling from 0.96 and fading in `base`; under reduced motion it opens instantly. Radio items, each named in its own language, with a check on the current one. Picking one switches the page in place with no reload or motion and stores the choice. The trigger renders both names and the page language shows one, so it is right before the island hydrates. Languages are listed in [locales.ts](apps/web/src/lib/i18n/locales.ts).
 
 ## States
 
@@ -204,6 +204,8 @@ Motion is rare, fast, and informative, following Emil Kowalski's principles. Use
 - Every icon-only button has an `aria-label`. Decorative SVGs have `aria-hidden="true"`.
 - Touch targets are at least 40px, counting the bezel, except compact `Button` sizes (`sm` 28px, `md` and `icon` 32px, `lg` 36px), which follow the shadcn-style control heights. Icon-only social links stay at 40px.
 - Respect `prefers-color-scheme` and `prefers-reduced-motion`.
+- `<html lang>` always matches the language on screen. The other language's copy is `display: none`, never just visually hidden, so screen readers read one language. English-only text on a Spanish page, such as skills from GitHub, is marked `lang="en"`.
+- Spanish text runs longer than English. Keep labels on one line at 320px in both languages, and check new layouts in both.
 
 ## Social images
 

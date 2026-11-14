@@ -1,6 +1,13 @@
 import * as stylex from '@stylexjs/stylex';
-import { type Chapter, formatYears } from '../../lib/about/about';
+import {
+  type Chapter,
+  chapterCopy,
+  localizedYears,
+  organizationName,
+} from '../../lib/about/about';
+import { localize } from '../../lib/i18n/translator';
 import { colors, font, space, text, weight } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { InlineLogo } from './inline-logo';
 
 const DOT = '9px';
@@ -106,13 +113,16 @@ export function Timeline({ chapters }: Props) {
       {chapters.map((chapter, index) => {
         const isLast = index === chapters.length - 1;
         const isCurrent = chapter.end === undefined;
+        const copy = chapterCopy(chapter);
 
         return (
           <li
-            key={`${chapter.role}-${chapter.start}`}
+            key={chapter.id}
             {...stylex.props(styles.item, !isLast && styles.gap)}
           >
-            <span {...stylex.props(styles.years)}>{formatYears(chapter)}</span>
+            <span {...stylex.props(styles.years)}>
+              <Translation value={localizedYears(chapter)} />
+            </span>
             <div aria-hidden="true" {...stylex.props(styles.rail)}>
               <span
                 {...stylex.props(styles.dot, isCurrent && styles.current)}
@@ -121,11 +131,16 @@ export function Timeline({ chapters }: Props) {
             </div>
             <div {...stylex.props(styles.story)}>
               <h3 {...stylex.props(styles.heading)}>
-                {chapter.role} <span {...stylex.props(styles.at)}>at</span>{' '}
+                <Translation value={copy.role} />{' '}
+                <span {...stylex.props(styles.at)}>
+                  <Translation value={localize('about.at')} />
+                </span>{' '}
                 <InlineLogo organization={chapter.organization} />{' '}
-                {chapter.organization.name}
+                <Translation value={organizationName(chapter.organization)} />
               </h3>
-              <p {...stylex.props(styles.text)}>{chapter.story}</p>
+              <p {...stylex.props(styles.text)}>
+                <Translation value={copy.story} />
+              </p>
             </div>
           </li>
         );

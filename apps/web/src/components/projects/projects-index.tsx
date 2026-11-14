@@ -1,5 +1,7 @@
+import { localize } from '../../lib/i18n/translator';
 import { PageLayout } from '../layout/page-layout';
 import { Section } from '../page';
+import { Translation } from '../translation';
 import { ProjectList, type ProjectSummary } from './project-list';
 
 interface Props {
@@ -10,10 +12,10 @@ interface Props {
 export function ProjectsIndex({ projects }: Props) {
   return (
     <PageLayout
-      title="Projects"
-      lead="Products, tools, and libraries I've built or am building."
+      title={localize('projects.title')}
+      lead={<Translation value={localize('projects.lead')} />}
     >
-      <Section label="ALL PROJECTS">
+      <Section label={localize('projects.all')}>
         <ProjectList projects={projects} />
       </Section>
     </PageLayout>

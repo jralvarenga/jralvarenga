@@ -1,7 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
+import { localize } from '../../lib/i18n/translator';
 import { linkTarget } from '../../lib/links';
-import type { ProjectPart } from '../../lib/projects/types';
+import type { LocalizedProjectPart } from '../../lib/projects/collection';
 import { colors, font, space, text, weight } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { Tag } from '../ui/tag';
 import { LinkIcon } from './link-icon';
 
@@ -65,7 +67,7 @@ const styles = stylex.create({
 });
 
 interface Props {
-  parts: ProjectPart[];
+  parts: LocalizedProjectPart[];
 }
 
 /**
@@ -76,11 +78,17 @@ export function ProjectParts({ parts }: Props) {
   return (
     <ul {...stylex.props(styles.list)}>
       {parts.map((part) => (
-        <li key={part.name} {...stylex.props(styles.item)}>
+        <li key={part.name.en} {...stylex.props(styles.item)}>
           <div {...stylex.props(styles.top)}>
             <h3 {...stylex.props(styles.title)}>
-              <span {...stylex.props(styles.name)}>{part.name}</span>
-              {part.status === 'building' && <Tag>In progress</Tag>}
+              <span {...stylex.props(styles.name)}>
+                <Translation value={part.name} />
+              </span>
+              {part.status === 'building' && (
+                <Tag>
+                  <Translation value={localize('common.inProgress')} />
+                </Tag>
+              )}
             </h3>
             {part.site && (
               <a
@@ -89,11 +97,13 @@ export function ProjectParts({ parts }: Props) {
                 {...stylex.props(styles.link)}
               >
                 <LinkIcon href={part.site.href} />
-                {part.site.label}
+                <Translation value={part.site.label} />
               </a>
             )}
           </div>
-          <p {...stylex.props(styles.summary)}>{part.summary}</p>
+          <p {...stylex.props(styles.summary)}>
+            <Translation value={part.summary} />
+          </p>
           {part.stack.length > 0 && (
             <p {...stylex.props(styles.stack)}>{part.stack.join(' · ')}</p>
           )}

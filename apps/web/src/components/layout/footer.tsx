@@ -2,8 +2,10 @@ import * as stylex from '@stylexjs/stylex';
 import type { ReactNode } from 'react';
 import { profile } from '../../lib/about/profile';
 import { siteLicense, siteUpdated } from '../../lib/colophon';
+import { localize } from '../../lib/i18n/translator';
 import { layout } from '../../styles/layout';
 import { colors, font, motion, space, text } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { ScrollEdge } from './scroll-edge';
 
 const styles = stylex.create({
@@ -83,7 +85,7 @@ export function Footer({ settings }: Props) {
               rel="noreferrer"
               {...stylex.props(styles.link)}
             >
-              MIT License
+              <Translation value={localize('footer.license')} />
             </a>
           </p>
           {settings}

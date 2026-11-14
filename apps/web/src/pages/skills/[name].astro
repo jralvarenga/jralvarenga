@@ -2,6 +2,7 @@
 import { SkillDetail } from '../../components/skills/skill-detail';
 import Layout from '../../layouts/Layout.astro';
 import { profile } from '../../lib/about/profile';
+import { localize } from '../../lib/i18n/translator';
 import { metaDescription } from '../../lib/seo/site';
 import { breadcrumbNode, skillNode } from '../../lib/seo/structured-data';
 import { getSkills } from '../../lib/skills/collection';
@@ -22,7 +23,10 @@ const description = metaDescription(skill.data.description);
 ---
 
 <Layout
-  title={`${skill.data.name} · Skills · ${profile.name}`}
+  title={localize('meta.skillTitle', {
+    skill: skill.data.name,
+    name: profile.name,
+  })}
   description={description}
   type="article"
   structuredData={[

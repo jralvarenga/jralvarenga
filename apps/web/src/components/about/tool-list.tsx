@@ -1,5 +1,6 @@
 import * as stylex from '@stylexjs/stylex';
 import type { ToolGroup } from '../../lib/about/about';
+import { localize } from '../../lib/i18n/translator';
 import {
   colors,
   radius,
@@ -7,6 +8,7 @@ import {
   text,
   weight,
 } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { ToolIcon } from './tool-icon';
 
 const desktop = '@media (min-width: 640px)';
@@ -89,9 +91,11 @@ const styles = stylex.create({
 export function ToolList({ groups }: { groups: ToolGroup[] }) {
   return (
     <dl {...stylex.props(styles.list)}>
-      {groups.map(({ group, tools }) => (
-        <div key={group} {...stylex.props(styles.group)}>
-          <dt {...stylex.props(styles.name)}>{group}</dt>
+      {groups.map(({ id, tools }) => (
+        <div key={id} {...stylex.props(styles.group)}>
+          <dt {...stylex.props(styles.name)}>
+            <Translation value={localize(`about.toolGroups.${id}`)} />
+          </dt>
           <dd {...stylex.props(styles.detail)}>
             <ul {...stylex.props(styles.pills)}>
               {tools.map((tool) => (

@@ -2,54 +2,60 @@
 import { ProjectDetail } from '../../components/projects/project-detail';
 import Layout from '../../layouts/Layout.astro';
 import { profile } from '../../lib/about/profile';
-import { getProjects } from '../../lib/projects/collection';
+import { localize } from '../../lib/i18n/translator';
+import { getLocalizedProjects } from '../../lib/projects/collection';
 import { metaDescription } from '../../lib/seo/site';
 import { breadcrumbNode, projectNode } from '../../lib/seo/structured-data';
 
 export async function getStaticPaths() {
-  const projects = await getProjects();
+  const projects = await getLocalizedProjects();
   return projects.map((project) => ({
-    params: { slug: project.id },
+    params: { slug: project.slug },
     props: { project },
   }));
 }
 
 const { project } = Astro.props;
-const { data } = project;
 const site = Astro.site ?? new URL(Astro.url.origin);
-const path = `/projects/${project.id}`;
-const description = metaDescription(data.summary);
+const path = `/projects/${project.slug}`;
+const description = metaDescription(project.summary.en);
 ---
 
 <Layout
-  title={`${data.name} · Projects · ${profile.name}`}
+  title={localize('meta.projectTitle', {
+    project: project.name,
+    name: profile.name,
+  })}
   description={description}
   type="article"
   structuredData={[
     projectNode(site, {
-      name: data.name,
+      name: project.name,
       path,
       description,
-      started: data.started,
-      stack: data.stack,
-      links: data.links,
+      started: project.started,
+      stack: project.stack,
+      links: project.links.map((link) => ({
+        label: link.label.en,
+        href: link.href,
+      })),
     }),
     breadcrumbNode(site, [
       { name: 'Home', path: '/' },
       { name: 'Projects', path: '/projects' },
-      { name: data.name, path },
+      { name: project.name, path },
     ]),
   ]}
 >
   <ProjectDetail
-    slug={project.id}
-    name={data.name}
-    summary={data.summary}
-    started={data.started}
-    status={data.status}
-    stack={data.stack}
-    links={data.links}
-    parts={data.parts}
-    body={project.body ?? ''}
+    slug={project.slug}
+    name={project.name}
+    summary={project.summary}
+    started={project.started}
+    status={project.status}
+    stack={project.stack}
+    links={project.links}
+    parts={project.parts}
+    body={project.body}
   />
 </Layout>

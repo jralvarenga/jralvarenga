@@ -1,4 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
+import { localize } from '../../lib/i18n/translator';
 import { splitSkillDescription } from '../../lib/skills/description';
 import {
   installCommand,
@@ -32,7 +33,11 @@ interface Props {
   body: string;
 }
 
-/** `/skills/<name>`: description, install command, and the full SKILL.md. */
+/**
+ * `/skills/<name>`: description, install command, and the full SKILL.md.
+ * Skills come from GitHub in English only, so their text is marked
+ * `lang="en"` for screen readers on the Spanish page.
+ */
 export function SkillDetail({ slug, name, description, path, body }: Props) {
   const { lead, rest } = splitSkillDescription(description);
 
@@ -40,27 +45,33 @@ export function SkillDetail({ slug, name, description, path, body }: Props) {
     <PageLayout
       title={name}
       breadcrumbs={[
-        { href: '/skills', label: 'skills' },
+        { href: '/skills', label: localize('skills.crumb') },
         { href: `/skills/${slug}`, label: name },
       ]}
-      lead={lead}
+      lead={<span lang="en">{lead}</span>}
       meta={[
         {
           icon: <GitHubIcon size={14} />,
-          label: 'Source',
+          label: localize('skills.source'),
           href: sourceUrl(path),
         },
       ]}
     >
-      {rest ? <p {...stylex.props(styles.rest)}>{rest}</p> : null}
-      <Section label="INSTALLATION">
+      {rest ? (
+        <p lang="en" {...stylex.props(styles.rest)}>
+          {rest}
+        </p>
+      ) : null}
+      <Section label={localize('skills.installation')}>
         <Command command={installCommand(slug)} />
       </Section>
 
       <Section label="SKILL.md">
-        <Markdown resolveHref={(href) => resolveSkillHref(href, path)}>
-          {body}
-        </Markdown>
+        <div lang="en">
+          <Markdown resolveHref={(href) => resolveSkillHref(href, path)}>
+            {body}
+          </Markdown>
+        </div>
       </Section>
     </PageLayout>
   );

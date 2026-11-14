@@ -16,6 +16,8 @@ const styles = stylex.create({
 
 /**
  * Class name for `<body>`. Astro files can't compile StyleX, so the layout
- * imports this precompiled class instead.
+ * imports this precompiled class instead. The default marker lets
+ * `Translation` show the copy that matches `<html lang>`.
  */
-export const bodyClass: string = stylex.props(styles.body).className ?? '';
+export const bodyClass: string =
+  stylex.props(styles.body, stylex.defaultMarker()).className ?? '';

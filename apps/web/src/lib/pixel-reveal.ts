@@ -33,7 +33,10 @@ interface Glyph {
   line: number;
 }
 
-/** Reads one character rect per glyph, relative to `root`, skipping spaces. */
+/**
+ * Reads one character rect per glyph, relative to `root`, skipping spaces
+ * and hidden text, such as the copy for the language not on screen.
+ */
 function measureGlyphs(text: HTMLElement, root: DOMRect, ascent: number) {
   const glyphs: Glyph[] = [];
   const range = document.createRange();
@@ -51,6 +54,8 @@ function measureGlyphs(text: HTMLElement, root: DOMRect, ascent: number) {
       range.setStart(node, index);
       range.setEnd(node, index + 1);
       const rect = range.getBoundingClientRect();
+      // Text in the other language is `display: none` and has no box.
+      if (rect.width === 0 && rect.height === 0) continue;
 
       if (rect.top > lineTop + 1) {
         lineTop = rect.top;

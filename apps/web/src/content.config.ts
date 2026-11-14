@@ -87,4 +87,29 @@ const projects = defineCollection({
   }),
 });
 
-export const collections = { skills, projects };
+/**
+ * Spanish copy for a project: `src/content/projects/es/<slug>.md`, named
+ * like the English file. The body is the Spanish write-up. `links` and
+ * `parts` follow the English file's order, and `collection.ts` fails the
+ * build when their counts differ. A project without one shows in English.
+ */
+const projectTranslations = defineCollection({
+  loader: glob({ pattern: '*.md', base: './src/content/projects/es' }),
+  schema: z.object({
+    summary: z.string().min(1),
+    /** Link labels, in the English file's order. */
+    links: z.array(z.string().min(1)).default([]),
+    parts: z
+      .array(
+        z.object({
+          name: z.string().min(1),
+          summary: z.string().min(1),
+          /** Label for the part's `site` link. */
+          site: z.string().min(1).optional(),
+        }),
+      )
+      .default([]),
+  }),
+});
+
+export const collections = { skills, projects, projectTranslations };
