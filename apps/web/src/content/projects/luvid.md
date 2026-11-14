@@ -3,6 +3,7 @@
 name: luvid
 summary: Money tracking you can share. Income and expenses live in spaces you invite people into, each with its own currency.
 started: 2026-06
+updated: 2026-11-12
 status: building
 order: 1
 parts:

@@ -46,6 +46,11 @@ const projects = defineCollection({
     summary: z.string().min(1),
     /** Month the project started, as `YYYY-MM`. */
     started: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+    /**
+     * Day the content last changed, as `YYYY-MM-DD`. Becomes the sitemap's
+     * `lastmod`, so bump it when you edit the file.
+     */
+    updated: z.coerce.date().optional(),
     /** `building` shows an "In progress" tag. */
     status,
     /** Position in lists, lowest first. */
