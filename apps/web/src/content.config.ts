@@ -46,6 +46,24 @@ const projects = defineCollection({
     summary: z.string().min(1),
     /** Month the project started, as `YYYY-MM`. */
     started: z.string().regex(/^\d{4}-(0[1-9]|1[0-2])$/),
+    /**
+     * Day the content last changed, as `YYYY-MM-DD`. Becomes the sitemap's
+     * `lastmod`, so bump it when you edit the file. The YAML parser turns an
+     * unquoted date into a `Date`, so accept that only at UTC midnight (a bare
+     * day), and a quoted string only as `YYYY-MM-DD`.
+     */
+    updated: z
+      .union([
+        z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'Use YYYY-MM-DD'),
+        z
+          .date()
+          .refine(
+            (date) => date.toISOString().endsWith('T00:00:00.000Z'),
+            'Use YYYY-MM-DD, with no time',
+          ),
+      ])
+      .pipe(z.coerce.date())
+      .optional(),
     /** `building` shows an "In progress" tag. */
     status,
     /** Position in lists, lowest first. */

@@ -3,6 +3,7 @@
 name: exchange
 summary: A trading dashboard on Alpaca, where every account brings its own paper and live keys, encrypted at rest.
 started: 2026-08
+updated: 2026-11-11
 status: live
 order: 2
 stack: [Next.js, Better Auth, Drizzle, Postgres, TanStack Query, Alpaca]

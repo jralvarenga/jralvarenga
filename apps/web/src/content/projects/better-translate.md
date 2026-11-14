@@ -3,6 +3,7 @@
 name: better-translate
 summary: Type-safe i18n for TypeScript. One config that works across Next.js, Astro, React, TanStack Router, Node, Bun, and Expo.
 started: 2026-03
+updated: 2026-11-11
 status: live
 order: 3
 stack: [TypeScript, Next.js, Astro, React, TanStack Router, AI SDK]

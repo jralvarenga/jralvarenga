@@ -3,6 +3,7 @@
 name: skills
 summary: The rules I give coding agents, from how to write and review code to how to design and ship apps, packaged as Agent Skills.
 started: 2026-08
+updated: 2026-11-11
 status: live
 order: 4
 stack: [Agent Skills, Claude Code, Codex, Cursor, Changesets]

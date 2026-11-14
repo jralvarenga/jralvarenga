@@ -1,5 +1,6 @@
 // @ts-check
 
+import { readdirSync, readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
@@ -7,6 +8,7 @@ import vercel from '@astrojs/vercel';
 import stylex from '@stylexjs/unplugin';
 import { defineConfig, envField, fontProviders } from 'astro/config';
 import { loadEnv } from 'vite';
+import { parse as parseYaml } from 'yaml';
 
 /**
  * The production origin. Canonical URLs, Open Graph tags, the sitemap, and
@@ -26,6 +28,34 @@ const site = env.SITE_URL || 'https://jralvarenga.com';
 
 /** Pages that must stay out of the sitemap. They also send `noindex`. */
 const NOT_IN_SITEMAP = ['/ui', '/404'];
+
+/**
+ * `lastmod` for each `/projects/<slug>`, from the `updated` frontmatter
+ * field. Config runs before content collections load, so this reads the
+ * files directly. Skills get no `lastmod`: the GitHub tree API has no
+ * dates, and a build-time date would be wrong.
+ */
+const projectsDir = new URL('./src/content/projects/', import.meta.url);
+const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
+const projectLastmod = new Map(
+  readdirSync(projectsDir)
+    .filter((file) => file.endsWith('.md'))
+    .flatMap((file) => {
+      const raw = readFileSync(new URL(file, projectsDir), 'utf8');
+      // Parse the frontmatter as YAML so any valid spelling of the key is
+      // read. The YAML 1.2 core schema keeps a date as a string, quoted or
+      // not, which is the form the schema in content.config.ts accepts.
+      const updated = parseYaml(raw.match(FRONTMATTER)?.[1] ?? '')?.updated;
+      if (updated === undefined || updated === null) return [];
+      if (typeof updated !== 'string' || !DAY.test(updated)) {
+        throw new Error(
+          `src/content/projects/${file}: \`updated\` must be YYYY-MM-DD`,
+        );
+      }
+      return [[`/projects/${file.slice(0, -'.md'.length)}`, updated]];
+    }),
+);
 
 // https://astro.build/config
 export default defineConfig({
@@ -49,6 +79,10 @@ export default defineConfig({
     sitemap({
       filter: (page) =>
         !NOT_IN_SITEMAP.some((path) => new URL(page).pathname === path),
+      serialize: (item) => {
+        const lastmod = projectLastmod.get(new URL(item.url).pathname);
+        return lastmod ? { ...item, lastmod } : item;
+      },
     }),
   ],
   env: {
