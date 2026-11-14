@@ -23,12 +23,12 @@ I also build my own projects on the side.
 
 ## Projects
 
-|                                                   |                                                                       |
-| ------------------------------------------------- | --------------------------------------------------------------------- |
-| [luvid](https://luvid-design.vercel.app)          | Money tracking you can share, in spaces you invite people into.       |
-| [exchange](https://exchange-sigma-ten.vercel.app) | A trading dashboard on Alpaca, with your own keys, encrypted at rest. |
-| [better-translate](https://better-translate.com)  | Type-safe i18n for TypeScript, one config across frameworks.          |
-| [skills](https://github.com/jralvarenga/skills)   | The rules I give coding agents, packaged as Agent Skills.             |
+|                                                  |                                                                 |
+| ------------------------------------------------ | --------------------------------------------------------------- |
+| [luvid](https://luvid-design.vercel.app)         | Money tracking you can share, in spaces you invite people into. |
+| [treid](https://www.treid.app)                   | A quiet trading desk for Alpaca, on your own or with your team. |
+| [better-translate](https://better-translate.com) | Type-safe i18n for TypeScript, one config across frameworks.    |
+| [skills](https://github.com/jralvarenga/skills)  | The rules I give coding agents, packaged as Agent Skills.       |
 
 ## Stack
 
