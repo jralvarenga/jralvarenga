@@ -87,10 +87,10 @@ export function ThemeToggle({ labels }: Props) {
     };
   }, []);
 
+  // State follows `subscribeTheme`, which fires inside the page's view
+  // transition, so the old snapshot keeps the old icon.
   function toggle() {
-    const next = nextPreference(theme);
-    setTheme(next);
-    applyPreference(next);
+    applyPreference(nextPreference(theme));
   }
 
   const next = nextPreference(theme);

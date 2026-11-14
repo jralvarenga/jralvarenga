@@ -4,6 +4,8 @@
  * it before paint. Without a stored choice the page follows the system.
  */
 
+import { fadeSwitch } from './view-transition';
+
 type Theme = 'light' | 'dark';
 
 /** Stored preference, or `system` when nothing is stored. */
@@ -121,19 +123,23 @@ function syncThemeColor(theme: ThemePreference) {
 
 /**
  * Forces light or dark, or clears the force so the page follows the system.
- * The choice is stored, and `/ui` is notified so its selector stays in sync.
+ * The page cross-fades into the new colors (`fadeSwitch`), the choice is
+ * stored, and subscribers such as the footer toggle and `/ui` are notified
+ * inside the transition, so their new state is in the new snapshot.
  */
 export function applyPreference(theme: ThemePreference) {
-  withoutTransitions(() => {
-    if (theme === 'system') {
-      delete document.documentElement.dataset.theme;
-    } else {
-      document.documentElement.dataset.theme = theme;
-    }
+  fadeSwitch(() => {
+    withoutTransitions(() => {
+      if (theme === 'system') {
+        delete document.documentElement.dataset.theme;
+      } else {
+        document.documentElement.dataset.theme = theme;
+      }
+    });
+    persistPreference(theme);
+    syncThemeColor(theme);
+    notifyThemeChange();
   });
-  persistPreference(theme);
-  syncThemeColor(theme);
-  notifyThemeChange();
 }
 
 export function toggleTheme() {

@@ -2,8 +2,11 @@
  * Pixel reveal for text set in Geist Pixel. Each glyph is sampled on the
  * font's own pixel grid, then its pixels pop in on a canvas that sits exactly
  * over the text, in batches on a slow clock, left to right. Then the real
- * text replaces the canvas.
+ * text replaces the canvas. Switching the language mid-reveal skips to the
+ * finished text, since the canvas holds the old language's pixels.
  */
+
+import { subscribeLocale } from './i18n/locale';
 
 /** Geist Pixel draws every glyph from squares of 38 units on a 1000 unit em. */
 const PIXEL_EM = 0.038;
@@ -223,13 +226,22 @@ export async function revealPixels(root: HTMLElement) {
   let frameId = 0;
   let aborted = false;
 
+  let unsubscribeLocale = () => {};
+
+  /** Stops listening for the events that cut the reveal short. */
+  const cleanUp = () => {
+    window.removeEventListener('resize', abort);
+    unsubscribeLocale();
+  };
+
   const abort = () => {
     aborted = true;
     cancelAnimationFrame(frameId);
-    window.removeEventListener('resize', abort);
+    cleanUp();
     finish(text, canvas);
   };
   window.addEventListener('resize', abort, { once: true });
+  unsubscribeLocale = subscribeLocale(abort);
 
   const draw = (now: number) => {
     if (aborted) return;
@@ -239,7 +251,7 @@ export async function revealPixels(root: HTMLElement) {
     const frame = Math.floor(time / STEP_MS);
 
     if (time >= end) {
-      window.removeEventListener('resize', abort);
+      cleanUp();
       finish(text, canvas);
       return;
     }

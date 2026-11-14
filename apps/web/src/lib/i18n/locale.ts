@@ -5,6 +5,7 @@
  * `Layout.astro` sets `lang` before paint from the stored choice, or from
  * the browser's languages when nothing is stored.
  */
+import { fadeSwitch } from '../view-transition';
 import { defaultLocale, isLocale, type Locale } from './locales';
 
 /** Must match the key read by the inline script in `Layout.astro`. */
@@ -56,12 +57,15 @@ function persistLocale(locale: Locale): void {
 
 /**
  * Switches the page to `locale` in place: `<html lang>`, the tab title, and
- * localized attributes. The choice is stored for the next page load.
+ * localized attributes, cross-faded by `fadeSwitch`. The choice is stored
+ * for the next page load, and islands are notified inside the transition.
  */
 export function applyLocale(locale: Locale): void {
-  document.documentElement.lang = locale;
-  syncTitle(locale);
-  localizeAttributes(locale);
-  persistLocale(locale);
-  window.dispatchEvent(new Event(LOCALE_CHANGE));
+  fadeSwitch(() => {
+    document.documentElement.lang = locale;
+    syncTitle(locale);
+    localizeAttributes(locale);
+    persistLocale(locale);
+    window.dispatchEvent(new Event(LOCALE_CHANGE));
+  });
 }
