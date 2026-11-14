@@ -8,6 +8,7 @@ import vercel from '@astrojs/vercel';
 import stylex from '@stylexjs/unplugin';
 import { defineConfig, envField, fontProviders } from 'astro/config';
 import { loadEnv } from 'vite';
+import { parse as parseYaml } from 'yaml';
 
 /**
  * The production origin. Canonical URLs, Open Graph tags, the sitemap, and
@@ -36,24 +37,23 @@ const NOT_IN_SITEMAP = ['/ui', '/404'];
  */
 const projectsDir = new URL('./src/content/projects/', import.meta.url);
 const FRONTMATTER = /^---\r?\n([\s\S]*?)\r?\n---/;
-const UPDATED = /^updated:\s*['"]?(\d{4}-\d{2}-\d{2})['"]?\s*$/m;
+const DAY = /^\d{4}-\d{2}-\d{2}$/;
 const projectLastmod = new Map(
   readdirSync(projectsDir)
     .filter((file) => file.endsWith('.md'))
     .flatMap((file) => {
       const raw = readFileSync(new URL(file, projectsDir), 'utf8');
-      const frontmatter = raw.match(FRONTMATTER)?.[1] ?? '';
-      const updated = frontmatter.match(UPDATED)?.[1];
-      // The schema accepts any date, but only a bare YYYY-MM-DD is read
-      // here. Fail loudly instead of silently dropping the lastmod.
-      if (!updated && /^updated:/m.test(frontmatter)) {
+      // Parse the frontmatter as YAML so any valid spelling of the key is
+      // read. The YAML 1.2 core schema keeps a date as a string, quoted or
+      // not, which is the form the schema in content.config.ts accepts.
+      const updated = parseYaml(raw.match(FRONTMATTER)?.[1] ?? '')?.updated;
+      if (updated === undefined || updated === null) return [];
+      if (typeof updated !== 'string' || !DAY.test(updated)) {
         throw new Error(
           `src/content/projects/${file}: \`updated\` must be YYYY-MM-DD`,
         );
       }
-      return updated
-        ? [[`/projects/${file.slice(0, -'.md'.length)}`, updated]]
-        : [];
+      return [[`/projects/${file.slice(0, -'.md'.length)}`, updated]];
     }),
 );
 
