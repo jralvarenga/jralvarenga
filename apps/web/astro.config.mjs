@@ -42,7 +42,15 @@ const projectLastmod = new Map(
     .filter((file) => file.endsWith('.md'))
     .flatMap((file) => {
       const raw = readFileSync(new URL(file, projectsDir), 'utf8');
-      const updated = raw.match(FRONTMATTER)?.[1]?.match(UPDATED)?.[1];
+      const frontmatter = raw.match(FRONTMATTER)?.[1] ?? '';
+      const updated = frontmatter.match(UPDATED)?.[1];
+      // The schema accepts any date, but only a bare YYYY-MM-DD is read
+      // here. Fail loudly instead of silently dropping the lastmod.
+      if (!updated && /^updated:/m.test(frontmatter)) {
+        throw new Error(
+          `src/content/projects/${file}: \`updated\` must be YYYY-MM-DD`,
+        );
+      }
       return updated
         ? [[`/projects/${file.slice(0, -'.md'.length)}`, updated]]
         : [];
