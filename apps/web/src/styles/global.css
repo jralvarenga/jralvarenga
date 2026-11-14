@@ -59,7 +59,8 @@ p {
  * until the new one is ready, so navigating never shows a blank page. The old
  * page fades out first (150ms), then the new one fades in and rises 8px
  * (300ms), the page-load motion from DESIGN.md. The site header and the
- * page header (title, subtitle, meta) have their own view-transition-names.
+ * page header (title, subtitle, meta) have their own view-transition-names,
+ * and so does the bottom scroll edge.
  * Their old snapshots are hidden and the new ones are not animated, so the
  * browser's default crossfade doesn't move them while the content changes.
  * The page header swaps instantly: the new title builds out of its pixels
@@ -95,12 +96,15 @@ p {
 
 ::view-transition-group(site-header),
 ::view-transition-new(site-header),
+::view-transition-group(bottom-edge),
+::view-transition-new(bottom-edge),
 ::view-transition-group(page-header),
 ::view-transition-new(page-header) {
   animation: none;
 }
 
 ::view-transition-old(site-header),
+::view-transition-old(bottom-edge),
 ::view-transition-old(page-header) {
   display: none;
 }

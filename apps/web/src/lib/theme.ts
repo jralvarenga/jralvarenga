@@ -53,13 +53,14 @@ function currentTheme(): Theme {
 }
 
 /**
- * Turns off every transition for one frame, so the switch is instant
- * instead of animating each color, like `disableTransitionOnChange` in
- * next-themes.
+ * Turns off page transitions for one frame so colors switch instantly,
+ * like `disableTransitionOnChange` in next-themes. Theme icons keep their
+ * opacity and transform transitions.
  */
 function withoutTransitions(change: () => void) {
   const style = document.createElement('style');
-  style.textContent = '*,*::before,*::after{transition:none!important}';
+  style.textContent =
+    '*:not([data-theme-icon]),*::before,*::after{transition:none!important}';
   document.head.append(style);
   change();
   // Force a style recalc before the transitions come back.

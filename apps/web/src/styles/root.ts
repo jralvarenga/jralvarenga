@@ -2,7 +2,10 @@ import * as stylex from '@stylexjs/stylex';
 import { colors, font, text } from './tokens.stylex';
 
 const styles = stylex.create({
+  // A column, so the footer sits at the bottom of short pages.
   body: {
+    display: 'flex',
+    flexDirection: 'column',
     backgroundColor: colors.background,
     color: colors.foreground,
     fontFamily: font.sans,

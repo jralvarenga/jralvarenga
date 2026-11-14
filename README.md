@@ -45,3 +45,7 @@ What I build with today, by kind. It's the same list as my [about page](https://
     alt="My stack: TypeScript, React, Next.js, TanStack Start, React Native, Vue.js, SwiftUI, Node.js, Bun, Astro, Tailwind CSS, StyleX, Python, Rust, and PHP. Infrastructure on Vercel, Cloudflare, Render, Railway, AWS, Google Cloud, Docker, Jenkins, Depot, Expo EAS, PostgreSQL, Neon, Convex, Sentry, and PostHog. AI and tools: Claude Code, Codex, Cursor, T3 Code, Grok, Grok Bot, CodeRabbit, Cubic, and Graphite."
   >
 </picture>
+
+## License
+
+[MIT](LICENSE) © 2026 Rigo Alvarenga

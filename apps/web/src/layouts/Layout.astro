@@ -5,6 +5,8 @@ import {
   GOOGLE_SITE_VERIFICATION,
 } from 'astro:env/server';
 import avatar from '../assets/avatar.jpg';
+import { Footer } from '../components/layout/footer';
+import { FooterSettings } from '../components/layout/footer-settings';
 import { Header } from '../components/layout/header';
 import { profile } from '../lib/about/profile';
 import {
@@ -168,6 +170,9 @@ const jsonLd = serializeJsonLd([
   <body class={bodyClass}>
     <Header pathname={Astro.url.pathname} />
     <slot />
+    <Footer>
+      <FooterSettings slot="settings" client:visible />
+    </Footer>
     <script>
     import { revealPixels } from '../lib/pixel-reveal';
     import { bindThemeHotkey } from '../lib/theme';

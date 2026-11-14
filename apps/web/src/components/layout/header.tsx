@@ -7,6 +7,7 @@ import {
   space,
   text,
 } from '../../styles/tokens.stylex';
+import { ScrollEdge } from './scroll-edge';
 
 interface NavLink {
   href: string;
@@ -22,26 +23,6 @@ const links: NavLink[] = [
 /** How far the fade reaches below the header, so the edge has no line. */
 const FADE_OVERHANG = '32px';
 
-/**
- * Progressive blur, like SwiftUI's soft scroll edge: each layer blurs more
- * and is masked to a shorter band at the top, so the blur builds toward the
- * top edge and dissolves into the page below.
- */
-const blurLayers = [
-  {
-    blur: 'blur(1px)',
-    mask: 'linear-gradient(to bottom, black 60%, transparent)',
-  },
-  {
-    blur: 'blur(3px)',
-    mask: 'linear-gradient(to bottom, black 40%, transparent 80%)',
-  },
-  {
-    blur: 'blur(8px)',
-    mask: 'linear-gradient(to bottom, black 20%, transparent 60%)',
-  },
-];
-
 const styles = stylex.create({
   bar: {
     position: 'sticky',
@@ -51,22 +32,10 @@ const styles = stylex.create({
     viewTransitionName: 'site-header',
   },
   backdrop: {
-    position: 'absolute',
     insetInline: 0,
     top: 0,
     bottom: `calc(-1 * ${FADE_OVERHANG})`,
-    pointerEvents: 'none',
-    // A soft tint of the page color that fades out toward the bottom.
-    backgroundImage: `linear-gradient(to bottom, color-mix(in oklch, ${colors.background} 92%, transparent), color-mix(in oklch, ${colors.background} 70%, transparent) 55%, transparent)`,
   },
-  blur: (blur: string, mask: string) => ({
-    position: 'absolute',
-    inset: 0,
-    backdropFilter: blur,
-    WebkitBackdropFilter: blur,
-    maskImage: mask,
-    WebkitMaskImage: mask,
-  }),
   header: {
     position: 'relative',
     display: 'flex',
@@ -187,14 +156,7 @@ export function Header({ pathname }: Props) {
         Skip to content
       </a>
       <div {...stylex.props(styles.bar)}>
-        <div aria-hidden="true" {...stylex.props(styles.backdrop)}>
-          {blurLayers.map((layer) => (
-            <div
-              key={layer.blur}
-              {...stylex.props(styles.blur(layer.blur, layer.mask))}
-            />
-          ))}
-        </div>
+        <ScrollEdge side="top" xstyle={styles.backdrop} />
         <header {...stylex.props(styles.header)}>
           <a
             href="/"
