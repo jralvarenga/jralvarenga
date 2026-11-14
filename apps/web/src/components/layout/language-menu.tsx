@@ -29,7 +29,10 @@ const styles = stylex.create({
     borderRadius: radius.lg,
     transformOrigin: 'var(--transform-origin)',
     transitionProperty: 'opacity, transform',
-    transitionDuration: motion.base,
+    transitionDuration: {
+      default: motion.base,
+      '@media (prefers-reduced-motion: reduce)': '0s',
+    },
     transitionTimingFunction: motion.easeOut,
     outline: 'none',
   },

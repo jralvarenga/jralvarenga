@@ -104,12 +104,12 @@ export function ThemeToggle() {
       size="icon"
       onClick={toggle}
       aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next]}`}
-      title={`Theme: ${labels[theme]}`}
     >
       <span aria-hidden="true" {...stylex.props(styles.stack)}>
         {cycle.map((option) => (
           <span
             key={option}
+            data-theme-icon=""
             {...stylex.props(
               styles.icon,
               ready && styles.animated,

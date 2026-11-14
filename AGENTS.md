@@ -56,7 +56,7 @@ This is a Turborepo monorepo with one app today:
   - `src/assets/` holds fonts, images, and SVGs processed by Astro.
   - `public/` holds files served as is (favicons, the apple-touch icon, and the manifest icons).
 - `packages/typescript-config/` and `packages/eslint-config/` are shared config packages left over from the Turborepo Next.js starter.
-- [LICENSE](LICENSE) is MIT, in my name. The footer links to it.
+- [LICENSE](LICENSE) is MIT, copyright Rigo Alvarenga. The footer links to it.
 - `.changeset/` holds pending changesets and the Changesets config.
 - `.github/workflows/` holds CI ([release.yml](.github/workflows/release.yml)).
 
