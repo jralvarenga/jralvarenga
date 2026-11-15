@@ -2,19 +2,20 @@
 import { ProjectsIndex } from '../../components/projects/projects-index';
 import Layout from '../../layouts/Layout.astro';
 import { profile } from '../../lib/about/profile';
-import { getProjectSummaries } from '../../lib/projects/collection';
+import { localize } from '../../lib/i18n/translator';
+import { getLocalizedProjectSummaries } from '../../lib/projects/collection';
 import { metaDescription, pageDescriptions } from '../../lib/seo/site';
 import {
   breadcrumbNode,
   collectionPageNode,
 } from '../../lib/seo/structured-data';
 
-const projects = await getProjectSummaries();
+const projects = await getLocalizedProjectSummaries();
 const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
 <Layout
-  title={`Projects · ${profile.name}`}
+  title={localize('meta.projectsTitle', { name: profile.name })}
   description={pageDescriptions.projects}
   structuredData={[
     collectionPageNode(
@@ -27,7 +28,7 @@ const site = Astro.site ?? new URL(Astro.url.origin);
       projects.map((project) => ({
         name: project.name,
         path: `/projects/${project.slug}`,
-        description: metaDescription(project.summary),
+        description: metaDescription(project.summary.en),
       })),
     ),
     breadcrumbNode(site, [

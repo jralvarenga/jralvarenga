@@ -1,9 +1,10 @@
 import * as stylex from '@stylexjs/stylex';
-import { profile } from '../../lib/about/profile';
+import { localize } from '../../lib/i18n/translator';
 import { layout } from '../../styles/layout';
 import { colors, space, text } from '../../styles/tokens.stylex';
 import { Section } from '../page';
 import { ProjectList, type ProjectSummary } from '../projects/project-list';
+import { Translation } from '../translation';
 import { Hero } from './hero';
 
 const styles = stylex.create({
@@ -45,16 +46,18 @@ export function HomePage({ projects }: Props) {
   return (
     <main id="content" {...stylex.props(layout.column, styles.main)}>
       <Hero />
-      <Section label="ABOUT" xstyle={styles.section}>
-        <p {...stylex.props(styles.brief)}>{profile.summary}</p>
+      <Section label={localize('home.about')} xstyle={styles.section}>
+        <p {...stylex.props(styles.brief)}>
+          <Translation value={localize('profile.summary')} />
+        </p>
         <a href="/about" {...stylex.props(styles.more)}>
-          Read more about me →
+          <Translation value={localize('home.readMore')} />
         </a>
       </Section>
-      <Section label="PROJECTS" xstyle={styles.section}>
+      <Section label={localize('home.projects')} xstyle={styles.section}>
         <ProjectList projects={projects} />
         <a href="/projects" {...stylex.props(styles.more)}>
-          All projects →
+          <Translation value={localize('home.allProjects')} />
         </a>
       </Section>
     </main>

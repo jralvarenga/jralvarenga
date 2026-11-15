@@ -1,23 +1,19 @@
 import * as stylex from '@stylexjs/stylex';
 import { type ReactNode, useEffect, useState } from 'react';
+import { useLocale } from '../../hooks/use-locale';
+import { localizedAttribute } from '../../lib/i18n/attributes';
+import type { Localized } from '../../lib/i18n/locales';
 import {
   applyPreference,
+  nextPreference,
   readPreference,
   subscribeTheme,
   type ThemePreference,
+  themeCycle,
 } from '../../lib/theme';
 import { motion } from '../../styles/tokens.stylex';
 import { MonitorIcon, MoonIcon, SunIcon } from '../icons';
 import { Button } from '../ui/button';
-
-/** The order the button cycles through. */
-const cycle: ThemePreference[] = ['system', 'light', 'dark'];
-
-const labels: Record<ThemePreference, string> = {
-  system: 'System',
-  light: 'Light',
-  dark: 'Dark',
-};
 
 const icons: Record<ThemePreference, ReactNode> = {
   system: <MonitorIcon size={16} />,
@@ -61,16 +57,18 @@ const styles = stylex.create({
   },
 });
 
-function nextOf(theme: ThemePreference) {
-  return cycle[(cycle.indexOf(theme) + 1) % cycle.length] ?? 'system';
-}
-
 /**
  * One button that cycles system, light, and dark. The icons morph into
  * each other: the old one turns out and shrinks while the new one turns in.
  * Stays in sync with the D hotkey.
  */
-export function ThemeToggle() {
+interface Props {
+  /** "Theme: System. Switch to Light" for each preference, per locale. */
+  labels: Record<ThemePreference, Localized>;
+}
+
+export function ThemeToggle({ labels }: Props) {
+  const locale = useLocale();
   const [theme, setTheme] = useState<ThemePreference>('system');
   // The stored theme is read after hydration. Skip the morph for that first
   // sync so the button doesn't animate on load.
@@ -90,23 +88,28 @@ export function ThemeToggle() {
     };
   }, []);
 
+  // State follows `subscribeTheme`, which fires inside the page's view
+  // transition, so the old snapshot keeps the old icon. The next step comes
+  // from `readPreference`, which includes a switch still in flight, so rapid
+  // clicks keep cycling.
   function toggle() {
-    const next = nextOf(theme);
-    setTheme(next);
-    applyPreference(next);
+    applyPreference(nextPreference(readPreference()));
   }
 
-  const next = nextOf(theme);
+  const next = nextPreference(theme);
 
   return (
     <Button
       variant="secondary"
       size="icon"
       onClick={toggle}
-      aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next]}`}
+      // Carries every language, so the label follows `<html lang>` before
+      // the island hydrates; `locale` keeps it right after.
+      {...localizedAttribute('aria-label', labels[theme])}
+      aria-label={labels[theme][locale]}
     >
       <span aria-hidden="true" {...stylex.props(styles.stack)}>
-        {cycle.map((option) => (
+        {themeCycle.map((option) => (
           <span
             key={option}
             data-theme-icon=""

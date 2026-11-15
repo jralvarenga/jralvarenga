@@ -1,5 +1,9 @@
 import * as stylex from '@stylexjs/stylex';
 import avatar from '../../assets/avatar.jpg';
+import { profile } from '../../lib/about/profile';
+import { localizedAttribute } from '../../lib/i18n/attributes';
+import type { Localized } from '../../lib/i18n/locales';
+import { localize } from '../../lib/i18n/translator';
 import {
   colors,
   motion,
@@ -7,17 +11,18 @@ import {
   space,
   text,
 } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { ScrollEdge } from './scroll-edge';
 
 interface NavLink {
   href: string;
-  label: string;
+  label: Localized;
 }
 
 const links: NavLink[] = [
-  { href: '/about', label: 'About' },
-  { href: '/projects', label: 'Projects' },
-  { href: '/skills', label: 'Skills' },
+  { href: '/about', label: localize('nav.about') },
+  { href: '/projects', label: localize('nav.projects') },
+  { href: '/skills', label: localize('nav.skills') },
 ];
 
 /** How far the fade reaches below the header, so the edge has no line. */
@@ -153,14 +158,17 @@ export function Header({ pathname }: Props) {
   return (
     <>
       <a href="#content" {...stylex.props(styles.skip)}>
-        Skip to content
+        <Translation value={localize('nav.skip')} />
       </a>
       <div {...stylex.props(styles.bar)}>
         <ScrollEdge side="top" xstyle={styles.backdrop} />
         <header {...stylex.props(styles.header)}>
           <a
             href="/"
-            aria-label="Rigo Alvarenga, home"
+            {...localizedAttribute(
+              'aria-label',
+              localize('nav.home', { name: profile.name }),
+            )}
             {...stylex.props(styles.home)}
           >
             <img
@@ -171,7 +179,7 @@ export function Header({ pathname }: Props) {
               {...stylex.props(styles.avatar)}
             />
           </a>
-          <nav aria-label="Main">
+          <nav {...localizedAttribute('aria-label', localize('nav.label'))}>
             <ul {...stylex.props(styles.list)}>
               {links.map((link) => {
                 const isCurrent = pathname.startsWith(link.href);
@@ -186,7 +194,7 @@ export function Header({ pathname }: Props) {
                         isCurrent && styles.current,
                       )}
                     >
-                      {link.label}
+                      <Translation value={link.label} />
                     </a>
                   </li>
                 );

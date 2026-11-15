@@ -8,7 +8,11 @@ import avatar from '../assets/avatar.jpg';
 import { Footer } from '../components/layout/footer';
 import { FooterSettings } from '../components/layout/footer-settings';
 import { Header } from '../components/layout/header';
-import { profile } from '../lib/about/profile';
+import { chapterCopy, organizationName } from '../lib/about/about';
+import { currentChapter, profile } from '../lib/about/profile';
+import { isInvariant, type Text, textIn } from '../lib/i18n/locales';
+import { settingsCopy } from '../lib/i18n/settings-copy';
+import { localize } from '../lib/i18n/translator';
 import {
   absoluteUrl,
   DEFAULT_DESCRIPTION,
@@ -31,7 +35,8 @@ import '../styles/global.css';
 import { bodyClass } from '../styles/root';
 
 interface Props {
-  title?: string;
+  /** Tab title. Pass one string per locale; search and social use English. */
+  title?: Text;
   /** Search result snippet and social preview text, ideally 70–160 chars. */
   description?: string;
   /** `og:type`. Inner pages about one thing use `article` or `profile`. */
@@ -43,7 +48,13 @@ interface Props {
 }
 
 const {
-  title = `${profile.name} · ${profile.title}`,
+  title: rawTitle = localize('meta.defaultTitle', {
+    name: profile.name,
+    title: localize('profile.title', {
+      role: chapterCopy(currentChapter).role,
+      organization: organizationName(currentChapter.organization),
+    }),
+  }),
   description: rawDescription = DEFAULT_DESCRIPTION,
   type = 'website',
   noindex = false,
@@ -57,6 +68,12 @@ const image = absoluteUrl(
   noindex ? ogImagePath('/') : ogImagePath(Astro.url.pathname),
   site,
 );
+const title = textIn(rawTitle, 'en');
+// The inline script swaps the tab title from these when the page language
+// isn't English. Search engines and social cards keep the English one.
+const localizedTitles = isInvariant(rawTitle)
+  ? {}
+  : { 'data-title-en': title, 'data-title-es': textIn(rawTitle, 'es') };
 const description = metaDescription(rawDescription);
 const imageAlt = title;
 const jsonLd = serializeJsonLd([
@@ -67,7 +84,7 @@ const jsonLd = serializeJsonLd([
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" {...localizedTitles}>
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -133,6 +150,32 @@ const jsonLd = serializeJsonLd([
     <meta name="twitter:image:alt" content={imageAlt}>
     <script is:inline type="application/ld+json" set:html={jsonLd} />
     <script is:inline>
+    // Apply the language before paint: the stored choice, else the first of
+    // the browser's languages the site has, else English. Keys and codes
+    // match lib/i18n/locale.ts and lib/i18n/locales.ts. Translation hides
+    // the copy that doesn't match `<html lang>`.
+    try {
+      let locale = null;
+      try {
+        locale = localStorage.getItem('locale');
+      } catch {}
+      if (locale !== 'en' && locale !== 'es') {
+        locale = 'en';
+        for (const language of navigator.languages ?? [navigator.language]) {
+          const code = language.toLowerCase().split('-')[0];
+          if (code === 'en' || code === 'es') {
+            locale = code;
+            break;
+          }
+        }
+      }
+      const root = document.documentElement;
+      root.lang = locale;
+      const localizedTitle = root.getAttribute(`data-title-${locale}`);
+      if (localizedTitle) document.title = localizedTitle;
+    } catch {}
+    </script>
+    <script is:inline>
     // Apply the stored theme before paint. The key matches lib/theme.ts.
     try {
       const theme = localStorage.getItem('theme');
@@ -171,13 +214,16 @@ const jsonLd = serializeJsonLd([
     <Header pathname={Astro.url.pathname} />
     <slot />
     <Footer>
-      <FooterSettings slot="settings" client:visible />
+      <FooterSettings slot="settings" copy={settingsCopy()} client:visible />
     </Footer>
     <script>
+    import { currentLocale, localizeAttributes } from '../lib/i18n/locale';
     import { revealPixels } from '../lib/pixel-reveal';
     import { bindThemeHotkey } from '../lib/theme';
 
     bindThemeHotkey();
+    // Attributes such as `aria-label` follow the language set in `<head>`.
+    localizeAttributes(currentLocale());
 
     // The hero name and every page title build themselves out of pixels.
     for (const element of document.querySelectorAll<HTMLElement>(

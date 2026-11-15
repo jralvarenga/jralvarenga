@@ -2,6 +2,7 @@
 import { AboutPage } from '../components/about/about-page';
 import Layout from '../layouts/Layout.astro';
 import { profile } from '../lib/about/profile';
+import { localize } from '../lib/i18n/translator';
 import { pageDescriptions } from '../lib/seo/site';
 import { breadcrumbNode, profilePageNode } from '../lib/seo/structured-data';
 
@@ -9,7 +10,7 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
 <Layout
-  title={`About · ${profile.name}`}
+  title={localize('meta.aboutTitle', { name: profile.name })}
   description={pageDescriptions.about}
   type="profile"
   structuredData={[

@@ -1,5 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
-import { profile } from '../../lib/about/profile';
+import { chapterCopy, organizationName } from '../../lib/about/about';
+import { currentChapter, profile } from '../../lib/about/profile';
+import { localize } from '../../lib/i18n/translator';
 import {
   colors,
   font,
@@ -11,6 +13,7 @@ import {
 import { MetaList } from '../page';
 import { PixelReveal } from '../pixel-reveal';
 import { socialLinks } from '../social-links';
+import { Translation } from '../translation';
 
 const rise = stylex.keyframes({
   from: { opacity: 0, transform: 'translateY(8px)' },
@@ -59,14 +62,22 @@ const styles = stylex.create({
 
 /** Home intro: a greeting, the name in Geist Pixel, and a short bio. */
 export function Hero() {
+  const params = {
+    role: chapterCopy(currentChapter).role,
+    organization: organizationName(currentChapter.organization),
+  };
+
   return (
     <section aria-labelledby="hero-title" {...stylex.props(styles.hero)}>
       <h1 id="hero-title" {...stylex.props(styles.title)}>
-        <span {...stylex.props(styles.greeting)}>{profile.greeting}</span>
+        <span {...stylex.props(styles.greeting)}>
+          <Translation value={localize('profile.greeting')} />
+        </span>
         <PixelReveal xstyle={styles.name}>{profile.name}</PixelReveal>
       </h1>
       <p {...stylex.props(styles.description)}>
-        {profile.headline} {profile.featuredWorkIntro}{' '}
+        <Translation value={localize('profile.headline', params)} />{' '}
+        <Translation value={localize('profile.featuredWorkIntro')} />{' '}
         <a
           href={profile.featuredWork.href}
           target="_blank"
@@ -74,9 +85,11 @@ export function Hero() {
         >
           {profile.featuredWork.name}
         </a>{' '}
-        {profile.featuredWorkOutro}
+        <Translation value={localize('profile.featuredWorkOutro')} />
       </p>
-      <p {...stylex.props(styles.description)}>{profile.sideNote}</p>
+      <p {...stylex.props(styles.description)}>
+        <Translation value={localize('profile.sideNote')} />
+      </p>
       <MetaList items={socialLinks} />
     </section>
   );

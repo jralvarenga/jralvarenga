@@ -4,10 +4,26 @@
  * it before paint. Without a stored choice the page follows the system.
  */
 
+import { fadeSwitch } from './view-transition';
+
 type Theme = 'light' | 'dark';
 
 /** Stored preference, or `system` when nothing is stored. */
 export type ThemePreference = Theme | 'system';
+
+/** The order the footer toggle cycles through. */
+export const themeCycle: readonly ThemePreference[] = [
+  'system',
+  'light',
+  'dark',
+];
+
+/** The preference after `theme` in the footer toggle's cycle. */
+export function nextPreference(theme: ThemePreference): ThemePreference {
+  return (
+    themeCycle[(themeCycle.indexOf(theme) + 1) % themeCycle.length] ?? 'system'
+  );
+}
 
 /** Must match the key read by the inline script in `Layout.astro`. */
 const STORAGE_KEY = 'theme';
@@ -30,8 +46,21 @@ export function subscribeTheme(listener: () => void) {
   return () => window.removeEventListener(THEME_CHANGE, listener);
 }
 
-/** The stored preference, or `system` when none is stored. */
+/**
+ * The preference the latest `applyPreference` call is switching to. A view
+ * transition applies the change a frame or more later, so rapid toggles read
+ * this instead of the DOM, which still shows the old theme.
+ */
+let pending: ThemePreference | undefined;
+/** Counts `applyPreference` calls, so only the latest one clears `pending`. */
+let switches = 0;
+
+/**
+ * The stored preference, or `system` when none is stored. While a switch is
+ * in flight, the preference it is switching to.
+ */
 export function readPreference(): ThemePreference {
+  if (pending) return pending;
   try {
     const theme = localStorage.getItem(STORAGE_KEY);
     if (theme === 'light' || theme === 'dark') return theme;
@@ -45,7 +74,7 @@ export function readPreference(): ThemePreference {
 
 /** The theme on screen, whether forced or from the system. */
 function currentTheme(): Theme {
-  const forced = document.documentElement.dataset.theme;
+  const forced = pending ?? document.documentElement.dataset.theme;
   if (forced === 'light' || forced === 'dark') return forced;
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
@@ -107,19 +136,26 @@ function syncThemeColor(theme: ThemePreference) {
 
 /**
  * Forces light or dark, or clears the force so the page follows the system.
- * The choice is stored, and `/ui` is notified so its selector stays in sync.
+ * The page cross-fades into the new colors (`fadeSwitch`), the choice is
+ * stored, and subscribers such as the footer toggle and `/ui` are notified
+ * inside the transition, so their new state is in the new snapshot.
  */
 export function applyPreference(theme: ThemePreference) {
-  withoutTransitions(() => {
-    if (theme === 'system') {
-      delete document.documentElement.dataset.theme;
-    } else {
-      document.documentElement.dataset.theme = theme;
-    }
+  pending = theme;
+  const id = ++switches;
+  fadeSwitch(() => {
+    if (id === switches) pending = undefined;
+    withoutTransitions(() => {
+      if (theme === 'system') {
+        delete document.documentElement.dataset.theme;
+      } else {
+        document.documentElement.dataset.theme = theme;
+      }
+    });
+    persistPreference(theme);
+    syncThemeColor(theme);
+    notifyThemeChange();
   });
-  persistPreference(theme);
-  syncThemeColor(theme);
-  notifyThemeChange();
 }
 
 export function toggleTheme() {

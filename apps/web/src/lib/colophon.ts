@@ -1,5 +1,6 @@
 /**
- * Facts about the site itself and its languages, shown in the footer.
+ * Facts about the site itself, shown in the footer. Languages are in
+ * `lib/i18n/locales.ts`.
  */
 
 /** The site's source code. */
@@ -13,11 +14,3 @@ export const siteLicense = `${siteSource}/blob/main/LICENSE`;
  * year the site was last deployed.
  */
 export const siteUpdated = new Date();
-
-/** Languages the site will be offered in. Only English exists today. */
-export const languages = [
-  { code: 'en', label: 'English', available: true },
-  { code: 'es', label: 'Español', available: false },
-] as const;
-
-export type LanguageCode = (typeof languages)[number]['code'];

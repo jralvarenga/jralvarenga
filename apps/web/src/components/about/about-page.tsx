@@ -1,11 +1,19 @@
 import * as stylex from '@stylexjs/stylex';
 import avatar from '../../assets/avatar.jpg';
-import { chapters, elSalvador, toolGroups } from '../../lib/about/about';
+import {
+  chapterCopy,
+  chapters,
+  elSalvador,
+  organizationName,
+  toolGroups,
+} from '../../lib/about/about';
 import { currentChapter, profile } from '../../lib/about/profile';
+import { localize } from '../../lib/i18n/translator';
 import { colors, radius, space } from '../../styles/tokens.stylex';
 import { PageLayout } from '../layout/page-layout';
 import { Section } from '../page';
 import { socialLinks } from '../social-links';
+import { Translation } from '../translation';
 import { InlineLogo } from './inline-logo';
 import { Timeline } from './timeline';
 import { ToolList } from './tool-list';
@@ -47,11 +55,17 @@ const styles = stylex.create({
  * timeline, and the tools I use.
  */
 export function AboutPage() {
+  const role = chapterCopy(currentChapter).role;
+
   return (
-    <PageLayout title="About me" lead={profile.aboutLead} meta={socialLinks}>
+    <PageLayout
+      title={localize('about.title')}
+      lead={<Translation value={localize('profile.aboutLead')} />}
+      meta={socialLinks}
+    >
       <div {...stylex.props(styles.intro)}>
         <p>
-          I'm{' '}
+          <Translation value={localize('about.intro.im')} />{' '}
           <img
             src={avatar.src}
             alt=""
@@ -59,29 +73,35 @@ export function AboutPage() {
             height={20}
             {...stylex.props(styles.avatar)}
           />{' '}
-          {profile.name}, {profile.aboutRole} at{' '}
+          {profile.name},{' '}
+          <Translation value={localize('profile.aboutRole', { role })} />{' '}
+          <Translation value={localize('about.intro.at')} />{' '}
           <InlineLogo organization={currentChapter.organization} />{' '}
-          {profile.organization}, based in{' '}
-          <InlineLogo organization={elSalvador} /> {profile.location}.
+          <Translation value={organizationName(currentChapter.organization)} />,{' '}
+          <Translation value={localize('about.intro.basedIn')} />{' '}
+          <InlineLogo organization={elSalvador} />{' '}
+          <Translation value={organizationName(elSalvador)} />.
         </p>
-        {profile.aboutBody.map((paragraph) => (
-          <p key={paragraph} {...stylex.props(styles.muted)}>
-            {paragraph}
-          </p>
-        ))}
         <p {...stylex.props(styles.muted)}>
-          {profile.aboutSkills.before}
+          <Translation value={localize('profile.aboutBody.first')} />
+        </p>
+        <p {...stylex.props(styles.muted)}>
+          <Translation value={localize('profile.aboutBody.second')} />
+        </p>
+        <p {...stylex.props(styles.muted)}>
+          <Translation value={localize('profile.aboutSkills.before')} />
           <a href={profile.aboutSkills.href} {...stylex.props(styles.link)}>
-            {profile.aboutSkills.label}
+            <Translation value={localize('profile.aboutSkills.label')} />
           </a>
+          <Translation value={localize('profile.aboutSkills.after')} />
         </p>
       </div>
 
-      <Section label="MY EXPERIENCE">
+      <Section label={localize('about.experience')}>
         <Timeline chapters={chapters} />
       </Section>
 
-      <Section label="TOOLS">
+      <Section label={localize('about.tools')}>
         <ToolList groups={toolGroups} />
       </Section>
     </PageLayout>

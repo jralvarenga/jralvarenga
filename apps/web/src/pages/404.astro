@@ -2,10 +2,11 @@
 import { NotFoundPage } from '../components/not-found/not-found-page';
 import Layout from '../layouts/Layout.astro';
 import { profile } from '../lib/about/profile';
+import { localize } from '../lib/i18n/translator';
 ---
 
 <Layout
-  title={`Not found · ${profile.name}`}
+  title={localize('meta.notFoundTitle', { name: profile.name })}
   description="There is nothing here, stop sniffing around."
   noindex
 >

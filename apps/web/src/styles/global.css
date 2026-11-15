@@ -109,6 +109,29 @@ p {
   display: none;
 }
 
+/*
+ * Same-document switches: changing the theme or the language
+ * (lib/view-transition.ts) sets `data-view-switch` on <html> while it runs.
+ * Every layer, the named header and edge ones included, then crossfades in
+ * place, with no rise and no delay, so the page reads as one fade. Both
+ * halves use motion.slow and easeOut, so their opacities add up to 1.
+ * Reduced motion skips the transition in the script.
+ */
+@keyframes switch-enter {
+  from {
+    opacity: 0;
+  }
+}
+
+:root[data-view-switch]::view-transition-old(*) {
+  display: block;
+  animation: page-leave 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
+:root[data-view-switch]::view-transition-new(*) {
+  animation: switch-enter 300ms cubic-bezier(0.23, 1, 0.32, 1) both;
+}
+
 @media (prefers-reduced-motion: reduce) {
   /*
    * `::view-transition-old(root)` is more specific than

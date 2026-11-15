@@ -1,3 +1,4 @@
+import { t } from '../i18n/translator';
 import { social } from '../social';
 import { chapters, elSalvador } from './about';
 
@@ -15,38 +16,38 @@ export type ProfileLink = {
   href: string;
 };
 
+const role = currentChapter.role;
+const organization = currentChapter.organization.name;
+
 /**
  * Identity and copy shared by the home page, the about page, the MCP
- * server, and `/llms.txt`. Role, employer, and headline come from the
- * newest chapter so those surfaces cannot drift apart.
+ * server, and `/llms.txt`, in English. Role, employer, and headline come
+ * from the newest chapter so those surfaces cannot drift apart. The copy
+ * lives in `lib/i18n/messages`; pages render it in every language through
+ * `localize('profile.…')`.
  */
 export const profile = {
   name: 'Rigo Alvarenga',
-  greeting: "Hi, I'm",
-  title: `${currentChapter.role} at ${currentChapter.organization.name}`,
+  greeting: t('profile.greeting'),
+  title: t('profile.title', { params: { role, organization } }),
   location: elSalvador.name,
-  organization: currentChapter.organization.name,
-  headline: `I'm a ${currentChapter.role} on the development team at ${currentChapter.organization.name}.`,
-  featuredWorkIntro: 'Working on different projects like',
+  organization,
+  headline: t('profile.headline', { params: { role, organization } }),
+  featuredWorkIntro: t('profile.featuredWorkIntro'),
   featuredWork: {
     name: 'Orvia',
     href: 'https://orviadx.com',
   } satisfies ProfileLink,
-  featuredWorkOutro: 'and many others.',
-  sideNote: 'I also build my own projects on the side.',
+  featuredWorkOutro: t('profile.featuredWorkOutro'),
+  sideNote: t('profile.sideNote'),
   /** Home-page about blurb. */
-  summary:
-    'More than six years building web and mobile products, from frontend architecture to APIs, databases, and infrastructure. These days I lead development at Denzo Studios, in El Salvador.',
-  aboutLead: 'Engineer, tech lead, and builder of my own products.',
-  aboutRole: `a fullstack software engineer and ${currentChapter.role}`,
-  aboutBody: [
-    'I work on both ends of a product, on the web and on mobile, most of my time goes into planning and building apps, then the APIs and databases behind them, SQL or NoSQL depending on what the product needs.',
-    "I've worked on a lot of different kinds of products over the years, that taught me to look at a problem from the frontend and the backend before I pick a solution, instead of forcing everything into the tools I already know.",
-  ],
+  summary: t('profile.summary'),
+  aboutLead: t('profile.aboutLead'),
+  aboutRole: t('profile.aboutRole', { params: { role } }),
+  aboutBody: [t('profile.aboutBody.first'), t('profile.aboutBody.second')],
   aboutSkills: {
-    before:
-      "I like learning, so I'm usually trying something new, lately that's coding agents and I share the rules I give them as open ",
-    label: 'skills',
+    before: t('profile.aboutSkills.before'),
+    label: t('profile.aboutSkills.label'),
     href: '/skills',
   },
   links: Object.values(social).map(({ label, href }) => ({

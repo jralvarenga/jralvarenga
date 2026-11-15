@@ -2,6 +2,7 @@
 import { SkillsIndex } from '../../components/skills/skills-index';
 import Layout from '../../layouts/Layout.astro';
 import { profile } from '../../lib/about/profile';
+import { localize } from '../../lib/i18n/translator';
 import { metaDescription, pageDescriptions } from '../../lib/seo/site';
 import {
   breadcrumbNode,
@@ -14,7 +15,7 @@ const site = Astro.site ?? new URL(Astro.url.origin);
 ---
 
 <Layout
-  title={`Skills · ${profile.name}`}
+  title={localize('meta.skillsTitle', { name: profile.name })}
   description={pageDescriptions.skills}
   structuredData={[
     collectionPageNode(

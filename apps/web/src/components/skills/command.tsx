@@ -1,4 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
+import { localizedAttribute } from '../../lib/i18n/attributes';
+import { type Localized, locales } from '../../lib/i18n/locales';
+import { localize } from '../../lib/i18n/translator';
 import { colors, font, radius, space, text } from '../../styles/tokens.stylex';
 import { CheckIcon, CopyIcon } from '../icons';
 import { Button } from '../ui/button';
@@ -34,6 +37,16 @@ interface Props {
 }
 
 /**
+ * `data-<name>-<locale>` attributes with the label the button takes after a
+ * copy, read by `bindCopyButtons` for the language on screen.
+ */
+function statusLabels(name: string, label: Localized): Record<string, string> {
+  return Object.fromEntries(
+    locales.map((locale) => [`data-${name}-${locale}`, label[locale]]),
+  );
+}
+
+/**
  * A shell command with a copy button. The button is wired up by
  * `bindCopyButtons` in `lib/copy.ts`, so it needs no hydration.
  */
@@ -47,8 +60,10 @@ export function Command({ command }: Props) {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Copy command"
         data-copy={command}
+        {...localizedAttribute('aria-label', localize('skills.copy'))}
+        {...statusLabels('copied', localize('skills.copied'))}
+        {...statusLabels('copy-failed', localize('skills.copyFailed'))}
       >
         {/* No display style on these spans, so `hidden` can hide them. */}
         <span data-copy-idle="">

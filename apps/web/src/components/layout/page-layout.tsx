@@ -1,11 +1,12 @@
 import * as stylex from '@stylexjs/stylex';
 import type { ReactNode } from 'react';
+import type { Text } from '../../lib/i18n/locales';
 import { layout } from '../../styles/layout';
 import { Breadcrumbs, type Crumb, type MetaItem, PageHeader } from '../page';
 
 interface Props {
   /** The page `h1`, set in Geist Pixel. */
-  title: string;
+  title: Text;
   /** Path back to parent pages. The last item is the current page. */
   breadcrumbs?: Crumb[];
   /** Small facts or links under the title. */

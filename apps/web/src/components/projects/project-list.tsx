@@ -1,16 +1,19 @@
 import * as stylex from '@stylexjs/stylex';
+import type { Localized } from '../../lib/i18n/locales';
+import { localize } from '../../lib/i18n/translator';
 import { formatMonth } from '../../lib/projects/format';
 import { colors, font, space, text, weight } from '../../styles/tokens.stylex';
+import { Translation } from '../translation';
 import { Tag } from '../ui/tag';
 
 export interface ProjectSummary {
   slug: string;
   name: string;
-  summary: string;
+  summary: Localized;
   started: string;
   status: 'live' | 'building';
   /** Names of the apps or sites the project is made of. */
-  parts: string[];
+  parts: Localized[];
 }
 
 const styles = stylex.create({
@@ -98,16 +101,27 @@ export function ProjectList({ projects }: Props) {
             <span {...stylex.props(styles.top)}>
               <span {...stylex.props(styles.title)}>
                 <span {...stylex.props(styles.name)}>{project.name}</span>
-                {project.status === 'building' && <Tag>In progress</Tag>}
+                {project.status === 'building' && (
+                  <Tag>
+                    <Translation value={localize('common.inProgress')} />
+                  </Tag>
+                )}
               </span>
               <time dateTime={project.started} {...stylex.props(styles.date)}>
-                {formatMonth(project.started)}
+                <Translation value={formatMonth(project.started)} />
               </time>
             </span>
-            <span {...stylex.props(styles.summary)}>{project.summary}</span>
+            <span {...stylex.props(styles.summary)}>
+              <Translation value={project.summary} />
+            </span>
             {project.parts.length > 0 && (
               <span {...stylex.props(styles.parts)}>
-                {project.parts.join(' · ')}
+                <Translation
+                  value={{
+                    en: project.parts.map((part) => part.en).join(' · '),
+                    es: project.parts.map((part) => part.es).join(' · '),
+                  }}
+                />
               </span>
             )}
           </a>

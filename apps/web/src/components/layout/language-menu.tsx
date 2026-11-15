@@ -1,6 +1,14 @@
 import { Menu } from '@base-ui/react/menu';
 import * as stylex from '@stylexjs/stylex';
-import { type LanguageCode, languages } from '../../lib/colophon';
+import { useLocale } from '../../hooks/use-locale';
+import { localizedAttribute } from '../../lib/i18n/attributes';
+import { applyLocale } from '../../lib/i18n/locale';
+import {
+  isLocale,
+  type Localized,
+  languageNames,
+  languages,
+} from '../../lib/i18n/locales';
 import { elevation } from '../../styles/elevation';
 import {
   colors,
@@ -10,8 +18,8 @@ import {
   text,
 } from '../../styles/tokens.stylex';
 import { CheckIcon, ChevronsUpDownIcon, GlobeIcon } from '../icons';
+import { Translation } from '../translation';
 import { Button } from '../ui/button';
-import { Tag } from '../ui/tag';
 
 const styles = stylex.create({
   trigger: {
@@ -61,9 +69,6 @@ const styles = stylex.create({
   highlighted: {
     backgroundColor: colors.muted,
   },
-  disabled: {
-    color: colors.mutedForeground,
-  },
   check: {
     display: 'inline-flex',
     width: '14px',
@@ -73,14 +78,23 @@ const styles = stylex.create({
   },
 });
 
-const current: LanguageCode = 'en';
+interface Props {
+  /** "Language: English", per locale, for the trigger's accessible name. */
+  label: Localized;
+}
 
 /**
- * Language picker. Only English exists today, so the other languages are
- * listed as coming soon and can't be picked.
+ * Language picker. Switching rewrites `<html lang>` in place, so the page
+ * shows its other copy at once, and stores the choice for the next visit.
+ * The trigger shows both names and lets the page language pick one, so it
+ * reads right before the island hydrates.
  */
-export function LanguageMenu() {
-  const active = languages.find((language) => language.code === current);
+export function LanguageMenu({ label }: Props) {
+  const locale = useLocale();
+
+  function select(value: unknown) {
+    if (isLocale(value) && value !== locale) applyLocale(value);
+  }
 
   return (
     <Menu.Root>
@@ -89,13 +103,16 @@ export function LanguageMenu() {
           <Button
             variant="ghost"
             size="sm"
-            aria-label={`Language: ${active?.label}`}
+            // Carries every language, so the label follows `<html lang>`
+            // before the island hydrates; `locale` keeps it right after.
+            {...localizedAttribute('aria-label', label)}
+            aria-label={label[locale]}
             xstyle={styles.trigger}
           />
         }
       >
         <GlobeIcon size={14} />
-        {active?.label}
+        <Translation value={languageNames} />
         <ChevronsUpDownIcon size={12} {...stylex.props(styles.chevron)} />
       </Menu.Trigger>
       <Menu.Portal>
@@ -117,18 +134,16 @@ export function LanguageMenu() {
               ).className ?? ''
             }
           >
-            <Menu.RadioGroup value={current}>
+            <Menu.RadioGroup value={locale} onValueChange={select}>
               {languages.map((language) => (
                 <Menu.RadioItem
-                  key={language.code}
-                  value={language.code}
-                  disabled={!language.available}
-                  lang={language.code}
+                  key={language.locale}
+                  value={language.locale}
+                  lang={language.locale}
                   className={(state) =>
                     stylex.props(
                       styles.item,
                       state.highlighted && styles.highlighted,
-                      state.disabled && styles.disabled,
                     ).className ?? ''
                   }
                 >
@@ -138,7 +153,6 @@ export function LanguageMenu() {
                     </Menu.RadioItemIndicator>
                   </span>
                   <span {...stylex.props(styles.name)}>{language.label}</span>
-                  {!language.available && <Tag>Soon</Tag>}
                 </Menu.RadioItem>
               ))}
             </Menu.RadioGroup>
