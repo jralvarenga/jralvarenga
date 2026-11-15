@@ -46,8 +46,21 @@ export function subscribeTheme(listener: () => void) {
   return () => window.removeEventListener(THEME_CHANGE, listener);
 }
 
-/** The stored preference, or `system` when none is stored. */
+/**
+ * The preference the latest `applyPreference` call is switching to. A view
+ * transition applies the change a frame or more later, so rapid toggles read
+ * this instead of the DOM, which still shows the old theme.
+ */
+let pending: ThemePreference | undefined;
+/** Counts `applyPreference` calls, so only the latest one clears `pending`. */
+let switches = 0;
+
+/**
+ * The stored preference, or `system` when none is stored. While a switch is
+ * in flight, the preference it is switching to.
+ */
 export function readPreference(): ThemePreference {
+  if (pending) return pending;
   try {
     const theme = localStorage.getItem(STORAGE_KEY);
     if (theme === 'light' || theme === 'dark') return theme;
@@ -61,7 +74,7 @@ export function readPreference(): ThemePreference {
 
 /** The theme on screen, whether forced or from the system. */
 function currentTheme(): Theme {
-  const forced = document.documentElement.dataset.theme;
+  const forced = pending ?? document.documentElement.dataset.theme;
   if (forced === 'light' || forced === 'dark') return forced;
   return window.matchMedia('(prefers-color-scheme: dark)').matches
     ? 'dark'
@@ -128,7 +141,10 @@ function syncThemeColor(theme: ThemePreference) {
  * inside the transition, so their new state is in the new snapshot.
  */
 export function applyPreference(theme: ThemePreference) {
+  pending = theme;
+  const id = ++switches;
   fadeSwitch(() => {
+    if (id === switches) pending = undefined;
     withoutTransitions(() => {
       if (theme === 'system') {
         delete document.documentElement.dataset.theme;

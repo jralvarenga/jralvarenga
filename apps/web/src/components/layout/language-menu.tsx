@@ -1,6 +1,7 @@
 import { Menu } from '@base-ui/react/menu';
 import * as stylex from '@stylexjs/stylex';
 import { useLocale } from '../../hooks/use-locale';
+import { localizedAttribute } from '../../lib/i18n/attributes';
 import { applyLocale } from '../../lib/i18n/locale';
 import {
   isLocale,
@@ -102,6 +103,9 @@ export function LanguageMenu({ label }: Props) {
           <Button
             variant="ghost"
             size="sm"
+            // Carries every language, so the label follows `<html lang>`
+            // before the island hydrates; `locale` keeps it right after.
+            {...localizedAttribute('aria-label', label)}
             aria-label={label[locale]}
             xstyle={styles.trigger}
           />

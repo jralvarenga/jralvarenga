@@ -1,6 +1,7 @@
 import * as stylex from '@stylexjs/stylex';
 import { type ReactNode, useEffect, useState } from 'react';
 import { useLocale } from '../../hooks/use-locale';
+import { localizedAttribute } from '../../lib/i18n/attributes';
 import type { Localized } from '../../lib/i18n/locales';
 import {
   applyPreference,
@@ -88,9 +89,11 @@ export function ThemeToggle({ labels }: Props) {
   }, []);
 
   // State follows `subscribeTheme`, which fires inside the page's view
-  // transition, so the old snapshot keeps the old icon.
+  // transition, so the old snapshot keeps the old icon. The next step comes
+  // from `readPreference`, which includes a switch still in flight, so rapid
+  // clicks keep cycling.
   function toggle() {
-    applyPreference(nextPreference(theme));
+    applyPreference(nextPreference(readPreference()));
   }
 
   const next = nextPreference(theme);
@@ -100,6 +103,9 @@ export function ThemeToggle({ labels }: Props) {
       variant="secondary"
       size="icon"
       onClick={toggle}
+      // Carries every language, so the label follows `<html lang>` before
+      // the island hydrates; `locale` keeps it right after.
+      {...localizedAttribute('aria-label', labels[theme])}
       aria-label={labels[theme][locale]}
     >
       <span aria-hidden="true" {...stylex.props(styles.stack)}>
