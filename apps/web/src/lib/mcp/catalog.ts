@@ -51,13 +51,12 @@ export type SkillsMeta = {
  * same strings; this is the assistant-facing shape.
  */
 export function getProfile(): ProfilePayload {
-  const featured = `${profile.featuredWorkIntro} ${profile.featuredWork.name} ${profile.featuredWorkOutro}`;
   return {
     name: profile.name,
     title: profile.title,
     location: profile.location,
     organization: profile.organization,
-    bio: `${profile.headline} ${featured} ${profile.sideNote}`,
+    bio: `${profile.headline} ${profile.sideNote}`,
     summary: profile.summary,
     aboutLead: profile.aboutLead,
     links: profile.links,
