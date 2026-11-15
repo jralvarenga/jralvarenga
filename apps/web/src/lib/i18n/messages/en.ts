@@ -40,10 +40,10 @@ export const en = {
   profile: {
     greeting: "Hi, I'm",
     title: 'Software Engineer',
-    headline: "I'm a {role} on the development team at {organization}.",
-    featuredWorkIntro: 'Working on different projects like',
-    featuredWorkOutro: 'and many others.',
-    sideNote: 'I also build my own projects on the side.',
+    headline:
+      "I'm a senior software engineer and a tech lead, currently working at {organization} as a Tech Lead Developer.",
+    sideProjectsIntro: 'I also work on my own projects like',
+    sideProjectsJoin: 'and',
     summary:
       'More than six years building web and mobile products, from frontend architecture to APIs, databases, and infrastructure. These days I lead development at Denzo Studios, in El Salvador.',
     aboutLead: 'Engineer, tech lead, and builder of my own products.',

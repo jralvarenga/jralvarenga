@@ -1,5 +1,5 @@
 import * as stylex from '@stylexjs/stylex';
-import { chapterCopy, organizationName } from '../../lib/about/about';
+import { organizationName } from '../../lib/about/about';
 import { currentChapter, profile } from '../../lib/about/profile';
 import { localize } from '../../lib/i18n/translator';
 import {
@@ -63,9 +63,9 @@ const styles = stylex.create({
 /** Home intro: a greeting, the name in Geist Pixel, and a short bio. */
 export function Hero() {
   const params = {
-    role: chapterCopy(currentChapter).role,
     organization: organizationName(currentChapter.organization),
   };
+  const [first, second] = profile.sideProjects;
 
   return (
     <section aria-labelledby="hero-title" {...stylex.props(styles.hero)}>
@@ -76,19 +76,13 @@ export function Hero() {
         <PixelReveal xstyle={styles.name}>{profile.name}</PixelReveal>
       </h1>
       <p {...stylex.props(styles.description)}>
-        <Translation value={localize('profile.headline', params)} />{' '}
-        <Translation value={localize('profile.featuredWorkIntro')} />{' '}
-        <a
-          href={profile.featuredWork.href}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          {profile.featuredWork.name}
-        </a>{' '}
-        <Translation value={localize('profile.featuredWorkOutro')} />
+        <Translation value={localize('profile.headline', params)} />
       </p>
       <p {...stylex.props(styles.description)}>
-        <Translation value={localize('profile.sideNote')} />
+        <Translation value={localize('profile.sideProjectsIntro')} />{' '}
+        <a href={first.href}>{first.name}</a>{' '}
+        <Translation value={localize('profile.sideProjectsJoin')} />{' '}
+        <a href={second.href}>{second.name}</a>.
       </p>
       <MetaList items={socialLinks} />
     </section>

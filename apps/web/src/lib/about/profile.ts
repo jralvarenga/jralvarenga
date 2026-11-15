@@ -19,10 +19,18 @@ export type ProfileLink = {
 const role = currentChapter.role;
 const organization = currentChapter.organization.name;
 
+/** Own products named in the home bio, linked to their project pages. */
+const sideProjects = [
+  { name: 'Luvid', href: '/projects/luvid' },
+  { name: 'Treid', href: '/projects/treid' },
+] as const satisfies readonly [ProfileLink, ProfileLink];
+
 /**
  * Identity and copy shared by the home page, the about page, the MCP
- * server, and `/llms.txt`, in English. Role, employer, and headline come
- * from the newest chapter so those surfaces cannot drift apart. The copy
+ * server, and `/llms.txt`, in English. Role and employer come from the
+ * newest chapter so those surfaces cannot drift apart. The home headline
+ * takes the employer from it but words the role by hand ("Tech Lead
+ * Developer"), so update `profile.headline` when the role changes. The copy
  * lives in `lib/i18n/messages`; pages render it in every language through
  * `localize('profile.…')`.
  */
@@ -33,14 +41,9 @@ export const profile = {
   title: t('profile.title'),
   location: elSalvador.name,
   organization,
-  headline: t('profile.headline', { params: { role, organization } }),
-  featuredWorkIntro: t('profile.featuredWorkIntro'),
-  featuredWork: {
-    name: 'Orvia',
-    href: 'https://orviadx.com',
-  } satisfies ProfileLink,
-  featuredWorkOutro: t('profile.featuredWorkOutro'),
-  sideNote: t('profile.sideNote'),
+  headline: t('profile.headline', { params: { organization } }),
+  sideProjects,
+  sideNote: `${t('profile.sideProjectsIntro')} ${sideProjects[0].name} ${t('profile.sideProjectsJoin')} ${sideProjects[1].name}.`,
   /** Home-page about blurb. */
   summary: t('profile.summary'),
   aboutLead: t('profile.aboutLead'),
