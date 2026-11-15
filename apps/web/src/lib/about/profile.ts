@@ -27,8 +27,10 @@ const sideProjects = [
 
 /**
  * Identity and copy shared by the home page, the about page, the MCP
- * server, and `/llms.txt`, in English. Role, employer, and headline come
- * from the newest chapter so those surfaces cannot drift apart. The copy
+ * server, and `/llms.txt`, in English. Role and employer come from the
+ * newest chapter so those surfaces cannot drift apart. The home headline
+ * takes the employer from it but words the role by hand ("Tech Lead
+ * Developer"), so update `profile.headline` when the role changes. The copy
  * lives in `lib/i18n/messages`; pages render it in every language through
  * `localize('profile.…')`.
  */
