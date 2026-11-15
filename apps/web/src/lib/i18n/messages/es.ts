@@ -38,7 +38,7 @@ export const es = {
   },
   profile: {
     greeting: 'Hola, soy',
-    title: '{role} en {organization}',
+    title: 'Ingeniero de software',
     headline: 'Soy {role} en el equipo de desarrollo de {organization}.',
     featuredWorkIntro: 'Trabajo en distintos proyectos, como',
     featuredWorkOutro: 'y muchos otros.',

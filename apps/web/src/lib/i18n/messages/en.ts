@@ -39,7 +39,7 @@ export const en = {
   },
   profile: {
     greeting: "Hi, I'm",
-    title: '{role} at {organization}',
+    title: 'Software Engineer',
     headline: "I'm a {role} on the development team at {organization}.",
     featuredWorkIntro: 'Working on different projects like',
     featuredWorkOutro: 'and many others.',

@@ -29,7 +29,8 @@ const organization = currentChapter.organization.name;
 export const profile = {
   name: 'Rigo Alvarenga',
   greeting: t('profile.greeting'),
-  title: t('profile.title', { params: { role, organization } }),
+  /** Public title for tab titles, social cards, and search. No employer. */
+  title: t('profile.title'),
   location: elSalvador.name,
   organization,
   headline: t('profile.headline', { params: { role, organization } }),

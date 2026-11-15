@@ -1,7 +1,13 @@
-import { chapters, elSalvador, toolGroups } from '../about/about';
+import { elSalvador, toolGroups } from '../about/about';
 import { profile } from '../about/profile';
 import { social } from '../social';
-import { ALTERNATE_NAMES, absoluteUrl, LOCALE, SITE_NAME } from './site';
+import {
+  ALTERNATE_NAMES,
+  absoluteUrl,
+  LOCALE,
+  pageDescriptions,
+  SITE_NAME,
+} from './site';
 
 /** A JSON-LD node. Kept loose because schema.org types are open-ended. */
 export type JsonLd = Record<string, unknown>;
@@ -32,7 +38,6 @@ export function personNode(site: URL, image: string): JsonLd {
   const knowsAbout = toolGroups.flatMap((group) =>
     group.tools.map((tool) => tool.name),
   );
-  const current = chapters[0];
 
   return {
     '@type': 'Person',
@@ -41,11 +46,8 @@ export function personNode(site: URL, image: string): JsonLd {
     alternateName: ALTERNATE_NAMES,
     url: absoluteUrl('/', site),
     image,
-    jobTitle: current?.role,
-    description: profile.summary,
-    worksFor: current
-      ? { '@type': 'Organization', name: current.organization.name }
-      : undefined,
+    jobTitle: profile.title,
+    description: pageDescriptions.home,
     homeLocation: { '@type': 'Country', name: elSalvador.name },
     knowsAbout,
     sameAs: Object.values(social).map((link) => link.href),
