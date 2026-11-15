@@ -8,8 +8,7 @@ import avatar from '../assets/avatar.jpg';
 import { Footer } from '../components/layout/footer';
 import { FooterSettings } from '../components/layout/footer-settings';
 import { Header } from '../components/layout/header';
-import { chapterCopy, organizationName } from '../lib/about/about';
-import { currentChapter, profile } from '../lib/about/profile';
+import { profile } from '../lib/about/profile';
 import { isInvariant, type Text, textIn } from '../lib/i18n/locales';
 import { settingsCopy } from '../lib/i18n/settings-copy';
 import { localize } from '../lib/i18n/translator';
@@ -50,10 +49,7 @@ interface Props {
 const {
   title: rawTitle = localize('meta.defaultTitle', {
     name: profile.name,
-    title: localize('profile.title', {
-      role: chapterCopy(currentChapter).role,
-      organization: organizationName(currentChapter.organization),
-    }),
+    title: localize('profile.title'),
   }),
   description: rawDescription = DEFAULT_DESCRIPTION,
   type = 'website',

@@ -13,14 +13,21 @@ export const LOCALE = 'en_US';
 export const X_HANDLE = `@${new URL(social.x.href).pathname.replace(/^\/+|\/+$/g, '')}`;
 
 /** Per-page fallback when a page passes no description. */
-export const DEFAULT_DESCRIPTION = `${profile.name} is ${profile.aboutRole} at ${profile.organization}, in ${profile.location}. ${profile.sideNote}`;
+/**
+ * Search, social cards, and the manifest are a first contact, so this copy
+ * is in first person, names the role, and never the employer. The name is
+ * already in the title, so the copy doesn't repeat it.
+ */
+export const DEFAULT_DESCRIPTION = `I'm a fullstack software engineer in ${profile.location}. ${profile.sideNote}`;
 
 /** Copy for the pages whose lead is not already a good description. */
 export const pageDescriptions = {
-  home: `${profile.name} is a ${profile.title} in ${profile.location}, building web and mobile products from frontend architecture to APIs and infrastructure.`,
-  about: `About ${profile.name}: ${profile.aboutRole} at ${profile.organization}, with work history and the stack I build with.`,
-  projects: `Products, tools, and libraries built by ${profile.name}, with the stack and status of each.`,
-  skills: `Open Agent Skills by ${profile.name}: the rules I give coding agents, from how to write code to how to review it.`,
+  home: `I'm a software engineer in ${profile.location}, building web and mobile products from frontend architecture to APIs and infrastructure.`,
+  about: `I'm a fullstack software engineer in ${profile.location}. Here's what I have been up to.`,
+  projects:
+    "Products, tools, and libraries I've built, with the stack and status of each.",
+  skills:
+    'Open Agent Skills with the rules I give coding agents, from how to write code to how to review it.',
 } as const;
 
 /**

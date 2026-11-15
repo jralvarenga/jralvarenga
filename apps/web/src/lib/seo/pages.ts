@@ -26,7 +26,7 @@ export async function getOgPages(): Promise<OgPage[]> {
       path: '/',
       eyebrow: profile.title,
       title: profile.name,
-      description: profile.summary,
+      description: pageDescriptions.home,
     },
     {
       path: '/about',
