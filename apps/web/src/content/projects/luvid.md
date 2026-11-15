@@ -3,9 +3,14 @@
 name: luvid
 summary: Money tracking you can share. Income and expenses live in spaces you invite people into, each with its own currency.
 started: 2026-06
-updated: 2026-11-12
+updated: 2026-11-15
 status: building
 order: 1
+links:
+
+- label: Website
+  href: https://luvid-landing.vercel.app
+
 parts:
 
 - name: Web app
