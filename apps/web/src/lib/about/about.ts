@@ -118,8 +118,10 @@ export type ToolIconName =
   | 'tailwind'
   | 'stylex'
   | 'python'
+  | 'flask'
   | 'rust'
   | 'php'
+  | 'laravel'
   | 'vercel'
   | 'cloudflare'
   | 'render'
@@ -179,8 +181,10 @@ export const toolGroups: ToolGroup[] = [
       { name: 'Tailwind CSS', icon: 'tailwind' },
       { name: 'StyleX', icon: 'stylex' },
       { name: 'Python', icon: 'python' },
+      { name: 'Flask', icon: 'flask' },
       { name: 'Rust', icon: 'rust' },
       { name: 'PHP', icon: 'php' },
+      { name: 'Laravel', icon: 'laravel' },
     ],
   },
   {
