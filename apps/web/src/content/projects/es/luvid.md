@@ -1,6 +1,7 @@
 ---
 
 summary: Control de dinero que puedes compartir. Los ingresos y gastos viven en espacios a los que invitas a otras personas, cada uno con su propia moneda.
+links: [Sitio web]
 parts:
 
 - name: App web
