@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="apps/web/src/assets/avatar.jpg" width="96" height="96" alt="Rigo Alvarenga">
-
 <h1>Rigo Alvarenga</h1>
 
 Tech Lead on the development team at Denzo Studios, in El Salvador.<br />
