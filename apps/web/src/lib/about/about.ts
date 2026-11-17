@@ -138,6 +138,7 @@ export type ToolIconName =
   | 'claude'
   | 'openai'
   | 'cursor'
+  | 'devin'
   | 'grok'
   | 'grokBot'
   | 'coderabbit'
@@ -212,6 +213,7 @@ export const toolGroups: ToolGroup[] = [
       { name: 'Codex', icon: 'openai' },
       { name: 'Cursor', icon: 'cursor' },
       { name: 'T3 Code', icon: 't3code' },
+      { name: 'Devin', icon: 'devin' },
       { name: 'Grok', icon: 'grok' },
       { name: 'Grok Bot', icon: 'grokBot' },
       { name: 'CodeRabbit', icon: 'coderabbit' },
