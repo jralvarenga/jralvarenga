@@ -133,6 +133,7 @@ export type ToolIconName =
   | 'postgresql'
   | 'neon'
   | 'convex'
+  | 'supabase'
   | 'sentry'
   | 'posthog'
   | 'claude'
@@ -201,6 +202,7 @@ export const toolGroups: ToolGroup[] = [
       { name: 'PostgreSQL', icon: 'postgresql' },
       { name: 'Neon', icon: 'neon' },
       { name: 'Convex', icon: 'convex' },
+      { name: 'Supabase', icon: 'supabase' },
       { name: 'Sentry', icon: 'sentry' },
       { name: 'PostHog', icon: 'posthog' },
     ],
