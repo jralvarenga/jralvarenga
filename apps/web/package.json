@@ -2,7 +2,7 @@
   "name": "web",
   "license": "MIT",
   "type": "module",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "engines": {
     "node": ">=24"
   },
